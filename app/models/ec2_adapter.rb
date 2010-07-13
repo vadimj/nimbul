@@ -10,41 +10,39 @@ class Ec2Adapter
     end
 
     def self.refresh_account(account, resources = nil)
-		# always refresh zones
-        refresh_zones(account)
-        # always refresh key pairs
-        refresh_key_pairs(account)
+      # don't proceed if we can't get the ec2 account object
+      if get_ec2(account).nil?
+        Rails.logger.error "Account [#{account.id} - #{account.name}] failed to refresh - unable to load AWS::EC2 object using account credentials."
+        return
+      end
+      
+      # always refresh zones
+      refresh_zones(account)
+      
+      # always refresh key pairs
+      refresh_key_pairs(account)
 
-        if resources.nil? or resources == 'server_images' 
-            refresh_server_images(account)
-        end
-        if resources.nil? or resources == 'security_groups' or resources == 'instances' 
-            refresh_security_groups(account)
-        end
-        if resources.nil? or resources == 'instances'
-            refresh_instances(account)
-        end
-        if resources.nil? or resources == 'volumes'
-            refresh_volumes(account)
-        end
-        if resources.nil? or resources == 'snapshots'
-            refresh_snapshots(account)
-        end
-        if resources.nil? or resources == 'addresses' 
-            refresh_addresses(account)
-        end
-<<<<<<< .working
-<<<<<<< .working
-        if resources.nil? or resources == 'reserved_instances'
-            refresh_reserved_instances(account)
-        end
-=======
-        if resources.nil? or resources == 'availability_zones'
-            refresh_availability_zones(account)
-        end
-=======
->>>>>>> .merge-right.r8102
->>>>>>> .merge-right.r4809
+      if resources.nil? or resources == 'server_images' 
+          refresh_server_images(account)
+      end
+      if resources.nil? or resources == 'security_groups' or resources == 'instances' 
+          refresh_security_groups(account)
+      end
+      if resources.nil? or resources == 'instances'
+          refresh_instances(account)
+      end
+      if resources.nil? or resources == 'volumes'
+          refresh_volumes(account)
+      end
+      if resources.nil? or resources == 'snapshots'
+          refresh_snapshots(account)
+      end
+      if resources.nil? or resources == 'addresses' 
+          refresh_addresses(account)
+      end
+      if resources.nil? or resources == 'reserved_instances'
+          refresh_reserved_instances(account)
+      end
     end
 
     def self.refresh_addresses(account)
@@ -476,12 +474,16 @@ class Ec2Adapter
         end
     end
 
-<<<<<<< .working
     def self.refresh_reserved_instances(account)
         ec2 = get_ec2(account)
+        account_zones = account.zones
+
         reserved_instances = ec2.describe_reserved_instances
         reserved_instances.each do |i|
             reserved_instance = account.reserved_instances.detect{ |s| s.reserved_instances_id == i[:reserved_instances_id] }
+            zone = account_zones.detect{ |z| z.name == i[:zone] }
+            i[:zone_id] = zone.id if zone
+            i.delete(:zone)
             if reserved_instance.nil?
                 reserved_instance = account.reserved_instances.build(i)
             else
@@ -491,17 +493,7 @@ class Ec2Adapter
         end
     end
 
-<<<<<<< .working
-	def self.run_instances(server, p)
-=======
-    def self.run_instances(server, p)
->>>>>>> .merge-right.r4809
-        count = p[:count] || 1
-        dns_active = p[:dns_active].nil? ? true : p[:dns_active]
-        user_id = p[:user_id] || nil
-=======
     def self.run_instances(server, count, p)
->>>>>>> .merge-right.r8102
         cluster = Cluster.find(server.cluster_id, :include => [ :provider_account ])
         account = cluster.provider_account
         ec2 = get_ec2(account)
@@ -529,27 +521,11 @@ class Ec2Adapter
 
         compress_user_data = true # false by default
     	options = {
-<<<<<<< .working
-<<<<<<< .working
-			:key_name => key_name,
-			:instance_type => server.type,
-			:user_data => Server::UserDataController.generate(server, compress_user_data),
-			:security_groups => security_groups,
-		}
-=======
-	    :key_name => key_name,
-	    :instance_type => server.type,
-	    :user_data => Server::UserDataController.generate(server, compress_user_data),
-	    :security_groups => security_groups,
-	}
-=======
             :key_name => key_name,
             :instance_type => server.type,
             :user_data => Server::UserDataController.generate(server, compress_user_data),
             :security_groups => security_groups,
         }
->>>>>>> .merge-right.r8102
->>>>>>> .merge-right.r4809
 
 		instances = []
 		0.upto(count-1) do |c|
@@ -718,22 +694,42 @@ class Ec2Adapter
 		return provider_account.zones.find_by_name(zone_name)
     end
 
+	# also used by AsAdapter to process info about AS Group's instances
 	def self.parse_instance_info(account, reservation, attributes, account_instances=nil, account_zones=nil, account_security_groups=nil)
+		as_lifecycle_state_to_ec2_state = {}
+		as_lifecycle_state_to_ec2_state['Pending'] = 'pending'
+		as_lifecycle_state_to_ec2_state['InService'] = 'running'
+		as_lifecycle_state_to_ec2_state['Terminating'] = 'shutting-down'
+		as_lifecycle_state_to_ec2_state['Terminated'] = 'terminated'
+
 		account_instances ||= account.instances
 		account_zones ||= account.zones
 		account_security_groups ||= account.security_groups
 		
-		# delete :id attribute before building a instance record - :id is a special rails attribute
-		attributes[:instance_id] = attributes[:id]
-        zone_name = attributes[:zone]
-        attributes.delete(:id)
-        attributes.delete(:zone)
+        # process ec2 instance info
+        if attributes[:lifecycle_state].blank?
+			# delete :id attribute before building a instance record - :id is a special rails attribute
+			attributes[:instance_id] = attributes[:id]
+	        attributes.delete(:id)
+	        zone_name = attributes[:zone]
+	        attributes.delete(:zone)
+		# process as instance info
+		else
+			attributes[:state] = as_lifecycle_state_to_ec2_state[attributes[:lifecycle_state]]
+			attributes.delete(:lifecycle_state)
+			attributes[:state] ||= 'unknown'
+	        zone_name = attributes[:availability_zone]
+	        attributes.delete(:availability_zone)
+        end
         
         # replace states like shutting-down with states like shutting_down
         attributes[:state].gsub!('-','_')
 
 		# get security groups
-		security_groups = (account_security_groups.select{ |g| reservation[:groups].include?(g.name) })
+		security_groups = []
+		if reservation and reservation[:groups]
+			security_groups = (account_security_groups.select{ |g| reservation[:groups].include?(g.name) })
+		end
 		
 		instance = account_instances.detect{ |s| s.instance_id == attributes[:instance_id] }
 		if instance.nil?
