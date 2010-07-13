@@ -1,25 +1,90 @@
-development:
+test:
   settings:
-    name: Your Application
+    name: Nimbul (Test)
+    proto:  http
     domain: localhost:3000
-    session_key: _your_application_session
-    secret: 1138371c71fe2f4f6769090e9fa0d7314b4febcc1c1966f9c83e16a3c880e0ca396cbb37e9ce53bbefc2417cb7363d7127200d51f16b9aeda033dbc3600c63fc
-    forgery: b8029fa60066bb90d7fb4e68265a112b
-    admin_email: yourpersonalemail@example.com
-    in_beta: true
+    session_key: _ec2_nimbul_session
+    secret: 94a2115f770d828a5e26d1516d8f3415c1df9a441d8274b2cc2af4822cf85c834537be9ad213c1c9151aaa5da3b3908fb323d4953737b8c14fa146f016dd84c9
+    forgery: 38f089a05f833a9ca07e48048e37be4c
+    admin_email: admin@example.com
+    in_beta: false
     new_user_invite_limit: 5
     max_user_invite_limit: 100
   rest_auth:
-    site_key: e587f9d09baa59c920b9ee97ac70f58b3c51356c
+    site_key: 9c7be3bf69d09bd8da94f5f166686203b261c357
     stretches: 10
   mail:
-    address: mail.yourapplication.com
+    address: smtp.somewhere.com
     port: 25
-    domain: yourapplication.com
+    domain: nimbul.example.com
     authentication: :login
-    user_name: email_account_username_or_address@yourapplication.com
-    password: emailaccountpassword
-    sender: donotreply@yourapplication.com
+    user_name:
+    password:
+    sender: donotreply@example.com
   recaptcha:
     publickey:
     privatekey:
+  ldap:
+    server: ldap2.example.com
+    port: 389
+    base: ou=People,dc=example,dc=com
+development:
+  settings:
+    name: Nimbul (Development)
+    proto:  http
+    domain: ddeploy.example.com:3000
+    session_key: _ec2_nimbul_session
+    secret: fb647af5ee28103df2cfdd4b558518a40a9cfb7e026d9bd125ba7d1d2be5849df3e0b1908b62f1c70e3f016fb5a801201b74ea39733a4e916f55255b43af3044
+    forgery: b305ecf7fd738add9a0049822318ad8a
+    admin_email: admin@example.com
+    in_beta: false
+    new_user_invite_limit: 5
+    max_user_invite_limit: 100
+  rest_auth:
+    site_key: ad6052613d291b2003aa8e027523611f7f39e14d
+    stretches: 10
+  mail:
+    address: smtp-hub.example.com
+    port: 25
+    domain: nimbul.example.com
+    authentication: :login
+    user_name:
+    password:
+    sender: donotreply@example.com
+  recaptcha:
+    publickey:
+    privatekey:
+  ldap:
+    server: ldap2.example.com
+    port: 389
+    base: ou=People,dc=example,dc=com
+production:
+  settings:
+    name: Nimbul
+    proto:  https
+    domain: nimbul.ec2.example.com
+    session_key: _nimbul_ec2_session
+    secret: d26e566fbf808797cb99519321ce37a8b5f9083b5c74af636a44f17359f94c5d47b7dba948b04689670f1f9432011cc1b5c18e076ed734eeb95253cc5aab8688
+    forgery: c791ab6a112ac4597d686cc78b8e3615
+    admin_email: admin@example.com
+    in_beta: false
+    new_user_invite_limit: 5
+    max_user_invite_limit: 100
+  rest_auth:
+    site_key: 11a53090e056cfe50d8224f167686daa2b5d9909
+    stretches: 10
+  mail:
+    address: localhost
+    port: 25
+    domain: nimbul.example.com
+    authentication: :login
+    user_name:
+    password:
+    sender: donotreply@example.com
+  recaptcha:
+    publickey:
+    privatekey:
+  ldap:
+    server: ldap2.example.com
+    port: 389
+    base: ou=People,dc=example,dc=com

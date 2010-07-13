@@ -10,7 +10,7 @@ development:
     #host: localhost
     port: 443
     user: nimbul
-    pass: n1m8ul
+    pass: CHANGEME
     vhost: /nimbul
     ssl: true
     ssl_verify: 0
@@ -55,7 +55,7 @@ test:
     port: 443
     user: guest
     pass: guest
-    vhost: /
+    vhost: /nimbul
     ssl: true
     ssl_verify: 0
     debug: 0
@@ -69,7 +69,7 @@ production:
     host: events.ec2.nytimes.com
     port: 443
     user: nimbul
-    pass: n1m8ul
+    pass: CHANGEME
     vhost: /nimbul
     ssl: true
     ssl_verify: 0
