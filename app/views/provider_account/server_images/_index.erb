@@ -1,0 +1,26 @@
+<% remote_form_for :server_images,
+    :url => control_provider_account_server_images_path(@provider_account) do |f| %>
+        
+Search: <%= will_paginate_search_field "provider_account_#{@provider_account.id}_server_images_search", nil, nil, :list %>
+
+<%= refresh_image 'Refresh', nil, nil, :list %>
+
+<span class="vr">&nbsp;</span>
+
+<%= add_server_image_button 'Add' %>
+<%= remove_server_image_submit 'Delete' %>
+
+<span class="vr">&nbsp;</span>
+
+<%= enable_server_images_submit 'Enable' %>
+<%= disable_server_images_submit 'Disable' %>
+<%= hidden_field_tag :command, '', :class => :command %>
+
+<span class="vr">&nbsp;</span>
+
+<b>Total: <span id="provider_account_<%= @provider_account.id %>_server_images_total"><%= @server_images.total_entries %></span></b>
+
+<hr>
+
+<%= render :partial => "provider_account/server_images/list", :locals => { :f => f } %>
+<% end %>

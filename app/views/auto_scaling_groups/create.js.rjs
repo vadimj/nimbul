@@ -1,0 +1,6 @@
+if @error_message.blank? and @auto_scaling_group
+    page.insert_html :bottom, 'auto_scaling_group_records', :partial => 'auto_scaling_groups/auto_scaling_group', :object => @auto_scaling_group
+    page['large_redbox'].hide
+else
+    page['auto_scaling_group_message'].replace_html "<div class='error'>#{@error_message}</div><br />"
+end

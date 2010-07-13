@@ -1,0 +1,15 @@
+@addresses ||= []
+if @error_message.blank?
+    @addresses.each do |i|
+        if i.destroyed
+            page["cloud_address_#{i.id}"].remove
+        else
+            page["cloud_address_#{i.id}"].replace_html :partial => "cloud_addresses/row", :row => i
+            page["cloud_address_#{i.id}"].visual_effect :highlight
+        end
+    end
+else
+    page['error_redbox'].replace_html :partial => 'shared/error_redbox'
+    page['error_redbox'].appear
+end
+

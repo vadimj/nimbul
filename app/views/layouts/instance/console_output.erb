@@ -1,0 +1,30 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"    
+ "http://www.w3.org/TR/html4/strict.dtd"> 
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+    <title><%= APP_CONFIG['settings']['name'] %>: <%= yield :subtitle %></title>
+    <%= stylesheet_link_tag 'reset' %>
+    <%= stylesheet_link_tag 'fonts' %>
+    <%= stylesheet_link_tag 'grids' %>
+    <%= stylesheet_link_tag 'menu' %>
+    <%= stylesheet_link_tag 'base' %>
+    <%= stylesheet_link_tag 'main' %>
+    <%= stylesheet_link_tag 'notices' %>
+    <%= stylesheet_link_tag 'servers' %>
+    <%= stylesheet_link_tag 'state' %>
+    <%= stylesheet_link_tag 'redbox' %>
+    <%= stylesheet_link_tag 'tabs' %>
+    <%= stylesheet_link_tag 'auto_complete' %>
+    <%= javascript_include_tag :all %>
+    <%= javascript_tag "window._token = '#{form_authenticity_token}'" %>
+</head>
+<body>
+<div id="page"><!-- beginning of page div -->
+
+<%= render :partial => "layouts/#{controller.nested_layout}" %>
+
+</div><!-- end of page div -->
+</body>
+</html>

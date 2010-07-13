@@ -1,0 +1,102 @@
+.pending,
+.requested,
+.waiting,
+.update,
+.creating {
+	font-weight: bold;
+	color: #FFD700;
+}
+
+.grant,
+.approved,
+.create,
+.attached {
+	font-weight: bold;
+	color: #00AA00;
+}
+
+.deny,
+.rejected,
+.destroy,
+.failed,
+.timedout,
+.false,
+.detached {
+	font-weight: bold;
+	color: #AA0000;
+}
+
+.available,
+.true {
+	color: #00AA00;
+}
+
+.ready {
+    color: #00AAAA;
+}
+
+.ok {
+	font-weight: bold;
+	color: #00AA00;
+}
+
+.too-high {
+	font-weight: bold;
+	color: #0000AA;
+}
+
+.too-low {
+	font-weight: bold;
+	color: #AA0000;
+}
+
+.removed,
+.in-use,
+.unavailable,
+.deleting {
+	color: #AA0000;
+}
+
+td.true,
+td.succeeded,
+td.completed,
+td.running,
+td.active {
+    background-color:#C3DDC3;
+}
+
+td.ready {
+    background-color:#99DDDD;
+}
+
+tr.admin {
+	font-weight: bold;
+    color:#00AA00;
+}
+
+td.false,
+td.failure,
+td.stopped,
+td.terminated	{
+	background-color: #FFCCCC;
+}
+
+td.pending,
+td.requested,
+td.waiting,
+td.timedout,
+td.rebooting,
+td.disabled,
+td.disabling {
+    background-color: #FFFFCC;
+}
+
+td.shutting_down,
+td.shutting-down {
+    background-color: #FFCC99;
+}
+
+.image_available		{ background-color: #C3DDC3; }
+.image_deregistered		{ background-color: #CCCCCC; }
+.image_public			{ background-color: #FFFF99; }
+.image_private			{ background-color: transparent; }

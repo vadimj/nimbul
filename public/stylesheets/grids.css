@@ -1,0 +1,203 @@
+body {
+	margin: 0; 
+	padding: 0;
+	font-family: verdana, helvetica, sans-serif;
+}
+/* Loading box of width=height=80px with a spinner placed at the center */
+#loading {
+	width:80px;
+	height: 80px;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	background-color: transparent;
+	background: url(/images/spinner.gif) no-repeat center #fff;
+	text-align: center;
+	padding: 10px;
+	font:normal 16px Tahoma, Geneva, sans-serif;
+	border:1px solid #666;
+	margin-left: -40px;
+	margin-top: -40px;
+	z-index:10;
+	overflow: auto;
+}
+
+/* Error red box: width=300 height=180px placed at the center */
+#error_redbox {
+	width: 300px;
+	height: 180px;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	background-color: #FFF0F0;
+	padding: 10px;
+	border:1px solid #666;
+	margin-left: -150px;
+	margin-top: -90px;
+	z-index:9;
+	overflow: hidden;
+	display: table; 
+}
+
+#notice_redbox {
+	width: 300px;
+	height: 180px;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	background-color: #F0F0FF;
+	padding: 10px;
+	border:1px solid #666;
+	margin-left: -150px;
+	margin-top: -90px;
+	z-index:9;
+	overflow: hidden;
+	display: table; 
+}
+
+/* Tiny red box: width=400 height=200px placed at the center */
+#tiny_redbox {
+	width:400px;
+	height: 220px;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	background-color: white;
+	padding: 10px;
+	border:1px solid #666;
+	margin-left: -200px;
+	margin-top: -110px;
+	z-index:8;
+	overflow: auto;
+}
+
+/* Wide red box: width=500 height=280px placed at the center */
+#wide_redbox {
+	width:520px;
+	height: 300px;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	background-color: white;
+	padding: 10px;
+	border:1px solid #666;
+	margin-left: -260px;
+	margin-top: -150px;
+	z-index:7;
+	overflow: auto;
+}
+
+/* Small red box: width=400 height=320px placed at the center */
+#small_redbox {
+	width:400px;
+	height: 320px;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	background-color: white;
+	padding: 10px;
+	border:1px solid #666;
+	margin-left: -200px;
+	margin-top: -160px;
+	z-index:6;
+	overflow: auto;
+}
+
+/* Small red box: width=420 height=380px placed at the center */
+#large_redbox {
+	width:420px;
+	height: 380px;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	background-color: white;
+	padding: 10px;
+	border:1px solid #666;
+	margin-left: -210px;
+	margin-top: -190px;
+	z-index:4;
+	overflow: auto;
+}
+
+#xlarge_redbox {
+	width:380px;
+	height: 450px;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	background-color: white;
+	padding: 10px;
+	border:1px solid #666;
+	margin-left: -190px;
+	margin-top: -225px;
+	z-index:4;
+	overflow: auto;
+}
+
+#xxlarge_redbox {
+	width:500px;
+	height: 450px;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	background-color: white;
+	padding: 10px;
+	border:1px solid #666;
+	margin-left: -250px;
+	margin-top: -225px;
+	z-index:4;
+	overflow: auto;
+}
+
+#tiny_redbox .centered,
+#small_redbox .centered,
+#wide_redbox .centered,
+#large_redbox .centered,
+#xlarge_redbox .centered,
+#xxlarge_redbox .centered {
+	margin-left: auto;
+	margin-right: auto;
+	text-align: center;
+}
+
+#header {
+	/* with no width specified, it will be 100% */
+	height: 40px;
+	margin: 20px;
+	text-align: left;
+	padding: 0;
+	font-size: 12px;
+	visibility: hidden;
+	}
+#sidebar {	
+	position: absolute;
+	top: 5px;
+	left: 20px;
+	width: 180px;
+	height: 250px;
+	margin: 0;
+	text-align: left;
+	padding: 0;
+	font-size: 12px;
+	}
+#nav {
+	position: absolute;
+	top: 20px;
+	right: 20px; /* this is important  */
+	width: 190px;
+	height: 300px;
+	margin: 0;
+	text-align: left;
+	padding: 0;
+	font-size: 12px;
+	}
+#main {
+	/* no position, no width */
+	height: 400px;
+	margin: 25px 20px 0 210px; /* this is important / margin: top right bottom left; (or TRouBLe) */
+	/* sidebar width = 180px / 180 + 30 = 210 / nav width = 0px (hidden) / 0 + 20 = 20 */
+	text-align: left;
+	padding: 0;
+	font-size: 12px;
+	}
+

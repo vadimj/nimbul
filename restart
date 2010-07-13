@@ -1,0 +1,8 @@
+#!/bin/bash
+
+cd /var/nyt/www/console
+./stop
+sleep 30
+./start
+
+exit 0

@@ -1,0 +1,1 @@
+page["auto_scaling_group_#{@auto_scaling_group.id}_triggers"].replace_html :partial => 'auto_scaling_triggers/triggers'

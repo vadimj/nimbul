@@ -1,0 +1,12 @@
+<tr>
+<td><%= text_field_tag :pending_volume_id, { :onclick => '$(this).focus();$(this).select()' } %></td>
+<td id="pending">pending</td>
+<td><%= text_field_tag :device %></td>
+<td><%= check_box_tag :force_volume_id_allocation %></td>
+<td>&nbsp;</td>
+</tr>
+<%= javascript_tag "
+if ($('instance_pending_volume_id').value == '') {
+    $('instance_pending_volume_id').value = 'Drag & drop a Volume here';
+}
+" %>

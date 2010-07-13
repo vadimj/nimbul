@@ -1,0 +1,58 @@
+<%= javascript_tag "Editable.setupAll('.volume-editable');" %>
+<div id="volumes">
+
+<%= show_all_link 'Show all' %>
+<%= filter_by_state_link 'In Use', 'in-use' %>
+<%= filter_by_state_link 'Available', 'available' %>
+<br/><br/>
+
+<%= will_paginate_remote @volumes, nil %>
+
+<table>
+  <thead>
+  <tr>
+    <% unless @parent.is_a?(User) %>
+        <th><% if @volumes.total_entries > 0 %><%= better_select_all_check_box :select_all_volumes, :selectable_volume %><% end %></th>
+	<% end %>
+    <th <%= sort_td_class_helper "name" %>>
+      <%= volumes_sort_link "Name", "name" %>
+    </th>
+    <% if @parent.is_a?(User) -%>
+        <th <%= sort_td_class_helper "provider_account_id" %>>
+          <%= server_images_sort_link "Account", "provider_account_id" %>
+        </th>
+    <% end -%>
+    <th <%= sort_td_class_helper "cloud_id" %>>
+      <%= volumes_sort_link "Volume", "cloud_id" %>
+    </th>
+    <th <%= sort_td_class_helper "parent_cloud_id" %>>
+      <%= volumes_sort_link "Snapshot", "parent_cloud_id" %>
+    </th>
+    <th <%= sort_td_class_helper "create_time" %>>
+      <%= volumes_sort_link "Create Time", "create_time" %>
+    </th>
+    <th <%= sort_td_class_helper "size" %>>
+      <%= volumes_sort_link "Size (GB)", "size" %>
+    </th>
+    <th <%= sort_td_class_helper "zone_id" %>>
+      <%= volumes_sort_link "Zone", "zone_id" %>
+    </th>
+    <th <%= sort_td_class_helper "state" %>>
+      <%= volumes_sort_link "State", "state" %>
+    </th>
+    <th <%= sort_td_class_helper "cloud_instance_id" %>>
+      <%= addresses_sort_link "Instance", "cloud_instance_id" %>
+    </th>
+    <% unless @parent.is_a?(Cluster) %>
+		<th>Cluster Access</th>
+	<% end %>
+  </tr>
+  </thead>
+  <tbody id="volume_records">
+    <%= render :partial => "cloud_volumes/volume", :collection => @volumes %>
+  </tbody>
+</table>
+
+<%= will_paginate_remote @volumes, nil %>
+
+</div>

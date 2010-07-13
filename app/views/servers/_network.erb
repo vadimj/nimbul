@@ -1,0 +1,23 @@
+<% form_for :server,
+    :url => server_path(@server),
+    :html => { :method => 'put' } do |f| %>
+	<%= f.error_messages %>
+
+    <table>
+        <caption>Security Groups</caption>
+        <tr><th>Group Name</th><th>&nbsp;</th></tr>
+        <% unless @cluster.provider_account.default_security_group.blank? %>
+            <tr>
+	            <td><%= @cluster.provider_account.default_security_group %></td>
+                <td>[ <span class="disabled">remove</span> ]</td>
+            </tr>
+        <% end %>
+	    <tbody id="security_groups">
+	    <%= render :partial => 'security_group', :collection => @server.security_groups %>
+	    </tbody>
+        <tr><td align="right" colspan="5"><%= add_server_security_group_link 'add group' %></td></tr>
+    </table>
+
+    <%= submit_tag "Update", :disable_with => "Updating&hellip;"  %>
+<% end %>
+

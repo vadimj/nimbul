@@ -1,0 +1,4 @@
+@servers.each do |s|
+	page["server_#{s.id}"].replace_html :partial => "servers/row", :locals => { :server => s }
+end
+page << "reset_selectable_elements();"

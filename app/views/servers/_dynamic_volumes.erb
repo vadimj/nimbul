@@ -1,0 +1,35 @@
+<%
+    @dynamic_volumes = []
+    @dynamic_volumes += @provider_account.volumes.sort{ |a,b| a.name.downcase <=> b.name.downcase }.collect{ |v| GroupLabelValue.new('Volume', v.name, v.volume_id) if v.is_enabled? }.compact
+    @dynamic_volumes += @provider_account.snapshots.sort{ |a,b| a.name.downcase <=> b.name.downcase }.collect{ |v| GroupLabelValue.new('Snapshot', v.name, v.snapshot_id) if v.is_enabled? }.compact
+    @provider_account.clusters.each do |c|
+        @dynamic_volumes += c.servers.sort{ |a,b| a.name.downcase <=> b.name.downcase }.collect{ |v| GroupLabelValue.new('AnotherServer', c.name+': '+v.name+': '+v.volume_id+' ('+v.volume_name+')', v.volume_id) if (v.id != @server.id and !v.volume_id.blank? and v.volume_class == 'Volume') }.compact
+    end
+%>
+<script type="text/javascript">
+var volumes = new Array();
+<% for volume in @dynamic_volumes -%>
+  volumes.push(new Array("<%= volume.group %>", "<%=h volume.label %>", "<%= volume.value %>"));
+<% end -%>
+
+function volumeClassSelected() {
+  volume_class = $('server_volume_class').getValue();
+  options = $('server_volume_id').options;
+  options.length = 1;
+  volumes.each(function(volume) {
+    if (volume[0] == volume_class) {
+      options[options.length] = new Option(volume[1], volume[2], (volume[2] == "<%= @server.volume_id %>"), (volume[2] == "<%= @server.volume_id %>"));
+    }
+  });
+//  if (options.length == 1) {
+//    $('volume_id_field').hide();
+//  } else {
+//    $('volume_id_field').show();
+//  }
+}
+
+document.observe('dom:loaded', function() {
+  volumeClassSelected();
+  $('server_volume_class').observe('change', volumeClassSelected);
+});
+</script>

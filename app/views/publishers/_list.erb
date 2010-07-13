@@ -1,0 +1,30 @@
+<%
+    publisher_class_types = Dir.glob( File.join( RAILS_ROOT, 'app', 'models', 'publishers', '*.rb') ).map{|path| path[/.+\/(.+).rb/,1] }
+    publisher_options = publisher_class_types.map{ |m| "<option value='#{m.camelize}'>#{('Publishers::'+m.camelize).constantize.label}</option>" }
+%>
+<h1>Account Publishers</h1>
+The following Publishers have been configured for this account.<br />
+To add a new Publisher, select a type from the drop-down list. Then click the plus sign icon.
+<br />
+<br />
+
+<% form_for :publisher,
+    :url => new_provider_account_publisher_path(@provider_account),
+    :html => { :method => :get } do |f| %>
+    <%= select_tag :class_type, publisher_options.join('') %>
+    <%= image_submit_tag("add.png", :class => 'control-icon', :alt => "Add", :title => "Add a New Publisher") %>
+<% end %>
+<br />
+<% form_for :provider_account,
+    :url => provider_account_publishers_url(@provider_account) do |f| %>
+<table>
+    <th>Type</th>
+    <th>Last Published</th>
+    <th>State</th>
+    <th>Details</th>
+    <th>Actions</th>
+    <tbody id="publishers">
+        <%= render :partial => 'publishers/publisher', :collection => @provider_account.publishers, :locals => { :f => f } %>
+    </tbody>
+</table>
+<% end %>

@@ -1,0 +1,5 @@
+page << "if ($('hostname_#{@hostname.id}_leases').childElementCount > 0) {"
+unless @hostname.nil?
+	page["hostname_#{@hostname.id}_leases"].replace_html :partial => 'dns_leases/leases' 
+end
+page << '}'

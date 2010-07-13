@@ -1,0 +1,4 @@
+page["instance_addresses_index"].replace_html :partial => "instance/addresses/index"
+@instance.addresses.each do |instance_resource|
+    page << "Editable.setupAll('.instance-resource-#{instance_resource.id}-editable');"
+end

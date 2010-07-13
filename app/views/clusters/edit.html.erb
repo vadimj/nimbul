@@ -1,0 +1,13 @@
+<% subtitle @cluster %>
+
+<h1><%= pagetitle @cluster, { :create_links => true } %></h1>
+
+<br />
+
+<% form_for :cluster,
+    :url => cluster_path(@cluster),
+    :html => { :method => 'put' } do |f| %>
+    <%= render :partial => 'fields', :locals => { :f => f } %>
+    <%= submit_tag 'Cancel', :name => 'cancel_button' %>
+<% end %>
+

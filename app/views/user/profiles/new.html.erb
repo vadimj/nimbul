@@ -1,0 +1,69 @@
+<h1>Sign Up for a <%= APP_CONFIG['settings']['name'] %> User Account</h1>
+
+<!--
+<p>New OpenID users should <%= link_to "log in here",  
+		(beta_openid_signup_path(params[:invitation_token]) || openid_signup_path) %>.</p>
+-->
+
+<p>LDAP users should <%= link_to "sign up here",  
+		(beta_ldap_signup_path(params[:invitation_token]) || ldap_signup_path) %>.</p>
+
+<br />
+
+<% @user.password = @user.password_confirmation = nil %>
+
+<%= error_messages_for :user %>
+<% form_for :user, :url => user_profiles_path do |f| %>
+  <table>
+  <% if_in_beta? do %>
+  <tr>
+    <th>Invitation Code</th>
+    <td>
+      <%= f.text_field :invitation_token %><br>
+      <small>*we are currently in private beta and an invitation code is required</small>
+    </td>
+  </tr>
+  <% end %>
+  <tr>
+    <th><%= f.label :name %></th>
+    <td>
+      <%= f.text_field :name, :help => "*optional" %>
+    </td>
+  </tr>
+  <tr>
+    <th><%= f.label :login, 'User Name' %></th>
+    <td><%= f.text_field :login %></td>
+  </tr>
+    <tr>
+      <th><%= f.label :email, 'E-Mail' %></th>
+      <% if in_beta? %>
+        <td>
+          <%= f.text_field :email %><br>
+          <small>"*email should match the one your invitation code was sent to, or you will have to activate your account</small>
+        </td>
+      <% else %>
+        <td><%= f.text_field :email %></td>
+      <% end %>
+    </tr>
+  <tr>
+    <th><%= f.label :password %></th>
+    <td><%= f.password_field :password %></td>
+  </tr>
+  <tr>
+    <th><%= f.label :password_confirmation, 'Confirm Password' %></th>
+    <td><%= f.password_field :password_confirmation %></td>
+  </tr>
+  <tr>
+  	<th><%= f.label :time_zone, 'Time Zone' %></th>
+    <td><%= f.time_zone_select :time_zone, ActiveSupport::TimeZone.us_zones %></td>
+  </tr>
+  <tr>
+  	<th><%= f.label :public_key, 'Public Key' %></th>
+    <td><%= f.text_area :public_key, :size => '60x6', :warp => 'soft' %></td>
+  </tr>
+  <tr>
+    <th>&nbsp;</th>
+    <td><%= f.submit "Sign Up"%></td>
+  </tr>
+  </table>
+<% end %>

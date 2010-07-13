@@ -1,0 +1,23 @@
+<div id="dns_data">
+	<h1>DNS</h2>
+	<br />
+	<%- if @model.is_a? ProviderAccount %>
+		<%= render :partial => 'provider_accounts/static_dns_setup' %>
+	<%- end %>
+	
+	<%- title ||= 'Hostname and Lease Information' %>
+	<h3><%= title %></h3>
+	<br />
+	Search: <%= will_paginate_search_field 'dns_hostname_search', 'dns_hostname_data', nil, :list, 'Search by '+DnsHostname.search_fields.collect{|f| f.titleize}.join(', ') %>
+	
+	<%= link_to_function(
+			image_tag("refresh.png", :class => 'control-icon', :alt => "Refresh", :title => "Refresh Hostname List"), "
+				reloadPane( $('dns_pane'), '#{polymorphic_url([@model, :dns_hostnames])}');")
+	%> Refresh Hostname List 
+	<br />
+	<br />
+	
+	<div id="dns_hostname_data">
+		<%= render :partial => 'dns_hostnames/list' %>
+	</div>
+</div>

@@ -1,0 +1,134 @@
+<ul class="tabselector" id="tabcontrol1">
+    <li class="tab-selected" id="instances_tab">
+        <%= link_to_function(
+			'Instances',
+			"tabselect($('instances_tab'));
+			paneselect($('instances_pane'));
+			return true;",
+			:href => '#instances'
+		) %>
+    </li>
+    <li class="tab-unselected" id="servers_tab">
+        <%= link_to_function(
+			'Servers',
+			"loadDiv($('cluster_#{@cluster.id}_servers_index'), '" + cluster_servers_url(@cluster) + "');
+			tabselect($('servers_tab'));
+			paneselect($('servers_pane'));
+			return true;",
+			:href => '#servers'
+		) %>
+    </li>
+    <li class="tab-unselected" id="addresses_tab">
+        <%= link_to_function(
+			'Addresses',
+			"loadDiv($('cluster_#{@cluster.id}_addresses_index'), '" + cluster_addresses_url(@cluster) + "');
+			tabselect($('addresses_tab'));
+			paneselect($('addresses_pane'));
+			return true;",
+			:href => '#addresses'
+		) %>
+    </li>
+    <li class="tab-unselected" id="storage_tab">
+        <%= link_to_function(
+			'Storage',
+			"loadDiv($('cluster_#{@cluster.id}_volumes_index'), '" + cluster_volumes_url(@cluster) + "');
+			loadDiv($('cluster_#{@cluster.id}_snapshots_index'), '" + cluster_snapshots_url(@cluster) + "');
+			tabselect($('storage_tab'));
+			paneselect($('storage_pane'));
+			return true;",
+			:href => '#storage'
+		) %>
+    </li>
+    <li class="tab-unselected" id="variables_tab">
+        <%= link_to_function(
+			'Variables',
+			"tabselect($('variables_tab'));
+			paneselect($('variables_pane'));
+			return true;",
+			:href => '#variables'
+		) %>
+    </li>
+    <li class="tab-unselected" id="dns_tab">
+        <%= link_to_function(
+			'DNS',
+			"loadPane($('dns_pane'), '" + cluster_dns_hostnames_url(@cluster) + "');
+			tabselect($('dns_tab'));
+			paneselect($('dns_pane'));
+			return true;",
+			:href => '#dns'
+		) %>
+    </li>
+    <li class="tab-unselected" id="security_tab">
+        <%= link_to_function(
+			'Security',
+			"tabselect($('security_tab'));
+			paneselect($('security_pane'));
+			return true;",
+			:href => '#security'
+		) %>
+    </li>
+    <li class="tab-unselected" id="stats_tab">
+        <%= link_to_function(
+			'Stats',
+			"loadPane($('stats_pane'), '" + cluster_stats_url(@cluster) + "');
+			tabselect($('stats_tab'));
+			paneselect($('stats_pane'));
+			return true;",
+			:href => '#stats'
+		) %>
+    </li>
+</ul>
+<div id="pane-content">
+<ul class="panes" id="panecontrol1">
+    <li id="instances_pane" class="pane-selected">
+		<div id="cluster_<%= @cluster.id %>_instances_index"></div>
+	</li>
+    <li id="servers_pane" class="pane-unselected">
+		<div id="cluster_<%= @cluster.id %>_servers_index"></div>
+    </li>
+    <li id="addresses_pane" class="pane-unselected">
+		<div id="cluster_<%= @cluster.id %>_addresses_index"></div>
+	</li>
+    <li id="storage_pane" class="pane-unselected">
+		<h1>Volumes</h1><br/>
+		<div id="cluster_<%= @cluster.id %>_volumes_index"></div>
+		<h1>Snapshots</h1><br/>
+		<div id="cluster_<%= @cluster.id %>_snapshots_index"></div>
+	</li>
+    <li id="variables_pane" class="pane-unselected">
+        <%= render :partial => 'cluster_parameters/list' %>
+    </li>
+	<li id="dns_pane" class="pane-unselected"></li>
+    <li id="security_pane" class="pane-unselected">
+        <%= render :partial => 'users' %>
+    </li>
+    <li id="stats_pane" class="pane-unselected"></li>
+</ul>
+</div>
+<%= javascript_tag "
+    var anchor = '';
+    if (location.hash != '') {
+        anchor = location.hash.substring(1, location.hash.length);
+        if (anchor == 'servers') {
+			loadDiv($('cluster_#{@cluster.id}_servers_index'), '" + cluster_servers_url(@cluster) + "');
+		}
+        if (anchor == 'addresses') {
+			loadDiv($('cluster_#{@cluster.id}_addresses_index'), '" + cluster_addresses_url(@cluster) + "');
+		}
+        if (anchor == 'storage') {
+			loadDiv($('cluster_#{@cluster.id}_volumes_index'), '" + cluster_volumes_url(@cluster) + "');
+			loadDiv($('cluster_#{@cluster.id}_snapshots_index'), '" + cluster_snapshots_url(@cluster) + "');
+		}
+        if (anchor == 'dns') {
+			loadPane($(anchor+'_pane'), '#{cluster_dns_hostnames_url(@cluster)}');
+		}
+        if (anchor == 'stats') {
+			loadPane($('stats_pane'), '" + cluster_stats_url(@cluster) + "');
+		}
+        if ($(anchor+'_pane') != null) {
+            tabselect($(anchor+'_tab'));
+            paneselect($(anchor+'_pane'));
+        }
+    }
+" %>
+<%= javascript_tag(remote_function(:url => cluster_instances_url(@cluster), :method => :get) ) %>

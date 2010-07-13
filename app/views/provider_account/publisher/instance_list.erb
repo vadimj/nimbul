@@ -1,0 +1,3 @@
+<% instances.each do |i| -%>
+<%= i.public_dns %> <% if i.server_name.blank? %><%= i.public_dns %><% else %><%= i.server_name.gsub(' ','_') %><% end %> <%= i.private_dns %> base
+<% end -%>

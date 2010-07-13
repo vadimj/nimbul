@@ -1,0 +1,13 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  publisher_id: 1
+  type: MyString
+  name: MyString
+  value: MyString
+
+two:
+  publisher_id: 1
+  type: MyString
+  name: MyString
+  value: MyString

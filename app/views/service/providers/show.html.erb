@@ -1,0 +1,17 @@
+<% title "Service Provider" %>
+
+<p>
+  <strong>Service Type:</strong>
+  <%=h @service_provider.service_type.name %>
+</p>
+<p>
+  <strong>Server:</strong>
+  <%=h @service_provider.server.name %>
+</p>
+<p>
+
+<p>
+  <%= link_to "Edit", edit_service_provider_path(@service_provider) %> |
+  <%= link_to "Destroy", @service_provider, :confirm => 'Are you sure?', :method => :delete %> |
+  <%= link_to "View All", service_providers_path %>
+</p>

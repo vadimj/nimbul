@@ -1,0 +1,1 @@
+page["user_#{@user.id}"].replace_html :partial => "users/row", :locals => { :user => @user }

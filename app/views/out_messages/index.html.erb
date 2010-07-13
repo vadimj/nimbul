@@ -1,0 +1,18 @@
+<% subtitle 'Outgoing Messages' %>
+
+<h1>Outgoing Messages</h1>
+
+<br />
+
+<%= refresh_link image_tag("refresh.png", :align => "absmiddle", :alt => "Refresh"), 'messages', nil, :list %>
+
+<b>Total: <%= @messages.total_entries %></b>
+
+Search: <%= will_paginate_search_field 'out_message_search', 'messages', nil, :list, 'Search on '+OutMessage.search_fields.collect{|f| f.titleize}.join(', ') %>
+
+<%= link_to 'Fake an Outgoing Message', new_out_message_path %>
+
+<br />
+<br />
+
+<%= render :partial => 'list' %>

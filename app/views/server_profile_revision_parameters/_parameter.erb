@@ -1,0 +1,24 @@
+<% fields_for "server_profile_revision[server_profile_revision_parameter_attributes][]", parameter do |f| %>
+<% content_tag_for :tr, parameter do %>
+    <% if parameter.new_record? %>
+    	<td>&nbsp;</td>
+    <% else %>
+    	<td class="handle">[drag]</td>
+    <% end %>
+	<td>
+		<%= check_box_tag nil, '', parameter.is_protected?, :onclick => "$(this).next('.is_protected').value = ($(this).checked ? '1' : '0');" %>
+        <%= f.hidden_field :is_protected, :index => nil, :class => 'is_protected' %>
+	</td>
+    <td><%= f.text_field :name, :index => nil %></td>
+	<td><%= f.text_field :value, :index => nil, :class => 'value' %></td>
+    <td>
+    <% if parameter.new_record? %>
+        <%= link_to_function 'remove', "$(this).up('.server_profile_revision_parameter').remove()"%>
+    <% else %>
+        <%= f.hidden_field :id, :index => nil %>
+        <%= link_to_function 'remove', "mark_for_destroy(this, $(this).up('.server_profile_revision_parameter'))"%>
+        <%= f.hidden_field :should_destroy, :index => nil, :class => 'should_destroy' %>
+    <% end %>
+    </td>
+<% end %>
+<% end %>

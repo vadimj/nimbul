@@ -1,0 +1,62 @@
+<%= javascript_tag "Editable.setupAll('.snapshot-editable');" %>
+<div id="snapshots">
+
+<%= show_all_link 'Show all' %>
+<% if @parent.is_a?(ProviderAccount) %>
+    <%= filter_by_owner_id_link 'My Snapshots', @parent.account_id %>
+<% end %>
+<%= filter_by_state_link 'Completed', 'completed' %>
+<%= filter_by_state_link 'Pending', 'pending' %>
+<br/>
+<br/>
+
+<%= will_paginate_remote @snapshots, nil %>
+
+<table>
+  <thead>
+  <tr>
+    <% unless @parent.is_a?(User) %>
+        <th><% if @snapshots.total_entries > 0 %><%= better_select_all_check_box :select_all_snapshots, 'selectable_snapshot'%><% end %></th>
+	<% end %>
+    <th <%= sort_td_class_helper "name" %>>
+      <%= snapshots_sort_link "Name", "name" %>
+    </th>
+    <% if @parent.is_a?(User) -%>
+        <th <%= sort_td_class_helper "provider_account_id" %>>
+          <%= server_images_sort_link "Account", "provider_account_id" %>
+        </th>
+    <% end -%>
+    <th <%= sort_td_class_helper "cloud_id" %>>
+      <%= snapshots_sort_link "Snapshot", "cloud_id" %>
+    </th>
+    <th <%= sort_td_class_helper "parent_cloud_id" %>>
+      <%= snapshots_sort_link "Volume", "parent_cloud_id" %>
+    </th>
+    <th <%= sort_td_class_helper "state" %>>
+      <%= snapshots_sort_link "State", "state" %>
+    </th>
+    <th <%= sort_td_class_helper "start_time" %>>
+      <%= snapshots_sort_link "Created At", "start_time" %>
+    </th>
+    <th <%= sort_td_class_helper "progress" %>>
+      <%= snapshots_sort_link "Progress", "progress" %>
+    </th>
+    <th <%= sort_td_class_helper "owner_id" %>>
+      <%= snapshots_sort_link "Owner", "owner_id" %>
+    </th>
+    <th <%= sort_td_class_helper "description" %>>
+      <%= snapshots_sort_link "Description", "description" %>
+    </th>
+    <% unless @parent.is_a?(Cluster) %>
+		<th>Cluster Access</th>
+	<% end %>
+  </tr>
+  </thead>
+  <tbody id="snapshot_records">
+    <%= render :partial => "cloud_snapshots/snapshot", :collection => @snapshots %>
+  </tbody>
+</table>
+
+<%= will_paginate_remote @snapshots, nil %>
+
+</div>

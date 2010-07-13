@@ -1,0 +1,22 @@
+	<td><%= link_to h(user.login), member_path(user) %></td>
+	<td><%=h user.name %></td>
+	<td><%=h user.email %></td>
+	<td><%= user.has_role?("admin") ? 'yes' : 'no' %></td>
+	<td><%= user.activated_at.blank? ? 'no' : 'yes' %>
+		<% if user.activated_at.blank? %>
+			<%= activate_user_link 'activate', user %>
+		<% end %>
+	</td> 
+	<td><%= user.enabled ? 'yes' : 'no' %>
+	<% unless user == current_user %>
+        <%= toggle_user_status_link 'enable', 'disable', user %>
+	<% end %>
+	</td>
+	<td><%=h user.auth_type %></td>
+  	<td><%= link_to 'edit roles', admin_user_roles_path(user) %></td>
+  	<td><%= link_to 'edit access rules', admin_user_provider_accounts_path(user) %></td>
+	<% if_in_beta? do %>
+		<td><%=h user.invitation_limit %> <%= link_to 'edit', edit_admin_invite_path(user) %></td>
+	<% end %>
+
+

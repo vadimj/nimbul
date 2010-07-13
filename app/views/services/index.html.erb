@@ -1,0 +1,31 @@
+<% subtitle 'Daemons' %>
+
+<h1>Daemons</h1>
+
+<br />
+
+<% remote_form_for :daemons, :url => { :action => 'control' } do |f| %>
+<%= render :partial => "list", :locals => { :f => f }  %>
+
+<%= refresh_link image_tag("refresh.png", :align => "absmiddle", :alt => "Refresh"), 'daemons', nil, :list %>
+
+<%= image_submit_tag "start.png", :align => "absmiddle",
+    :alt => "Start", :title => "Start Selected Daemons",
+    :onclick => '$(this).next(".command").value="start";',
+    :name => 'start'
+%>
+
+<%= image_submit_tag "reboot.png", :align => "absmiddle",
+    :alt => "Restart", :title => "Restart Selected Daemons",
+    :onclick => '$(this).next(".command").value="restart";',
+    :name => 'restart'
+%>
+
+<%= image_submit_tag "stop.png", :align => "absmiddle",
+    :alt => "Stop", :title => "Stop Selected Daemons",
+    :onclick => 'if (confirm("Are you sure?")) { $(this).next(".command").value="stop"; } else { return false; }',
+    :name => 'stop'
+%>
+
+<%= hidden_field_tag :command, '', :class => :command %>
+<% end %>

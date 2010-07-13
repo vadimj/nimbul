@@ -1,0 +1,20 @@
+if @included
+    page << "$('dns_hostname_id').value = '#{@hostname.name} is already added'; $('dns_hostname_id').appear(); $('dns_hostname_id').focus(); $('dns_hostname_id').select();"
+    page.visual_effect :highlight, "hostname_#{@hostname.id}"
+elsif !@error_message.blank?
+    page['hostname_status_message'].hide()
+    page['hostname_status_message'].replace_html @error_message
+    page['hostname_status_message'].appear()
+    page.delay(10) do
+		page['hostname_status_message'].fade()
+		page.delay(5) do 
+			page['hostname_status_message'].replace_html ''
+		end
+    end
+else
+    page.insert_html :bottom, 'dns_hostname_entries', :partial => "dns_hostnames/hostname", :locals => { :hostname => @hostname }
+    page.visual_effect :highlight, "hostname_#{@hostname.id}"
+end
+page.delay(2) do
+    page << "$('dns_hostname_id').value = 'Add Hostname'; $('dns_hostname_id').appear(); $('dns_hostname_id').focus(); $('dns_hostname_id').select();"
+end

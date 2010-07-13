@@ -1,0 +1,28 @@
+<%- readonly = server_parameter.is_readonly? %>
+<% fields_for "server[server_parameter_attributes][]", server_parameter do |f| %>
+<% content_tag_for :tr, server_parameter, :disabled => readonly, :class => readonly ? 'disabled' : '' do %>
+    <% if server_parameter.new_record? %>
+    	<td>&nbsp;</td>
+    <% else %>
+        <%= f.hidden_field :id, :index => nil %>
+    	<td class="handle">[drag]</td>
+    <% end %>
+	<td>
+		<%= check_box_tag nil, '', server_parameter.is_protected?, :disabled => readonly, :onclick => "$(this).next('.is_protected').value = ($(this).checked ? '1' : '0');" %>
+        <%= f.hidden_field :is_protected, :index => nil, :class => 'is_protected' %>
+	</td>
+    <td><%= f.text_field :name, :readonly => readonly, :index => nil %></td>
+	<td><%= f.text_field :value, :readonly => readonly, :index => nil %></td>
+    <td>
+    <% if server_parameter.new_record? %>
+        <%= link_to_function 'remove', "$(this).up('.server_parameter').remove()"%>
+    <% elsif not readonly %>
+        <%= link_to_function 'remove', "mark_for_destroy(this, $(this).up('.server_parameter'))"%>
+        <%= f.hidden_field :should_destroy, :index => nil, :class => 'should_destroy' %>
+	<% else %>
+		<span class="disabled">readonly</span>
+    <% end %>
+	<%= error_messages_for :server_parameter %>
+    </td>
+<% end %>
+<% end %>

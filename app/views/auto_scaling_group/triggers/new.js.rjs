@@ -1,0 +1,2 @@
+page["auto_scaling_group_#{@auto_scaling_group.id}_new_trigger"].replace_html :partial => "auto_scaling_triggers/new", :locals => { :auto_scaling_trigger => @auto_scaling_trigger }
+page["auto_scaling_group_#{@auto_scaling_group.id}_add_trigger"].hide

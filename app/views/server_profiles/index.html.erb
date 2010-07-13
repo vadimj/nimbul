@@ -1,0 +1,9 @@
+<% subtitle 'Server Profiles' %>
+
+<h1>Server Profiles</h1>
+
+<br />
+
+<% form_for :server_profiles do |f| %>
+  <%= render :partial => 'list', :locals => { :f => f }  %>
+<% end %>

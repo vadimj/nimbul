@@ -1,0 +1,28 @@
+<% if row.is_default? %>
+    <td class="handle top-bottom-border left-border">[drag]</td>
+<% else %>
+    <td class="handle">[drag]</td>
+<% end %>
+<td <%= (row.is_default? ? "class='top-bottom-border'" : '') %>>
+    <% if row.instance_id.blank? -%>
+        <span class="<%= h(row.state) %>"><%= h(row.state) %></span>
+    <% else -%>
+        <%= link_to row.instance.instance_id, row.instance %>
+    <% end -%>
+    <%= (row.is_default? ? ' - default' : '') %>
+</td>
+<td <%= (row.is_default? ? "class='top-bottom-border'" : '') %>>
+<%= start_server_resource_bundle_link 'start', @server, row -%>
+<%= make_default_resource_bundle_link 'make default', @server, row -%>
+<%= remove_resource_bundle_link 'delete', @server, row -%>
+</td>
+<td <%= (row.is_default? ? "class='top-bottom-border'" : '') %>>
+    <%= row.zone.nil? ? 'Not Set' : row.zone.name %>
+</td>
+<td <%= (row.is_default? ? "class='top-bottom-border right-border'" : '') %>>
+    <table id="resource_bundle_<%= row.id %>_resources">
+    <%= render :partial => 'resource_bundle/server_addresses/index', :locals => { :resource_bundle => row } %>
+    <td colspan="6" class="noborder"><hr/></td>
+    <%= render :partial => 'resource_bundle/server_volumes/index', :locals => { :resource_bundle => row } %>
+    </table>
+</td>

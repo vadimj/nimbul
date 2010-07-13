@@ -1,0 +1,2 @@
+page["#{@parent_type}_#{@parent.id}_servers_total"].replace_html "#{@servers.total_entries}"
+page["#{@parent_type}_#{@parent.id}_servers"].replace_html :partial => "#{@parent_type}/servers/list"

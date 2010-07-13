@@ -1,0 +1,24 @@
+<% semantic_form_for @service_provider do |f| %>
+  <%= f.error_messages %>
+  <% f.inputs do %>
+    <%= f.input :name, :hint => 'Name the Provider, for example, Dynamic DNS from DynDNS' %>
+    <%= f.input :service_type, :hint => 'Choose an existing Service Type' %>
+    <li id="service_provider_server_input" class="select required">
+      <%= f.label :server_id, :required => true %>
+      <%= dynamic_select_server :service_provider, :server_id, @servers, @clusters, @provider_accounts %>
+      <p class="inline-hints">
+        Choose a Server that provides this Service.<br>
+        When creating dynamic dns, Nimbul will use the IP of the first 'ready' instance of this Server.
+      </p>
+    </li>
+    <%#= f.input :server, :hint => 'Choose a Server that provides this Service.<br/>The Service Provider will use the IP of the first active Instance of this Server.' %>
+    <%= f.input :description,
+      :input_html => { :class => 'autogrow', :warp => 'soft', :size => '40x2' },
+      :required => false
+    %>
+  <% end %>
+  <% f.buttons do %>
+    <%= f.submit %>
+    <%= submit_tag 'Cancel', :name => 'cancel_button' %>
+  <% end %>
+<% end %>

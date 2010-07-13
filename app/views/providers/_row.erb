@@ -1,0 +1,6 @@
+	<td class="select-handle"><%= selectable_check_box_tag "provider_ids[]", provider.id, false %></td>
+    <td><%=h provider.name.titleize %></td>
+    <td class="<%= provider.state %>"><%=h provider.state %></td>
+    <td><%=h provider.pid %></td>
+    <td><%= time_ago provider.last_ran_at %></td>
+    <td><%= provider.started_at.nil? ? '' : time_ago_in_words(provider.started_at) %></td>

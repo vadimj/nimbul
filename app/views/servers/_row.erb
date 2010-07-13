@@ -1,0 +1,41 @@
+<% unless @parent.is_a?(User) %>
+	<td class="select-handle">
+		<%= better_check_box_tag "server_ids[]", row.id, false, "#{@parent_type}-#{@parent.id}-server" %>
+	</td>
+<% end %>
+<td>
+	<%= link_to row.name, row %> <%= row.status_message %>
+</td>
+<% if @parent.is_a?(User) %>
+	<td class="nowrap">
+		<%= link_to row.cluster.provider_account.name, provider_account_path(row.cluster.provider_account_id) -%>
+		<br/>&nbsp;&nbsp;<%= link_to row.cluster.name, cluster_path(row.cluster_id) -%>
+	</td>
+<% end %>
+<td>
+	<%= show_instances_with_status row.instances, 'vline' -%>
+	<%= show_hide_server_instances_link row, 'show', 'hide' -%>
+</td>
+<td><%=h row.server_profile_revision %></td>
+<td>
+	<% row.security_groups.each do |security_group| %>
+		<% content_tag_for :span, security_group do %>
+			<%=h security_group.name %> [<%= remove_server_security_group_link 'X', row, security_group %>]<br />
+		<% end %>
+	<% end %>
+</td>
+<td><%= h row.key_name %></td>
+<td>
+	<%= row.zones.collect{ |z| z.name }.sort{ |a,b| a <=> b }.join('<br/>') %>
+</td>
+<td>
+	<%= link_to row.addresses.length, server_url(row, :anchor => :launch_configurations) %>
+</td>
+<td>
+	<%= link_to row.volumes.length, server_url(row, :anchor => :launch_configurations) %>
+</td>
+<% if @cluster %>
+	<td>
+		<%= remove_cluster_server_link 'Delete', @cluster, row %>
+	</td>
+<% end %>

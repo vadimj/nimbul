@@ -1,0 +1,10 @@
+@security_groups.each do |i|
+    page["security_group_#{i.id}"].replace_html :partial => "security_groups/row", :locals => { :security_group => i }
+    page["security_group_#{i.id}"].visual_effect :highlight
+end
+@removed_security_groups.each do |i|
+    page["security_group_#{i.id}"].remove
+end
+page["recent-events"].replace_html "<div class='notice'>#{@message}</div>" if @message
+page["recent-events"].replace_html "<div class='error'>#{@error_message}</div>" if @error_message
+page << "reset_selectable_elements();"

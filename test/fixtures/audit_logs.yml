@@ -1,0 +1,17 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  auditable_id: 1
+  auditable_type: MyString
+  author_login: MyString
+  author_id: 1
+  summary: MyString
+  changes: MyText
+
+two:
+  auditable_id: 1
+  auditable_type: MyString
+  author_login: MyString
+  author_id: 1
+  summary: MyString
+  changes: MyText

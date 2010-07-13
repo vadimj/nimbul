@@ -1,0 +1,3 @@
+#page["server_#{@server.id}"].hide
+page["server_#{@server.id}"].replace_html :partial => "servers/row", :locals => { :server => @server }
+#page["server_#{@server.id}"].appear

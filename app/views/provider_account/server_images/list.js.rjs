@@ -1,0 +1,2 @@
+page["#{@parent_type}_#{@parent.id}_server_images_total"].replace_html "#{@server_images.total_entries}"
+page["#{@parent_type}_#{@parent.id}_server_images"].replace_html :partial => "#{@parent_type}/server_images/list"

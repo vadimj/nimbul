@@ -1,0 +1,7 @@
+if @error_message.blank? and
+    page.insert_html :bottom, 'cloud_resource_cluster_records', :partial => 'cloud_resource/cluster', :object => @cluster
+    page["#{@cloud_resource.type.underscore}_#{@cloud_resource.id}"].replace_html :partial => "#{@cloud_resource.type.tableize}/row", :object => @cloud_resource
+else
+    page['error_redbox'].replace_html :partial => 'shared/error_redbox'
+    page['error_redbox'].appear
+end

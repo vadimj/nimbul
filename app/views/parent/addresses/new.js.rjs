@@ -1,0 +1,2 @@
+page['tiny_redbox'].replace_html :partial => 'cloud_addresses/fields', :object => @address
+page['tiny_redbox'].appear

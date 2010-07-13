@@ -1,0 +1,6 @@
+<% fields_for 'provider_account[key_pair_attributes][]', key_pair do |f| %>
+    <tr class="selectable key_pair_record">
+      <td><%=h key_pair.name %></td>
+      <td><%=h key_pair.fingerprint %></td>
+    </tr>
+<% end %>

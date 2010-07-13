@@ -1,0 +1,44 @@
+<% form_for :server,
+    :url => server_path(@server),
+    :html => { :method => 'put' } do |f| %>
+	<%= hidden_field_tag :anchor, :security %>
+    <%= f.error_messages %>
+    <table>
+     <tr>
+	<th><%= f.label :is_locked, 'Lock Created Instances' %></th>
+        <td><%= f.check_box :is_locked, { 
+            :title => 'If checked, Instances of this Server will be created in a "Locked" state. You will need to "Unlock" such an instance before you can Stop or Reboot it.',
+            :readonly => @cluster.provider_account.auto_lock_instances,
+            :disabled => @cluster.provider_account.auto_lock_instances } %>
+        <% if @cluster.provider_account.auto_lock_instances %>
+            <small>Overwritten on the Account level</small>
+        <% end %>
+        </td>
+    </tr>
+    <tr>
+        <th><%= f.label :key_name, 'Main Key' %></th>
+        <% if @cluster.provider_account.default_main_key.blank? %>
+            <td><%= f.collection_select :key_name, @key_pairs, :name, :name %></td>
+        <% else %>
+            <td><%= f.text_field :key_name, { :readonly => true } %>
+            <small>Overwritten on the Account level</small>
+            </td>
+        <% end %>
+    </tr>
+    <tr>
+        <th>SSH Access</th>
+        <td>
+            <table>
+            <tr><th>Console User</th><th>Server User</th><th>Details</th><th>&nbsp;</th></tr>
+            <tbody id="server_user_accesses">
+            <%= render :partial => 'server_user_access', :collection => @server.server_user_accesses %>
+            </tbody>
+            <tr><td align="right" colspan="5"><%= add_server_server_user_access_link 'add user' %></td>
+            </tr>
+            </table>
+    	</td>
+    </tr>
+</table>
+
+<%= submit_tag "Update", :disable_with => "Updating&hellip;"  %>
+<% end %>

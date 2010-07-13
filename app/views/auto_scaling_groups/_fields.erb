@@ -1,0 +1,76 @@
+<center>
+<div class="centered">
+<%-
+launch_configurations = LaunchConfiguration.find_all_by_provider_account_id(@provider_account)
+%>
+	<h1>Add a New Auto Scaling Group</h1>
+        <br/>
+	<div id="auto_scaling_group"></div>
+	<% remote_form_for :auto_scaling_group,
+		:url => provider_account_auto_scaling_groups_path(@provider_account),
+		:html => { :method => :post } do |f| %>
+		<table>
+		<tr>
+			<th>
+			<%= f.label :name %>
+			<br /><small>(e.g. 'Web Tier' - required)</small>
+			</th>
+			<td><%= f.text_field :name %></td>
+		</tr>
+		<tr>
+			<th>
+			<%= f.label :launch_configuration_id, 'Launch Configuration' %>
+			<br /><small>(required)</small>
+			</th>
+			<td><%= f.collection_select :launch_configuration_id, launch_configurations, :id, :name %></td>
+		</tr>
+		<tr><td colspan="2" align="center">&nbsp;</td></tr>
+
+		<tr>
+			<th>
+			<%= f.label :min_size, 'Min Size' %>
+			<br /><small>(required)</small>
+			</th>
+			<td><%= f.text_field :min_size, :class => :short %></td>
+		</tr>
+		<tr>
+			<th>
+			<%= f.label :max_size, 'Max Size' %>
+			<br /><small>(required)</small>
+			</th>
+			<td><%= f.text_field :max_size, :class => :short %></td>
+		</tr>
+		<tr>
+			<th>
+			<%= f.label :desired_capacity, 'Desired Size' %>
+			<br /><small>(required)</small>
+			</th>
+			<td><%= f.text_field :desired_capacity, :class => :short %></td>
+		</tr>
+		<tr>
+			<th>
+			<%= f.label :cooldown, 'Cooldown' %>
+			<br /><small>(in seconds - required)</small>
+			</th>
+			<td><%= f.text_field :cooldown, :class => :short %></td>
+		</tr>		
+		<tr class="checkbox-list">
+			<th>
+			Availability Zones
+			</th>
+			<td>
+			<% @provider_account.zones.each do |zone| -%>
+			<li><%= check_box_tag "auto_scaling_group[zone_ids][]", zone.id, @auto_scaling_group.has_zone?(zone) -%> <%= zone.name -%></li>
+			<% end -%>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2" align="center">
+			<%= f.submit "Create" %>
+			<%= f.submit "Cancel", :onclick => "$('xlarge_redbox').hide(); return false;" %>
+			</td>
+		</tr>
+		</table>
+	<% end %>
+</div>
+</center>

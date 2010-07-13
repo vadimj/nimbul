@@ -1,0 +1,21 @@
+<% subtitle 'All Volumes' %>
+
+<h1><%= link_to 'Dashboard', '/dashboard' %> / All Volumes</h1>
+
+<br/>
+
+<%= will_paginate_search_field "user_#{@user.id}_cloud_volume_search", nil, nil, :list %>
+
+<%= refresh_image 'Refresh', nil, nil, :list, nil %>
+
+<span class="vr">&nbsp;</span>
+
+<b>Total: <span id="user_<%= @user.id %>_cloud_volumes_total"><%= @volumes.total_entries %></span></b>
+
+<hr>
+
+<div id="user_<%= @user.id %>_cloud_volumes">
+
+<%= render :partial => 'cloud_volumes/list' %>
+
+</div>

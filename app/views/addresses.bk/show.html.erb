@@ -1,0 +1,23 @@
+<p>
+  <b>Provider account:</b>
+  <%=h @address.provider_account_id %>
+</p>
+
+<p>
+  <b>Name:</b>
+  <%=h @address.name %>
+</p>
+
+<p>
+  <b>Public ip:</b>
+  <%=h @address.public_ip %>
+</p>
+
+<p>
+  <b>Instance:</b>
+  <%=h @address.instance_id %>
+</p>
+
+
+<%= link_to 'Edit', edit_address_path(@address) %> |
+<%= link_to 'Back', addresses_path %>

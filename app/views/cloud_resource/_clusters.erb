@@ -1,0 +1,30 @@
+[ <%= close_redbox_link 'Close', 'small_redbox' %> ]
+
+<br/>
+<br/>
+
+<div class="centered">
+<h1>Clusters using <%= h(@cloud_resource.name) %></h1>
+</div>
+
+<br/>
+
+<table width="100%">
+<th width="75%">Cluster</th><th>Action</th>
+<tbody id="cloud_resource_cluster_records">
+<% @cloud_resource.clusters.each do |cluster| %>
+    <%= render :partial => 'cloud_resource/cluster', :object => cluster %>
+<% end %>
+</tbody>
+<tr>
+<td colspan="2">
+    <% remote_form_for :cluster,
+        :url => cloud_resource_clusters_path(@cloud_resource),
+        :html => { :method => 'post' } do |f| %>
+        <%= select_cloud_resource_cluster(f, @cloud_resource) %>
+    <% end %>
+</td>
+</tr>
+</table>
+
+[ <%= close_redbox_link 'Close', 'small_redbox' %> ]

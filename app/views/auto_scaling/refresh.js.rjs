@@ -1,0 +1,1 @@
+page[@refresh+'_data'].replace :partial => "#{@refresh}/list"

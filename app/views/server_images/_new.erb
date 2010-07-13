@@ -1,0 +1,43 @@
+<div class="centered">
+<br>
+<h1>Add / Register a Server Image</h1>
+<br/>
+<% remote_form_for :server_image,
+    :url => provider_account_server_images_path(@provider_account),
+    :html => { :method => :post } do |f| %>
+	<%= f.hidden_field :is_enabled, :value => 1 %>
+    <table width="100%">
+    <tr>
+        <th width="40%">
+			<%= f.label :name, 'Image Name' %><br/>
+			<small>(e.g. centos i386 php5.2)</small>
+		</th>
+        <td><%= f.text_field :name %></td>
+	</tr>
+    </table>
+    <hr>
+    <table width="100%">
+	<tr>
+	    <th width="40%">
+            <%= f.label :image_id, 'Existing AMI ID' %><br/>
+            <small>(e.g. ami-963bdcff)</small>
+         </th>
+        <td>
+            <%= f.text_field :image_id %>
+         </td>
+    </tr>
+    <tr><th colspan="2">OR</th></tr>
+    <tr>
+	    <th>
+            <%= f.label :location, 'Manifest Path' %><br/>
+            <small>(e.g. bucket/my.manifest.xml)</small>
+         </th>
+         <td>
+			<%= f.text_field :location, :class => :long %>
+         </td>
+    </tr>
+    </table>
+	<%= f.submit "Add" %>
+	<%= f.submit "Done", :onclick => "$('wide_redbox').hide(); return false;" %>
+<% end %>
+</div>

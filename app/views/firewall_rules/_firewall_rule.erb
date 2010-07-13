@@ -1,0 +1,3 @@
+<% content_tag_for :tr, firewall_rule, :class => 'selectable firewall_rule_record' do %>
+    <%= render :partial => 'firewall_rules/row', :locals => { :firewall_rule => firewall_rule } %>
+<% end %>

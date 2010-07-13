@@ -1,0 +1,22 @@
+<% subtitle @security_group %>
+
+<h1><%= pagetitle @security_group, { :create_links => true } %></h1>
+<br />
+Edit security group.
+<br />
+<br />
+<% remote_form_for :security_group,
+    :url => security_group_firewall_rules_path(@security_group),
+    :html => { :method => 'post' } do |f| %>
+<table>
+<%= render :partial => 'fields', :locals => { :f => f, :editable => true } %>
+<tr><td colspan="2">
+    <%= select_security_group_firewall_rule(f, @security_group) %>
+</td></tr>
+</table>
+<% end %>
+<% form_for :security_group,
+    :url => security_group_path(@security_group),
+    :html => { :method => 'put' } do |f| %>
+    <%= submit_tag 'Done', :name => 'cancel_button' %>
+<% end %>

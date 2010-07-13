@@ -1,0 +1,12 @@
+<% subtitle @launch_configuration %>
+
+<h1><%= pagetitle @launch_configuration, { :create_links => true } %></h1>
+
+<br />
+
+<% form_for :launch_configuration,
+    :url => launch_configuration_path(@launch_configuration),
+    :html => { :method => 'put' } do |f| %>
+    <%= render :partial => 'launch_configurations/fields', :locals => { :f => f } %>
+    <%= submit_tag "Update", :disable_with => "Updating&hellip;"  %>
+<% end %>

@@ -1,0 +1,2 @@
+page["instance_#{@instance.id}_unassigned_hostnames"].replace :partial => 'instance/dns_hostnames/unassigned_hostnames'
+page["instance_#{@instance.id}_assigned_leases"].replace :partial => 'assigned_leases'

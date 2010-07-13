@@ -1,0 +1,6 @@
+if @error_messages.empty?
+    page["cluster_#{@cluster.id}"].remove
+else
+    page['error_redbox'].replace_html :partial => 'shared/error_redbox'
+    page['error_redbox'].appear
+end

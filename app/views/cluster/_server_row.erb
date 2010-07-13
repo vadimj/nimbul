@@ -1,0 +1,14 @@
+<% fields_for 'cluster[server_attributes][]', server do |f| %>
+   	<%= f.hidden_field :id, :index => nil %>
+    <%= f.hidden_field :should_destroy, :index => nil, :class => 'should_destroy' %>
+    <td class="select-handle"><%= selectable_check_box_tag "server_ids[]", server.id, false %></td>
+	<td><%= link_to server.name, server %></td>
+    <td><%=h server.server_profile_revision %></td>
+    <td><%= link_to server.instances.count, server_instances_path(server) %></td>
+    <td class="small"><% server.security_groups.each do |group| %><%= security_group_server_link group, server %><br /><% end %></td>
+    <td><%= h server.type %></td>
+    <td><%= h server.key_name %></td>
+    <td><%= h server.zone %></td>
+    <td><% if server.volume_id %><%= h server.volume_name %><% end %></td>
+    <td><% if server.public_ip %><%= h server.dns_name %><% end %></td>
+<% end %>

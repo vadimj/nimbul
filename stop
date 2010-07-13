@@ -1,0 +1,20 @@
+#!/bin/bash
+
+echo "Stopping Flock and daemons, please wait..."
+
+# source /etc/cloudrc if it exists
+if [ -f /etc/cloudrc ]; then
+    source /etc/cloudrc
+fi
+
+cd /var/nyt/www/console
+mongrel_rails stop -P tmp/pids/mongrel.pid
+script/daemons stop
+sleep 10
+killall -9 ruby
+
+rake keystore:reset_lock
+
+echo "Done"
+
+exit 0

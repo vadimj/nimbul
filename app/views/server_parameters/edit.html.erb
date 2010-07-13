@@ -1,0 +1,24 @@
+<h1>Editing server_param</h1>
+
+<% form_for(@server_param) do |f| %>
+  <%= f.error_messages %>
+
+  <p>
+    <%= f.label :server_id %><br />
+    <%= f.text_field :server_id %>
+  </p>
+  <p>
+    <%= f.label :name %><br />
+    <%= f.text_field :name %>
+  </p>
+  <p>
+    <%= f.label :value %><br />
+    <%= f.text_field :value %>
+  </p>
+  <p>
+    <%= f.submit "Update" %>
+  </p>
+<% end %>
+
+<%= link_to 'Show', @server_param %> |
+<%= link_to 'Back', server_params_path %>

@@ -1,0 +1,17 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  server_profile_revision_id: 1
+  position: 1
+  type: MyString
+  name: MyString
+  value: MyText
+  is_protected: false
+
+two:
+  server_profile_revision_id: 1
+  position: 1
+  type: MyString
+  name: MyString
+  value: MyText
+  is_protected: false

@@ -1,0 +1,49 @@
+<div id="events" class="small">
+
+<b>Total: <%= @events.total_entries %></b>
+&nbsp;&nbsp;Search: <%= will_paginate_search_field 'event_search', 'events', nil, :list %>
+<%= refresh_link image_tag("refresh.png", :align => "absmiddle", :alt => "Refresh"), 'events', nil, :list %>
+
+<br />
+
+<%= will_paginate_remote @events, 'events' %>
+
+<br />
+
+<table>
+  <thead>
+  <tr>
+  <th <%= sort_td_class_helper "created_at" %>>
+    <%= events_sort_link "Timestamp", "created_at" %>
+  </th>
+  <th <%= sort_td_class_helper "provider_account_name" %>>
+    <%= events_sort_link "Provider Account", "provider_account_name" %>
+  </th>
+  <th <%= sort_td_class_helper "security_group_name" %>>
+    <%= events_sort_link "Security Group", "security_group_name" %>
+  </th>
+  <th <%= sort_td_class_helper "server_name" %>>
+    <%= events_sort_link "Server", "server_name" %>
+  </th>
+  <th <%= sort_td_class_helper "user_name" %>>
+    <%= events_sort_link "User", "user_name" %>
+  </th>
+  <th <%= sort_td_class_helper "action" %>>
+    <%= events_sort_link "Action", "action" %>
+  </th>
+  <th <%= sort_td_class_helper "object" %>>
+    <%= events_sort_link "Object", "object" %>
+  </th>
+  <th <%= sort_td_class_helper "description" %>>
+    <%= events_sort_link "Description", "description" %>
+  </th>
+  </tr>
+  </thead>
+  <tbody id="event_records">
+    <%= render :partial => "event", :collection => @events %>
+  </tbody>
+</table>
+
+<%= will_paginate_remote @events, 'events' %>
+
+</div>

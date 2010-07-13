@@ -1,0 +1,7 @@
+if @error_message.blank?
+    page["instance_state"].replace_html :partial => 'state', :locals => { :instance => @instance }
+else
+    page['error_redbox'].replace_html :partial => 'shared/error_redbox'
+    page['error_redbox'].appear
+end
+

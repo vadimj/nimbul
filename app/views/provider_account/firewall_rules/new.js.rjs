@@ -1,0 +1,2 @@
+page['large_redbox'].replace_html :partial => 'firewall_rules/fields', :object => FirewallRule.new
+page['large_redbox'].appear

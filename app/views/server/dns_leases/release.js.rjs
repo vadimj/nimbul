@@ -1,0 +1,6 @@
+unless @hostname.nil?
+	page << "if ($('hostname_#{@hostname.id}_leases').childElementCount > 0) {"
+		page["hostname_#{@hostname.id}_leases"].replace_html :partial => 'dns_leases/leases' 
+	page << '}'
+	page["hostname_#{@hostname.id}"].replace_html :partial => 'dns_hostnames/hostname_row', :locals => { :hostname => @hostname }
+end

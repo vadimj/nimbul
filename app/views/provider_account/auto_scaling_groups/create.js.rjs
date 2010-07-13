@@ -1,0 +1,7 @@
+if @error_messages.empty?
+    page.insert_html :bottom, 'auto_scaling_group_records', :partial => 'auto_scaling_groups/auto_scaling_group', :object => @auto_scaling_group
+    page['xlarge_redbox'].hide
+else
+    page['error_redbox'].replace_html :partial => 'shared/error_redbox'
+    page['error_redbox'].appear
+end

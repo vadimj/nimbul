@@ -1,0 +1,34 @@
+<% fields_for 'provider_account[server_profile_attributes][]', server_profile do |f| %>
+    <tr class="selectable server_profile_record <% if server_profile.state == 'unavailable' %><%=h server_profile.state %><% end %>">
+      <% if server_profile.new_record? %>
+      	<%= f.hidden_field :is_enabled, :index => nil, :class => 'is_enabled' %>
+		<%= f.hidden_field :should_destroy, :index => nil, :class => 'should_destroy' %>
+		<%= f.hidden_field :architecture, :index => nil %>
+		<%= f.hidden_field :state, :index => nil %>
+		<%= f.hidden_field :owner_id, :index => nil %>
+		<%= f.hidden_field :is_public, :index => nil %>
+        <td>
+			<%= submit_tag "Add", :name => 'add', :disable_with => 'Please wait&hellip;' %>
+			<%= link_to_function "cancel", "$(this).up('.server_profile_record').remove()" %>
+		</td>
+        <td><%= f.text_field :name, :index => nil %></td>
+        <td colspan="7">
+			<b>Existing AMI:</b> <%= f.text_field :image_id, :index => nil %>
+			<b>OR New Manifest:</b> <%= f.text_field :location, :index => nil %>
+		</td>
+      <% else %>
+        <%= f.hidden_field :id, :index => nil %>
+      	<%= f.hidden_field :is_enabled, :index => nil, :class => 'is_enabled' %>
+		<%= f.hidden_field :should_destroy, :index => nil, :class => 'should_destroy' %>
+        <td class="select-handle"><%= selectable_check_box_tag "server_profile_ids[]", server_profile.id, false %></td>
+		<td><%= edit_in_place(server_profile, :name) %></td>
+        <td><%=h server_profile.image_id %></td>
+        <td><%= text_field_tag nil, server_profile.location, { :readonly => 'readonly', :length => '20', :onclick => '$(this).focus();$(this).select()' } %></td>
+        <td><%=h server_profile.architecture %></td>
+        <td class="<%=h server_profile.state %>"><%=h server_profile.state %></td>
+        <td><%=h server_profile.owner_id %></td>
+        <td><%=h server_profile.is_public %></td>
+      <% end %>
+      <td class="<%=h server_profile.is_enabled %>"><%=h server_profile.is_enabled %></td>
+    </tr>
+<% end %>

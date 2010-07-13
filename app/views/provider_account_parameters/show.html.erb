@@ -1,0 +1,28 @@
+<p>
+  <b>Provider account:</b>
+  <%=h @provider_account_parameter.provider_account_id %>
+</p>
+
+<p>
+  <b>Position:</b>
+  <%=h @provider_account_parameter.position %>
+</p>
+
+<p>
+  <b>Name:</b>
+  <%=h @provider_account_parameter.name %>
+</p>
+
+<p>
+  <b>Value:</b>
+  <%=h @provider_account_parameter.value %>
+</p>
+
+<p>
+  <b>Password:</b>
+  <%=h @provider_account_parameter.password %>
+</p>
+
+
+<%= link_to 'Edit', edit_provider_account_parameter_path(@provider_account_parameter) %> |
+<%= link_to 'Back', provider_account_parameters_path %>

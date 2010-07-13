@@ -1,0 +1,7 @@
+<% content_tag_for :tr, server, :class => 'selectable server_record' do %>
+    <%= render :partial => 'servers/row', :object => server %>
+<% end %>
+<tr id="server_<%= server.id %>_instances_row" class="server_instances" style="display: none;">
+    <td colspan="2"><strong><%= h(server.name) %></strong></td>
+    <td colspan="8"><div id="server_<%= server.id %>_instances_index"></div></td>
+</tr>

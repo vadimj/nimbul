@@ -1,0 +1,67 @@
+<%= javascript_tag "Editable.setupTextArea();" %>
+<strong>All fields are required unless noted otherwise.</strong>
+<br/>
+<br/>
+<%= f.error_messages %>
+
+<table>
+    <tr>
+        <th><%= f.label :provider_id, "Provider" %></th>
+        <% if @provider_account.new_record? %>
+            <td><%= f.collection_select :provider_id, Provider.find(:all, :order => 'name'), :id, :name, { :prompt => true } %></td>
+        <% else %>
+            <td><%= h(@provider_account.provider.name) %></td>
+        <% end %>
+    </tr>
+    <tr>
+        <th><%= f.label :name, "Name (e.g. 'Development Account')" %></th>
+        <td><%= f.text_field :name %></td>
+    </tr>
+    <tr>
+        <th><%= f.label :description %></th>
+        <td><%= f.text_area :description, :size => '40x2', :warp => 'soft', :help => "*optional"  %></td>
+    </tr>
+    <tr>
+        <th><%= f.label :account_id, "AWS Account ID" %></th>
+        <td><%= f.text_field :account_id %></td>
+    </tr>
+    <% if @provider_account.new_record? %>
+    <tr>
+        <th><%= f.label :aws_access_key_ui, 'AWS Access Key' %></th>
+        <td><%= f.text_field :aws_access_key_ui %></td>
+    </tr>
+    <tr>
+        <th><%= f.label :aws_secret_key_ui, 'AWS Secret Key' %></th>
+        <td><%= f.text_field :aws_secret_key_ui %></td>
+    </tr>
+    <tr>
+        <th><%= f.label :ssh_master_key_ui, 'Master SSH Private Key'%></th>
+        <td><%= f.text_area :ssh_master_key_ui, :size => '60x5', :warp => 'soft' %></td>
+    </tr>
+    <% else %>
+    <tr>
+        <th><%= f.label :aws_access_key_ui, 'AWS Access Key' %></th>
+        <% if @provider_account.aws_access_key_ui.blank? %>
+            <td><%= f.text_field :aws_access_key_ui %></td>
+        <% else %>
+            <td><%= edit_in_place(@provider_account, :aws_access_key_ui) %></td>
+        <% end %>
+    </tr>
+    <tr>
+        <th><%= f.label :aws_secret_key_ui, 'AWS Secret Key' %></th>
+        <% if @provider_account.aws_secret_key_ui.blank? %>
+            <td><%= f.text_field :aws_secret_key_ui %></td>
+        <% else %>
+            <td><%= edit_in_place(@provider_account, :aws_secret_key_ui) %></td>
+        <% end %>
+    </tr>
+    <tr>
+        <th><%= f.label :ssh_master_key_ui, 'Master SSH Private Key'%></th>
+        <% if @provider_account.ssh_master_key_ui.blank? %>
+            <td><%= f.text_area :ssh_master_key_ui, :size => '60x5', :warp => 'soft'  %></td>
+        <% else %>
+            <td><%= edit_in_place(@provider_account, :ssh_master_key_ui, :class => 'editable-textarea') %></td>
+        <% end %>
+    </tr>
+    <% end %>
+</table>

@@ -1,0 +1,21 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  server_profile_id: 1
+  revision: 1
+  creator_id: 1
+  commit_message: MyText
+  image_id: MyString
+  ramdisk_id: MyString
+  kernel_id: MyString
+  startup_script: MyText
+
+two:
+  server_profile_id: 1
+  revision: 1
+  creator_id: 1
+  commit_message: MyText
+  image_id: MyString
+  ramdisk_id: MyString
+  kernel_id: MyString
+  startup_script: MyText

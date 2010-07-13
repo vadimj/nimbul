@@ -1,0 +1,55 @@
+<td> <%# CONTROLS -%>
+<%# ONLY display delete / unassign controls if there are no leases in-use by the hostname %>
+
+<%- if (hostname.accrued_leases(@model).size > 0) %>
+	<span id="hostname_<%=hostname.id%>_expand_leases">
+		<%= expand_leases_image_link(@model, hostname) %>
+	</span>
+	<span id="hostname_<%=hostname.id%>_compress_leases" style="display:none;">
+		<%= compress_leases_image_link(hostname)  %>
+		<%= refresh_leases_image_link(hostname) %>
+	</span>
+<%- end %>
+<%- if hostname_instances_total(@model, hostname) > hostname.active_leases(@model).size %>
+<span id="hostname_<%=hostname.id%>_acquire_leases">
+	<%= acquire_hostname_leases_image_link(@model, hostname) %>
+</span>
+<%- end %>
+<%- if hostname.has_active_leases?(@model) %>
+	<span id="hostname_<%=hostname.id%>_release_all_leases">
+		<%= release_leases_image_link( @model, hostname ) %>
+	</span>
+<%- else %>
+	<%# only display delete if there are absolutely NO active leases at all %>
+	<%= delete_dns_hostname_image_link(@model, hostname) unless hostname.has_active_leases? %>
+
+	<%# only display the unassign control if we're in Server context %>
+	<%= unassign_server_hostname_image_link(@model, hostname) unless not @model.is_a? Server %>
+<%- end %>
+
+</td>
+<td>
+	<%= edit_in_place(hostname, :name, :complete => reload_leases_javascript(hostname, 0) ) %>
+	<%= javascript_tag "Editable.create('dns_hostname_#{hostname.id}_name');" %>
+</td>
+<td class="small">
+	<% hostname.servers.each do |server| %>
+		<% content_tag_for :span, server do %>
+			<%=
+				if server != @server
+					link_to(server, server_path(server))
+				else
+					h server.name
+				end
+			%>
+			<%- if not hostname.has_active_leases?(server) %>
+				[<%= unassign_server_hostname_link 'X', server, hostname %>]
+			<%- else %>
+				[<span title="LOCKED against assignment removal - '<%= hostname.name %>' has active leases with Server '<%=server.name%>'" class="disabled">X</span>]
+			<%- end %>
+			<br />
+		<% end %>
+	<% end %>
+</td>
+<td><%= hostname.accrued_leases(@model).size %> <small>(<%= hostname.active_leases(@model).size %>)</small>
+</td>

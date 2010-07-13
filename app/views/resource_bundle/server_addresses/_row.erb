@@ -1,0 +1,33 @@
+<% if row.new_record? %>
+<td colspan="6" class="noborder">
+<% remote_form_for :server_resource,
+    :url => resource_bundle_server_addresses_path(@resource_bundle),
+    :html => { :method => :post } do |f| %>
+    <%= hidden_field_tag :anchor, "addresses" %>
+    <%= hidden_field_tag :update, "resource_bundle_#{@resource_bundle.id}_server_addresses" %>
+    <%= f.hidden_field :class_type, :value => 'ServerAddress' %>
+    <%= f.hidden_field :mount_type, :value => CloudAddress.default_mount_type %>
+    <%= f.label :force_allocation, 'Force:' %>
+    <%= f.check_box :force_allocation, :title => 'If checked, this address will be moved to a new server even if it is already associated with a running server' %>
+    <%= f.collection_select :cloud_resource_id, @addresses, :id, :name_zone_state %>
+    <%= f.submit "Add" %>
+    <%= cancel_add_server_resource_link "Cancel", @resource_bundle, 'ServerAddress' %>
+<% end %>
+</td>
+<% else %>
+<td class="noborder">
+    [<%= remove_server_volume_link 'X', resource_bundle, row %>]
+</td>
+<td class="noborder">
+    <%= server_volume_force_allocation_check_box resource_bundle, row %>
+</td>
+<td class="noborder">
+    <%= row.type.gsub('Server','') %>
+</td>
+<td class="noborder">
+    <%= edit_in_place(row.cloud_resource, :name, :class => "editable server-resource-editable server-resource-#{row.id}-editable") %>
+</td>
+<td colspan="2" class="noborder">
+    <%= row.cloud_resource.cloud_id_zone_state(' ') %>
+</td>
+<% end %>

@@ -1,0 +1,63 @@
+<h1>Provider Accounts for <%=h @user.login %></h1>
+
+<br />
+
+<%= link_to "<< Back to Administer Users", admin_users_path %>
+
+<br />
+<br />
+
+<% form_for @user,
+	:url => { :action => "update", :id => @user },
+	:builder => Uberkit::Forms::Builder do |f|
+-%>
+
+<%= hidden_field_tag "user[created_at]", @user.created_at %>
+
+<ul> 
+	<%
+		for provider_account in @provider_accounts
+		is_provider_account_admin = @user.provider_accounts.include?(provider_account)
+	%>
+		<li><div class="field_row">
+			<%= check_box_tag "user[provider_account_ids][]",
+				provider_account.id,
+				is_provider_account_admin,
+				{
+					:onclick => "
+						var checked = $(this).checked;
+						$$('.provider_account_#{provider_account.id}_cluster').each(
+							function (el) { el.checked = checked; el.disabled = checked; }
+						);
+					"
+				}
+			%>
+			<%= provider_account.name %> <b>Admin Access</b>
+		</div></li>
+		<ul> 
+			<% clusters = provider_account.clusters.sort { |a,b| a.name.downcase <=> b.name.downcase } %>
+			<% for cluster in clusters %>
+				<li><div class="field_row">
+					<%= check_box_tag "user[cluster_ids][]",
+						cluster.id,
+						is_provider_account_admin || @user.clusters.include?(cluster),
+						{
+							:class => "provider_account_#{provider_account.id}_cluster",
+							:disabled => is_provider_account_admin,
+						}
+					%>
+					<%= cluster.name %> <%= (cluster.description.blank? ? "" : "("+h(cluster.description)+")") -%>
+				</div></li>
+			<% end %>
+		</ul> 
+	<% end %>
+</ul> 
+
+<p>
+	<%= f.submit "Update" %>
+</p>
+<% end %>
+
+<br />
+
+<%= link_to "<< Back to Administer Users", admin_users_path %>

@@ -1,0 +1,62 @@
+Search: <%= will_paginate_search_field 'instance_search', 'instances', nil, :list, 'Search by '+Instance.search_fields.collect{|f| f.titleize}.join(', ') %>
+
+<%= refresh_link image_tag("refresh.png", :class => 'control-icon', :alt => "Refresh"), 'instances', nil, :list %>
+
+<%= reboot_instance_image_submit 'Reboot' %>
+<%= stop_instance_image_submit 'Power Down' %>
+<%= hidden_field_tag :instance_command, '', :class => :instance_command %>
+
+<b>Total: <%= @instances.total_entries %></b>
+
+<br />
+<br />
+
+<%= will_paginate_remote @instances, 'instances' %>
+
+<table>
+  <thead>
+  <tr>
+    <th><% if @instances.total_entries > 0 %><%= better_select_all_check_box :select_all_instances, :instance %><% end %></th>
+    <th <%= sort_td_class_helper "instance_id" %>>
+      <%= instances_sort_link "Instance", "instance_id" %>
+    </th>
+    <th <%= sort_td_class_helper "server_id" %>>
+      <%= instances_sort_link "Server", "server_id" %>
+    </th>
+    <th <%= sort_td_class_helper "user_id" %>>
+      <%= instances_sort_link "Owner", "user_id" %>
+    </th>
+    <th <%= sort_td_class_helper "type" %>>
+      <%= instances_sort_link "Type", "type" %>
+    </th>
+    <th <%= sort_td_class_helper "zone" %>>
+      <%= instances_sort_link "Zone", "zone" %>
+    </th>
+    <th>Groups</th>
+    <th <%= sort_td_class_helper "public_dns" %>>
+      <%= instances_sort_link "Public DNS", "public_dns" %>
+    </th>
+    <th <%= sort_td_class_helper "launch_time" %>>
+      <%= instances_sort_link "Runtime", "launch_time" %>
+    </th>
+    <th <%= sort_td_class_helper "state" %>>
+      <%= instances_sort_link "State", "state" %>
+    </th>
+    <th <%= sort_td_class_helper "dns_active" %>>
+      <%= instances_sort_link "DNS<br />Active?", "dns_active" %>
+    </th>
+    <th <%= sort_td_class_helper "is_ready" %>>
+      <%= instances_sort_link "Ready?", "is_ready" %>
+    </th>
+    <th <%= sort_td_class_helper "is_locked" %>>
+      <%= instances_sort_link "Locked?", "is_locked" %>
+    </th>
+    <th>&nbsp;</th>
+  </tr>
+  </thead>
+  <tbody id="instance_records">
+    <%= render :partial => "instances/instance", :collection => @instances %>
+  </tbody>
+</table>
+
+<%= will_paginate_remote @instances, 'instances' %>

@@ -1,0 +1,18 @@
+<p>
+  <b>Server:</b>
+  <%=h @server_param.server_id %>
+</p>
+
+<p>
+  <b>Name:</b>
+  <%=h @server_param.name %>
+</p>
+
+<p>
+  <b>Value:</b>
+  <%=h @server_param.value %>
+</p>
+
+
+<%= link_to 'Edit', edit_server_param_path(@server_param) %> |
+<%= link_to 'Back', server_params_path %>

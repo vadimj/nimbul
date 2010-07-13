@@ -1,0 +1,27 @@
+<% remote_form_for :servers,
+    :url => control_cluster_servers_path(@cluster) do |f| %>
+        
+<%= will_paginate_search_field "cluster_#{@cluster.id}_server_search", nil, nil, :list %>
+
+<%= refresh_image 'Refresh', 'servers', nil, :list, nil %>
+
+<span class="vr">&nbsp;</span>
+
+<%= link_to image_tag("add.png", :align => "absmiddle", :alt => "Add", :title => "Add a New Server"), new_cluster_server_path(@cluster) %>
+
+<span class="vr">&nbsp;</span>
+
+<%= start_servers_submit 'Power Up' %>
+<%= select_tag :instance_start_count, (1..10).entries.collect{|i| "<option>#{i}</option>" }.join(''), :title => 'Start this number of Instances of selected Servers' %>
+<%= check_box :skip_dns_leases, '' %>
+<%= label :skip_dns_leases, '', "Skip DNS" %>
+<%= hidden_field_tag :command, '', :class => :command %>
+
+<span class="vr">&nbsp;</span>
+
+<b>Total: <span id="cluster_<%= @cluster.id %>_servers_total"><%= @servers.total_entries %></span></b>
+
+<hr>
+
+<%= render :partial => 'cluster/servers/list' %>
+<% end %>

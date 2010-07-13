@@ -1,0 +1,15 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  provider_account_id: 1
+  name: MyString
+  description: MyText
+  cloud_id: MyString
+  version: MyString
+
+two:
+  provider_account_id: 1
+  name: MyString
+  description: MyText
+  cloud_id: MyString
+  version: MyString

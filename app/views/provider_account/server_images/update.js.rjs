@@ -1,0 +1,16 @@
+@server_images.each do |i|
+    page["server_image_#{i.id}"].replace_html :partial => "server_images/row", :locals => { :server_image => i }
+    page["server_image_#{i.id}"].visual_effect :highlight
+end
+if @new_server_images.size > 0
+    page.replace_html :new_server_image, :partial => "server_images/new", :locals => { :server_image => ServerImage.new }
+end
+@new_server_images.each do |i|
+    page.insert_html :bottom, :server_image_records, :partial => "server_images/server_image", :object => i
+end
+@removed_server_images.each do |i|
+    page["server_image_#{i.id}"].remove
+end
+page["recent-events"].replace_html "<div class='notice'>#{@message}</div>" if @message
+page["recent-events"].replace_html "<div class='error'>#{@error_message}</div>" if @error_message
+page << "reset_selectable_elements();"

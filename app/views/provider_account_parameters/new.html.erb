@@ -1,0 +1,31 @@
+<h1>New provider_account_parameter</h1>
+
+<% form_for(@provider_account_parameter) do |f| %>
+  <%= f.error_messages %>
+
+  <p>
+    <%= f.label :provider_account_id %><br />
+    <%= f.text_field :provider_account_id %>
+  </p>
+  <p>
+    <%= f.label :position %><br />
+    <%= f.text_field :position %>
+  </p>
+  <p>
+    <%= f.label :name %><br />
+    <%= f.text_field :name %>
+  </p>
+  <p>
+    <%= f.label :value %><br />
+    <%= f.text_field :value %>
+  </p>
+  <p>
+    <%= f.label :password %><br />
+    <%= f.check_box :password %>
+  </p>
+  <p>
+    <%= f.submit "Create" %>
+  </p>
+<% end %>
+
+<%= link_to 'Back', provider_account_parameters_path %>

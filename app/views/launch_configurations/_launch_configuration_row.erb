@@ -1,0 +1,80 @@
+<td class="small controls">
+
+<%# delete launch_configuration %>
+	<span id="launch_configuration_<%=launch_configuration.id%>_delete">
+<%- if (launch_configuration.disabled?) %>
+		<%= delete_launch_configuration_image_link(launch_configuration) %>
+<%- else %>
+		<%= image_tag 'trash.png', :align => 'absmiddle',
+		:title => 'Delete AutoScaling Group [disabled]', :alt => "Delete AutoScaling Group [disabled]",
+		:style => 'opacity:0.35;filter:alpha(opacity=35);' %>
+<%- end %>
+	</span>
+
+<%# Activate/Disable launch_configuration %>
+<%- if (launch_configuration.active?) %>
+<span id="launch_configuration_<%=launch_configuration.id%>_disable">
+	<%= disable_launch_configuration_image_link(launch_configuration) %>
+</span>
+<%- else %>
+<span id="launch_configuration_<%=launch_configuration.id%>_activate">
+	<%= activate_launch_configuration_image_link(launch_configuration) %>
+</span>
+<%- end %>
+
+
+</td>
+
+<td>
+	<%- if launch_configuration.active? %>
+		<%= link_to( h(launch_configuration.name), launch_configuration_path(launch_configuration))  %>
+	<%- else %>
+		<%= link_to( h(launch_configuration.name), edit_launch_configuration_path(launch_configuration)) -%>
+	<%- end %>
+	<%- if (launch_configuration.status_message || '').length > 0 %><%= link_to_function(image_tag(
+				'important.png', :width => 16, :height => 16, :align => 'absmiddle',
+				:alt => 'Important Information', :title => 'Important Information: click to read'
+			), 
+			"$('launch_configuration_#{launch_configuration.id}_status_message').toggle()"
+		)%>
+        <div id="launch_configuration_<%= launch_configuration.id %>_status_message" style="display:none; postion:fixed;">
+	<%= launch_configuration.status_message %>
+	</div>
+	<%- end %>
+</td>
+<td>
+<%- if launch_configuration.try :server %>
+	<%= link_to( h(launch_configuration.server.name), server_url(launch_configuration.server) ) -%>
+	<sup>(REV #<%= launch_configuration.server.server_profile_revision.revision %>)</sup>
+<%- elsif launch_configuration.locked? || launch_configuration.active? %>
+	Deactivate To Set
+<%- else %>
+	<%- possibles = [ ['Choose One', 0] ] | launch_configuration.find_similar_servers.map {
+			|s| [s.cname + ' - ' + s.name, s.id ]
+		}
+		# set to zero so we default to 'none selected' - we're faking :enum style column editing here
+	%>
+	<%= editable_list(
+			launch_configuration, :server_id, possibles,
+			{
+				:display_value => 'Click To Set',
+				:url => associate_launch_configuration_path(launch_configuration),
+				:format => :js
+			}
+		)
+	%>
+<%- end %>
+</td>
+<%# State %>
+<td class="<%=launch_configuration.state%>">
+	<%= launch_configuration.state %>
+</td>
+<td class="small">
+	<% if launch_configuration.server_image_id.blank? %>
+		<%= h(launch_configuration.image_id) %>
+	<% else %>
+		<%= h(launch_configuration.server_image.name) %>
+	<% end %>
+</td>
+<td class="small"><%=h launch_configuration.instance_type %></td>
+<td class="small"><%=h launch_configuration.created_time %></td>

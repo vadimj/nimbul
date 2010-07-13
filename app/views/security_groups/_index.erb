@@ -1,0 +1,20 @@
+Search: <%= will_paginate_search_field 'security_group_search', 'security_groups', nil, :list %>
+
+<%= refresh_image 'Refresh', 'security_groups', nil, :list %>
+
+<% if current_user and @provider_account and current_user.has_provider_account_access?(@provider_account) %>
+    <span class="vr">&nbsp;</span>
+
+    <%= link_to_remote image_tag("add.png", :class => 'control-icon', :alt => "Enable", :title => "Add a Security Group"),
+        :url => new_provider_account_security_group_path(@provider_account),
+        :method => :get
+    %>
+<% end %>
+
+<span class="vr">&nbsp;</span>
+
+<b>Total: <span id="security_groups_total"><%= @security_groups.total_entries %></span></b>
+
+<hr>
+
+<%= render :partial => "security_groups/list" %>

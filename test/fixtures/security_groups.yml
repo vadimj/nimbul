@@ -1,0 +1,13 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  provider_account_id: 1
+  owner_id: MyString
+  name: MyString
+  description: MyString
+
+two:
+  provider_account_id: 1
+  owner_id: MyString
+  name: MyString
+  description: MyString

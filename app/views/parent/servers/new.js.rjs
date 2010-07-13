@@ -1,0 +1,2 @@
+page['small_redbox'].replace_html :partial => 'servers/fields', :object => Server.new
+page['small_redbox'].appear

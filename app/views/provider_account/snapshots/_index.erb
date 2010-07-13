@@ -1,0 +1,25 @@
+<% remote_form_for :snapshots,
+    :url => control_provider_account_snapshots_path(@provider_account) do |f| %>
+        
+<%= will_paginate_search_field "provider_account_#{@provider_account.id}_snapshot_search", nil, nil, :list %>
+
+<%= refresh_image 'Refresh', 'snapshots', nil, :list, nil %>
+
+<span class="vr">&nbsp;</span>
+
+<%= delete_snapshots_submit 'Delete' %>
+
+<span class="vr">&nbsp;</span>
+
+<%= restore_snapshots_submit('Restore', @provider_account.zones) %>
+<%= hidden_field_tag :command, '', :class => :command %>
+<%= hidden_field_tag :command_parameter, '', :class => :command_parameter %>
+
+<span class="vr">&nbsp;</span>
+
+<b>Total: <span id="provider_account_<%= @provider_account.id %>_snapshots_total"><%= @snapshots.total_entries %></span></b>
+
+<hr>
+
+<%= render :partial => 'provider_account/snapshots/list' %>
+<% end %>

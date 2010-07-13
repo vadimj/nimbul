@@ -1,0 +1,29 @@
+<% @overview.each do |category,objects| -%>
+    <h1><%= category.to_s.titleize %></h1>
+    <hr>
+    <table>
+    <tr>
+    <% index = 0 %>
+    <% objects.each_with_index do |o,index| %>
+        <% if index>0 and (index % 2 == 0) %></tr><tr><% end %>
+        <td class="noborder dashboard">
+            <%= dashboard_link o %>
+        </td>
+    <% end %>
+    <% if (index % 2 == 0) %><td class="noborder dashboard">&nbsp;</td><% end %>
+    </tr>
+    </table>
+<% end -%>
+
+<strong>Your Recent Activity</strong>
+<span id="author_<%= current_user.id %>_audit_logs_index"></span>
+
+<br/>
+
+<strong>System Events</strong>
+<span id="system_logs_index"></span>
+
+<%= javascript_tag(remote_function(:url => audit_logs_url, :method => :get) ) %>
+<%= javascript_tag(remote_function(:url => system_logs_url, :method => :get) ) %>
+<%= periodically_call_remote(:url => list_audit_logs_url, :method => :get, :with=>"'search='+$('author_#{current_user.id}_audit_log_search').value", :frequency => '30') %>
+<%= periodically_call_remote(:url => list_system_logs_url, :method => :get, :with=>"'search='+$('system_logs_search').value", :frequency => '30') %>

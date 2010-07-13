@@ -1,0 +1,32 @@
+<h1>Editing key_pair</h1>
+
+<% form_for(@key_pair) do |f| %>
+  <%= f.error_messages %>
+
+  <p>
+    <%= f.label :provider_account_id %><br />
+    <%= f.text_field :provider_account_id %>
+  </p>
+  <p>
+    <%= f.label :name %><br />
+    <%= f.text_field :name %>
+  </p>
+  <p>
+    <%= f.label :fingerprint %><br />
+    <%= f.text_field :fingerprint %>
+  </p>
+  <p>
+    <%= f.label :private_key %><br />
+    <%= f.text_area :private_key %>
+  </p>
+  <p>
+    <%= f.label :public_key %><br />
+    <%= f.text_area :public_key %>
+  </p>
+  <p>
+    <%= f.submit "Update" %>
+  </p>
+<% end %>
+
+<%= link_to 'Show', @key_pair %> |
+<%= link_to 'Back', key_pairs_path %>

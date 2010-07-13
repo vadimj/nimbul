@@ -1,0 +1,14 @@
+<% subtitle h(@provider_account.name + ': New Launch Configuration') %>
+
+<h1><%= h(@provider_account.name) %>: New Launch Configuration</h1>
+
+<br />
+
+<% form_for :launch_configuration,
+    :url => provider_account_launch_configurations_path(@provider_account) do |f| %>
+	<% if @server %>
+		<%= hidden_field_tag :server_id, @server.id %>
+	<% end %>
+	<%= render :partial => 'fields', :locals => { :f => f } %>
+	<%= submit_tag 'Add Launch Configuration', :disable_with => "Adding&hellip;"  %>
+<% end %>

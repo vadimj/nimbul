@@ -1,0 +1,181 @@
+h1, h2, h3 {
+	margin-top: 0em;
+	margin-right: 0pt;
+	margin-bottom: 0em;
+	margin-left: 0pt;
+}
+
+/* embeds the openid image in the text field */
+input#openid_identifier {
+   background: url(http://openid.net/login-bg.gif) no-repeat;
+   background-color: #fff;
+   background-position: 0 50%;
+   color: #000;
+   padding-left: 18px;
+}
+
+th {
+    background-color: #E7E7E7;
+    color: #777777;
+}
+
+th a {
+    color: #777777;
+    text-decoration: none;
+}
+
+/* sorting */
+th.sortup, th.sortdown { 
+  background-color: #DEDEDE;
+}
+
+th.sortup a {
+  background: url(/images/sort-ascending-arrow.png) 0% 50% no-repeat;
+  padding-left: 15px;
+}
+
+th.sortdown a {
+  background: url(/images/sort-descending-arrow.png) 0% 50% no-repeat;
+  padding-left: 15px;
+}
+
+tr.odd { 
+	background-color: #E8E8E8;
+}
+
+td.left-border {
+	border-left: 1px solid gray;
+}
+
+td.right-border {
+	border-right: 1px solid gray;
+}
+
+td.top-bottom-border {
+	border-top: 1px solid gray;
+	border-bottom: 1px solid gray;
+}
+
+.selectable,.selected {
+  border: 0px;
+}
+
+.selected {
+  background-color: #AAAAFF;
+}
+
+.editable,
+.server-image-editable,
+.firewall-rule-editable,
+.address-editable,
+.volume-editable,
+.snapshot-editable,
+.editable-textarea {
+	border-bottom: 1px dotted blue;
+	width: 100%;
+} 
+
+.edit-textarea {
+    width: 500px;
+    height: 100px;
+}
+
+td.provider-account {
+	font-weight: bold;
+}
+
+td.requester {
+	font-weight: bold;
+}
+
+td.approver {
+	font-weight: bold;
+}
+
+.group {
+	font-weight: bold;
+}
+
+td.admin-request-true {
+	font-weight: bold;
+	color: #AA0000;
+}
+
+td.admin-request-false {
+	font-weight: bold;
+	color: #00AA00;
+}
+
+caption {
+    font-weight: bold;
+}
+
+.handle {
+    font-size: 12px;
+    cursor: move;
+    color: #777;
+}
+
+.draggable {
+	cursor: -moz-grab;
+/*	cursor: move;*/
+}
+
+span.disabled {
+	color: #AAAAAA;
+}
+
+label {
+    font-weight: bold;
+}
+
+.select-handle {
+    text-align: center;
+}
+
+.main-section-title {
+    display: block;
+    background-color: #E7E7E7;
+    height: 20px;
+    margin: 5px 0px 5px 0px;
+    text-align: left;
+    font-size: 14px;
+    font-weight: bold;
+    }
+p {
+    margin: 0;
+    padding: 10px 10px 0 10px;
+}
+
+.small-icon {
+    vertical-align: middle;
+    width: 20px;
+    height: 20px;
+}
+
+.control-icon {
+    vertical-align: middle;
+    margin: 0px 2px 0px 2px;
+}
+
+.control-icon-disabled {
+    vertical-align: middle;
+    margin: 0px 2px 0px 2px;
+	opacity: 0.35;
+	filter: alpha(opacity=35);
+}
+
+tbody td, tfoot td {
+    vertical-align: middle;
+}
+
+.vr {
+    border-right: 3px solid grey;
+}
+/*
+img {
+    display: block;
+    margin: 10px;
+    }
+*/
+

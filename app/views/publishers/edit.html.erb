@@ -1,0 +1,14 @@
+<% subtitle h(@publisher.provider_account.name)+': '+h(@publisher.class_type) %>
+
+<h1><%= pagetitle h(@publisher.provider_account.name)+': '+h(@publisher.class_type)  %></h1>
+
+<br />
+
+<% form_for :publisher,
+    :url => publisher_path(@publisher),
+    :html => { :method => 'put' } do |f| %>
+    <%= render :partial => 'fields', :locals => { :f => f } %>
+    <%= submit_tag "Update", :disable_with => "Updating&hellip;"  %>
+    <%= submit_tag 'Cancel', :name => 'cancel_button' %>
+<% end %>
+

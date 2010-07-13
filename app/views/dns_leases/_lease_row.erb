@@ -1,0 +1,25 @@
+<% if lease.active? %>
+<td>
+<span id="hostname_<%=lease.dns_hostname_assignment.dns_hostname_id%>_release_lease">
+	<%= release_lease_link(
+			image_tag(
+				'release.png', :align => 'absmiddle', :alt => "Release Lease",
+				:title => "Release lease on '#{lease.fqdn}'",
+				:width => 16, :height => 16
+			),
+			lease
+		)
+	%>
+</span>
+</td>
+<td>in use</td>
+<td><%= lease.fqdn %></td>
+<td><%= link_to lease.instance_id, edit_instance_path(lease.instance) %></td>
+<td><%= link_to lease.instance.server, server_path(lease.instance.server) %></td>
+<% else %>
+<td>&nbsp;</td>
+<td>available</td>
+<td><%= lease.fqdn %></td>
+<td>Not Assigned</td>
+<td>Not Applicable</td>
+<% end %>

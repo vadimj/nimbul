@@ -1,0 +1,1 @@
+page["hostname_#{@hostname.id}_leases"].replace_html :partial => 'list'

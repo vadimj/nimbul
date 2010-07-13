@@ -1,0 +1,28 @@
+<h1>Listing provider_account_parameters</h1>
+
+<table>
+  <tr>
+    <th>Provider account</th>
+    <th>Position</th>
+    <th>Name</th>
+    <th>Value</th>
+    <th>Password</th>
+  </tr>
+
+<% for provider_account_parameter in @provider_account_parameters %>
+  <tr>
+    <td><%=h provider_account_parameter.provider_account_id %></td>
+    <td><%=h provider_account_parameter.position %></td>
+    <td><%=h provider_account_parameter.name %></td>
+    <td><%=h provider_account_parameter.value %></td>
+    <td><%=h provider_account_parameter.password %></td>
+    <td><%= link_to 'Show', provider_account_parameter %></td>
+    <td><%= link_to 'Edit', edit_provider_account_parameter_path(provider_account_parameter) %></td>
+    <td><%= link_to 'Destroy', provider_account_parameter, :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New provider_account_parameter', new_provider_account_parameter_path %>

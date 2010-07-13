@@ -1,0 +1,79 @@
+<h1>New instance</h1>
+
+<% form_for(@instance) do |f| %>
+  <%= f.error_messages %>
+
+  <p>
+    <%= f.label :instance_id %><br />
+    <%= f.text_field :instance_id %>
+  </p>
+  <p>
+    <%= f.label :provider_account_id %><br />
+    <%= f.text_field :provider_account_id %>
+  </p>
+  <p>
+    <%= f.label :server_id %><br />
+    <%= f.text_field :server_id %>
+  </p>
+  <p>
+    <%= f.label :server_pool_id %><br />
+    <%= f.text_field :server_pool_id %>
+  </p>
+  <p>
+    <%= f.label :image_id %><br />
+    <%= f.text_field :image_id %>
+  </p>
+  <p>
+    <%= f.label :type %><br />
+    <%= f.text_field :type %>
+  </p>
+  <p>
+    <%= f.label :key_pair %><br />
+    <%= f.text_field :key_pair %>
+  </p>
+  <p>
+    <%= f.label :zone %><br />
+    <%= f.text_field :zone %>
+  </p>
+  <p>
+    <%= f.label :state %><br />
+    <%= f.text_field :state %>
+  </p>
+  <p>
+    <%= f.label :public_dns %><br />
+    <%= f.text_field :public_dns %>
+  </p>
+  <p>
+    <%= f.label :private_dns %><br />
+    <%= f.text_field :private_dns %>
+  </p>
+  <p>
+    <%= f.label :launch_time %><br />
+    <%= f.datetime_select :launch_time %>
+  </p>
+  <p>
+    <%= f.label :ramdisk_id %><br />
+    <%= f.text_field :ramdisk_id %>
+  </p>
+  <p>
+    <%= f.label :kernel_id %><br />
+    <%= f.text_field :kernel_id %>
+  </p>
+  <p>
+    <%= f.label :reason %><br />
+    <%= f.text_field :reason %>
+  </p>
+  <p>
+    <%= f.label :product_codes %><br />
+    <%= f.text_field :product_codes %>
+  </p>
+  <p>
+    <%= f.label :index %><br />
+    <%= f.text_field :index %>
+  </p>
+  <p>
+    <%= f.submit "Create" %>
+  </p>
+<% end %>
+
+<%= link_to 'Back', instances_path %>

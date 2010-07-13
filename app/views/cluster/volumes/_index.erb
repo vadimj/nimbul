@@ -1,0 +1,26 @@
+<% remote_form_for :volumes,
+    :url => control_cluster_volumes_path(@cluster) do |f| %>
+        
+<%= will_paginate_search_field "cluster_#{@cluster.id}_volume_search", nil, nil, :list %>
+
+<%= refresh_image 'Refresh', 'volumes', nil, :list, nil %>
+
+<span class="vr">&nbsp;</span>
+
+<%= delete_volumes_submit 'Delete' %>
+
+<span class="vr">&nbsp;</span>
+
+<%= snapshot_volumes_submit 'Snapshot' %>
+
+<%= hidden_field_tag :command, '', :class => :command %>
+<%= hidden_field_tag :command_parameter, '', :class => :command_parameter %>
+
+<span class="vr">&nbsp;</span>
+
+<b>Total: <span id="cluster_<%= @cluster.id %>_volumes_total"><%= @volumes.total_entries %></span></b>
+
+<hr>
+
+<%= render :partial => 'cluster/volumes/list' %>
+<% end %>

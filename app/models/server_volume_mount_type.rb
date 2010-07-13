@@ -1,0 +1,2 @@
+class ServerVolumeMountType < ServerResourceMountType
+end

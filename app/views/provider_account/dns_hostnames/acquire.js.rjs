@@ -1,0 +1,9 @@
+if !@error_message.blank?
+    page['hostname_status_message'].hide
+    page['hostname_status_message'].replace_html @error_message
+    page['hostname_status_message'].appear
+    page.delay(10) do
+		page['hostname_status_message'].hide
+		page['hostname_status_message'].replace_html ''
+    end
+end

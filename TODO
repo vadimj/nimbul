@@ -1,0 +1,20 @@
+TODO:
+
+  [DONE] - Add DNS Assignable column to the Server Instances List on the Cluster (Servers tab) Viewport.
+    [DONE] - Remove the Main Key column
+	
+  [DONE] - Make sure instance lease assignment and relase use a timed update instead of sleep.
+  
+  [DONE] - Make sure all controllers have appropriate security restrictions set up
+  
+  [DONE] - Server Script Publisher needs to not fail when a server isn't entirely configured correctly (e.g., missing server image)
+    [DONE] - have a is_valid? method that returns true if all the necessary fields are there and only process a server that passes that check
+	
+  [DONE] - Fix hostname REFRESH button so that it uses the reload_hostname_leases_link() method, which handles updating both hostname row and it's leases row (if applicable)
+  
+  
+  [DONE] - Fix bug with selecting "Skip DNS" on instance startup
+  
+  [DONE] - Fix bug in instance_observer where dns leases aren't immediately relinquished for stopped instances
+  
+  [DONE] - Don't show 'acquire' button if there are no instances in ready state

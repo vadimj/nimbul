@@ -1,0 +1,90 @@
+<%= javascript_tag "Editable.setupAll();" %>
+<% form_for @provider_account,
+    :url => update_provider_account_server_profiles_path(@provider_account) do |f| %>
+<div id="server_profiles">
+
+<%= hidden_field_tag :page, params[:page] %>
+<%= hidden_field_tag :sort, params[:sort] %>
+
+Search: <%= will_paginate_search_field 'server_profile_search', 'server_profiles', nil, :list, 'Search by '+ServerImage.search_fields.collect{|f| f.titleize}.join(', ') %>
+
+<%= refresh_link image_tag("refresh.png", :class => 'control-icon', :alt => "Refresh"), 'server_profiles', nil, :list %>
+
+<% if current_user and @provider_account and current_user.has_provider_account_access?(@provider_account) %>
+	<%= image_submit_tag('start.png', :class => 'control-icon',
+	    :alt => 'Launch', :title => 'Launch Instance(s)',
+    	:onclick => '$(this).next(".command").value="reboot";',
+	    :name => 'launch', :value => 1
+	)%>
+
+	<%= add_server_profile_link image_tag("add_server_profile.png", :class => 'control-icon',
+		:alt => 'Add', :title => 'Add / Register an Image'
+	)%>
+
+	<%= image_submit_tag("24/trash.png", :class => 'control-icon',
+    	:alt => "Deregister", :title => "Deregister selected Images",
+	    :onclick => 'if (confirm("Are you sure?\n\nAll selected Images will be deleted.")) Selectable.destroy_selected(); else return false;',
+    	:name => 'destroy', :value => 1
+    )%>
+
+	<%= image_submit_tag("enable_server_profile.png", :class => 'control-icon',
+	    :alt => "Enable", :title => "Enable selected Images",
+    	:onclick => "Selectable.enable_selected();",
+	    :name => 'enable', :value => 1
+	)%>
+
+	<%= image_submit_tag("disable_server_profile.png", :class => 'control-icon',
+	    :alt => "Disable", :title => "Disable selected Images",
+    	:onclick => "Selectable.disable_selected();",
+	    :name => 'disable', :value => 1
+	)%>
+
+    <%= hidden_field_tag :command, '', :class => :command %>
+<% end %>
+
+<b>Total: <%= @server_profiles.total_entries %></b>
+
+<br />
+<br />
+
+<%= will_paginate_remote @server_profiles, 'server_profiles' %>
+
+<table>
+  <thead>
+  <tr>
+    <th><%= select_all_check_box 'select_all' %></th>
+    <th <%= sort_td_class_helper "name" %>>
+      <%= server_profiles_sort_link "Name", "name" %>
+    </th>
+    <th <%= sort_td_class_helper "image_id" %>>
+      <%= server_profiles_sort_link "AMI", "image_id" %>
+    </th>
+    <th <%= sort_td_class_helper "location" %>>
+      <%= server_profiles_sort_link "Manifest", "location" %>
+    </th>
+    <th <%= sort_td_class_helper "architecture" %>>
+      <%= server_profiles_sort_link "Arch", "architecture" %>
+    </th>
+    <th <%= sort_td_class_helper "state" %>>
+      <%= server_profiles_sort_link "State", "state" %>
+    </th>
+    <th <%= sort_td_class_helper "owner_id" %>>
+      <%= server_profiles_sort_link "Owner", "owner_id" %>
+    </th>
+    <th <%= sort_td_class_helper "is_public" %>>
+      <%= server_profiles_sort_link "Is Public", "is_public" %>
+    </th>
+    <th <%= sort_td_class_helper "is_enabled" %>>
+      <%= server_profiles_sort_link "Enabled", "is_enabled" %>
+    </th>
+  </tr>
+  </thead>
+  <tbody id="server_profile_records">
+    <%= render :partial => "server_profiles/server_profile", :collection => @server_profiles %>
+  </tbody>
+</table>
+
+<%= will_paginate_remote @server_profiles, 'server_profiles' %>
+
+</div>
+<% end %>

@@ -1,0 +1,25 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  provider_account_id: 1
+  reserved_instances_id: MyString
+  instance_type: MyString
+  zone: MyString
+  duration: 1
+  usage_price: 1.5
+  fixed_price: 1.5
+  count: 1
+  description: MyText
+  state: MyString
+
+two:
+  provider_account_id: 1
+  reserved_instances_id: MyString
+  instance_type: MyString
+  zone: MyString
+  duration: 1
+  usage_price: 1.5
+  fixed_price: 1.5
+  count: 1
+  description: MyText
+  state: MyString

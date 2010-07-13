@@ -1,0 +1,62 @@
+#!/usr/bin/ruby
+
+#
+# Account: <%= user_script.account.name %> [<%= user_script.account.id %>]
+# Cluster: <%= user_script.cluster.name %> [<%= user_script.cluster.id %>]
+# Server: <%= user_script.server.name %> [<%= user_script.server.id %>]
+#
+
+$:.unshift File.join(File.dirname(__FILE__))
+require 'AWS/EC2'
+require 'basic_configuration'
+require 'aws_context'
+require 'optparse'
+require 'net/http'
+
+# Replaces the cluster's hosts file with the one specified for cluster: <%= user_script.cluster.name -%>
+
+Signal.trap("INT") do
+	exit 2
+end
+
+$hosts_file_url = '<%= user_script.cluster.get_cluster_parameter("HOSTS_FILE_URL") -%>'
+
+def output_help
+	puts "Usage: #{File.basename(__FILE__)} -f <replacement hosts file>";
+	puts "\t -f    path to replacement hosts file"
+	puts
+	exit 1
+end
+
+def update_hosts_file(content)
+	config = BasicConfiguration.new
+	s3 =  AWS::S3.new(*config.keys)
+
+	s3_bucket_name, s3_object_path = $hosts_file_url.gsub('http://','').split(/.s3.amazonaws.com\//)
+
+	opts = { :data => content, :policy => 'public-read' }
+	obj = s3.create_object(s3_bucket_name, s3_object_path, opts)
+end
+
+
+replacement_file = nil
+
+# Specify options
+opts = OptionParser.new
+opts.on('-h', '--help')         { output_help }
+opts.on('-f FILE', '--file FILE') do |file| replacement_file = file; end
+opts.parse!(ARGV) rescue output_help
+
+if replacement_file.nil? or ! File.file? replacement_file
+	puts "Missing valid file argument"
+	exit 1
+end
+
+begin
+	update_hosts_file(File.read(replacement_file))
+rescue
+	puts "Could not update hosts data for cluster '<%= user_script.cluster.name -%>' - #{$!}"
+	exit 1
+end
+
+

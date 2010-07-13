@@ -1,0 +1,32 @@
+<% ast = auto_scaling_trigger -%>
+<%= edit_auto_scaling_trigger_image_link(ast) -%>
+<%= activate_disable_auto_scaling_trigger_link(ast) -%>
+<%= delete_auto_scaling_trigger_image_link(ast) -%>
+<span class="<%= ast.state -%>"><%= h(ast.state) %></span>
+<ol>
+<li>
+	Trigger <strong><%= h(ast.name) %></strong> calculates the <strong><%= h(ast.statistic) %></strong>
+	of <strong><%= h(ast.measure_name) %></strong> in <strong><%= h(ast.unit) %></strong>
+	over the period of <strong><%= h(ast.period) %></strong> seconds for all instances in the Group.
+</li>
+<li>
+	For <strong><%= h(ast.breach_duration) %></strong> seconds
+	(<strong><%= ast.breach_duration/ast.period %></strong> consecutive measurement(s)):
+	<ul>
+		<li>
+			If the calculated value remains
+			<strong>below</strong> <strong><%= h(ast.lower_threshold) %></strong> <%= h(ast.unit) %>,
+			the number of instances will be
+			<strong><%= ast.lower_breach_scale_increment.include?('-') ? 'decreased' : 'increased' %></strong>
+			by <%= h(ast.lower_breach_scale_increment.gsub('-','')) %>
+		</li>
+		<li>
+			If the calculated value remains
+			<strong>above</strong> <strong><%= h(ast.upper_threshold) %></strong> <%= h(ast.unit) %>,
+			the number of instances will be
+			<strong><%= ast.upper_breach_scale_increment.include?('-') ? 'decreased' : 'increased' %></strong>
+			by <%= h(ast.upper_breach_scale_increment.gsub('-','')) %>
+		</li>
+	</ul>
+</li>
+</ol>

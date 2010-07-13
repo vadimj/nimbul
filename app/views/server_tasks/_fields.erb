@@ -1,0 +1,76 @@
+<%= f.error_messages %>
+
+<%
+if @server_task.server_task_parameters.size == 0
+    @parameters = @server_task.initialize_parameters
+else
+    @parameters = @server_task.server_task_parameters
+end
+%>
+
+<table>
+    <tr>
+        <th><%= f.label :is_active, "Active?" %></th>
+        <td class="<%= @server_task.is_active? %>"><%= f.check_box :is_active %></td>
+    </tr>
+    <tr>
+        <th><%= f.label :is_scheduled, "Scheduled?" %></th>
+        <td class="<%= @server_task.is_scheduled? %>">
+            <%= @server_task.is_scheduled? ? 'Yes' : (@server_task.is_active? ? 'Pending' : 'No' ) %>
+            <%= hidden_field_tag 'server_task[is_scheduled]', 0 %>
+        </td>
+    </tr>
+    <tr>
+        <th><%= f.label :name %></th>
+        <td><%= f.text_field :name %></td>
+    </tr>
+    <tr>
+        <th><%= f.label :description %></th>
+        <td><%= f.text_area :description, :size => '60x6', :warp => 'soft' %></td>
+    </tr>
+    <tr>
+        <th>Operation</th>
+        <td><%= h @server_task.operation %></td>
+        <%= f.hidden_field :operation %>
+    </tr>
+    <tr>
+        <th><%= f.label :ran_at, 'First Run' %></th>
+        <td><%= f.datetime_select :run_at %></td>
+    </tr>
+    <tr>
+        <th><%= f.label :is_repeatable, 'Repeat' %>
+            <%= f.check_box :is_repeatable, :onclick => "
+            if (!$(this).checked) {
+                $('server_task_run_every_value').value = '';
+            }
+            $('server_task_run_every_value').disabled = !$(this).checked;
+            $('server_task_run_every_units').disabled = !$(this).checked;
+            " %>
+        </th>
+        <td>
+            <%= f.text_field :run_every_value, :class => 'tiny', :disabled => !@server_task.is_repeatable? %>
+            <%= f.select :run_every_units, RUN_EVERY_UNITS, { :disabled => !@server_task.is_repeatable? } %>
+        </td>
+    </tr>
+    <% @parameters.each do |p| %>
+        <% fields_for "server_task[server_task_parameter_attributes][]", p do |p_form| %>
+            <tr>
+                <th>
+                    <%=h p.name.titleize %>
+                    <% unless p.description.blank? %>
+                        <small><br /><%=h p.description %> </small>
+                    <% end %>
+                </th>
+                <% unless p.new_record? %>
+                    <%= p_form.hidden_field :id, :index => nil %>
+                <% end %>
+                <%= p_form.hidden_field :name, :index => nil %>
+                <%= p_form.hidden_field :description, :index => nil %>
+                <%= p_form.hidden_field :control_type, :index => nil %>
+                <td>
+                    <%= p_form.text_field :value, :index => nil %>
+                </td>
+            </td>
+        <% end %>
+    <% end %>
+</table>

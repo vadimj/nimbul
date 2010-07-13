@@ -1,0 +1,36 @@
+<% subtitle 'Service Providers' %>
+
+<h1><%= link_to 'Admin Controls', admin_controls_path %> / Service Providers</h1>
+
+<br/>
+
+Service Provider is a Server provides a Service that needs to be exposed to the rest of your infrastructure.<br/>
+For example, an SVN server, or a AMQP server. The IP address of the first 'ready' instance of the Server will be used<br/>
+when populating the hosts file with the ip / dns name of the Service.
+
+<br/><br/>
+
+To add a new Service Provider, click here: 
+<%= link_to image_tag('add.png', { :alt => "Add", :class => 'control-icon', :title => 'Add New Service Provider' }), new_service_provider_path %>
+
+<table>
+  <tr>
+    <th>Service Name</th>
+    <th>Service Type</th>
+    <th>Server</th>
+    <th>Service Description</th>
+    <th>Actions</th>
+  </tr>
+  <% for service_provider in @service_providers %>
+    <tr>
+      <td><%=h service_provider.name %></td>
+      <td><%=h service_provider.service_type.name %></td>
+      <td><%=h service_provider.server.name %></td>
+      <td><%=h service_provider.description %></td>
+      <td>
+        <%= link_to image_tag('verify.png', { :alt => "Edit", :class => 'control-icon' }), edit_service_provider_path(service_provider) -%>
+        <%= link_to image_tag('trash.png', { :alt => "Delete", :class => 'control-icon' }), service_provider, :confirm => 'Are you sure?', :method => :delete -%>
+      </td>
+    </tr>
+  <% end %>
+</table>

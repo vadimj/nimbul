@@ -1,0 +1,32 @@
+<%- if @model.is_a? ProviderAccount %>
+    <% form_for :provider_account, :url => provider_account_path(@model), :html => { :method => 'put', :anchor => :dns } do |f| %>
+    <%= hidden_field_tag :anchor, :dns %>
+    <h1>Service Related DNS Records</h1>
+
+	<p>
+        The following records are generated automatically based on the given services you have defined.
+        This list is not editable but can be overridden in the Static DNS Records section.
+        <blockquote>
+        <pre>
+        <%= @model.service_dns_records %>
+        </pre>
+        </blockquote>
+    </p>
+    
+	<h1>Static DNS Records</h1>
+
+    <p>
+        The following text will be prepended to the /etc/hosts file published for this provider account.
+        Use regular /etc/hosts file format, e.g.
+        <blockquote>
+        10.250.222.176    svn.prvt.nytimes.com svn<br>
+        10.250.222.177    merlin.prvt.nytimes.com merlin
+        </blockquote>
+    	<%= f.text_area :static_dns_records, :size => '90x5', :class => :static_dns %>
+    </p>
+
+	<%= submit_tag "Update", :disable_with => "Updating&hellip;"  %>
+    <%- end %>
+    <br/>
+    <br/>
+<%- end %>

@@ -1,0 +1,3 @@
+page["publisher_#{@publisher.id}"].hide
+page["publisher_#{@publisher.id}"].replace_html :partial => "publishers/row", :locals => { :publisher => @publisher }
+page["publisher_#{@publisher.id}"].appear

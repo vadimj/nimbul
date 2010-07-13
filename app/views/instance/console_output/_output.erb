@@ -1,0 +1,22 @@
+<div id="output">
+<table>
+<tr>
+	<th>Account:</th>
+	<td><%= text_field_tag :provider_account, "#{@instance.provider_account.name} [#{@instance.provider_account.id}]", :readonly => true %></td>
+</tr>
+<tr>
+	<th>Instance ID:</th>
+	<td><%= text_field_tag :instance_id, "#{@instance.instance_id} [#{@instance.id}]", :readonly => true %></td>
+</tr>
+<tr>
+	<th>Timestamp:</th>
+	<td><%= text_field_tag :console_timestamp, @instance.console_timestamp, :readonly => true %></td>
+</tr>
+
+<tr>
+	<th>Console Output:</th>
+	<td><%= text_area_tag :console_output, @instance.console_output, :size=>'95x28', :wrap => :off, :readonly => true %></td>
+</tr>
+</table>
+</div>
+

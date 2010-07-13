@@ -1,0 +1,52 @@
+<%= javascript_tag "Editable.setupAll('.audit-log-editable');" %>
+<div id="audit_logs">
+
+<%= will_paginate_remote @audit_logs, nil %>
+
+<table>
+    <thead>
+    <tr>
+        <th <%= sort_td_class_helper "created_at", "small" %>>
+            <%= audit_logs_sort_link "Timestamp", "created_at" %>
+        </th>
+        <% unless @parent == current_user %>
+            <th <%= sort_td_class_helper "author_login", "small" %>>
+                <%= audit_logs_sort_link "User", "author_login" %>
+            </th>
+        <% end %>
+        <% unless @parent.is_a?(ProviderAccount) %>
+            <th <%= sort_td_class_helper "provider_account_name", "small" %>>
+                <%= audit_logs_sort_link "Account", "provider_account_name" %>
+            </th>
+        <% end %>
+        <% unless @parent.is_a?(Cluster) %>
+            <th <%= sort_td_class_helper "cluster_name", "small" %>>
+                <%= audit_logs_sort_link "Cluster", "cluster_name" %>
+            </th>
+        <% end %>
+        <% unless @parent.is_a?(Server) %>
+            <th <%= sort_td_class_helper "server_name", "small" %>>
+                <%= audit_logs_sort_link "Server", "server_name" %>
+            </th>
+        <% end %>
+        <th <%= sort_td_class_helper "auditable_type", "small" %>>
+            <%= audit_logs_sort_link "Type", "auditable_type" %>
+        </th>
+        <th <%= sort_td_class_helper "auditable_name", "small" %>>
+            <%= audit_logs_sort_link "Object", "auditable_name" %>
+        </th>
+        <th <%= sort_td_class_helper "summary", "small" %>>
+            <%= audit_logs_sort_link "Summary", "summary" %>
+        </th>
+        <th class="small">
+            Changes
+        </th>
+    </tr>
+    <tbody id="audit_log_records">
+        <%= render :partial => "audit_logs/audit_log", :collection => @audit_logs %>
+    </tbody>
+</table>
+
+<%= will_paginate_remote @audit_logs, nil %>
+
+</div>

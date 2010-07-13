@@ -1,0 +1,13 @@
+<% subtitle 'Users' %>
+
+<h1>Users</h1>
+
+<br />
+
+<% if_in_beta? do %>
+  <p><%= link_to 'Manage Beta Invitations for All Users', admin_invites_path %> |
+  <%= link_to 'Pending Beta Users', admin_invite_actions_path %></p>
+<% end %>
+
+<%= render :partial => "shared/users_list", :object => @users %>
+

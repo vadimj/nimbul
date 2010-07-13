@@ -1,0 +1,24 @@
+<% fields_for "provider_account[instance_list_reader_attributes][]", instance_list_reader do |f| %>
+    <% if instance_list_reader.new_record? %>
+        <td><%= f.text_field :name, :index => nil %></td>
+        <td><%= f.text_field :s3_user_id, :index => nil %></td>
+        <td>
+            <%= link_to_function 'remove', "$(this).up('.instance_list_reader').remove()"%>
+        </td>
+    <% else %>
+        <%= f.hidden_field :id, :index => nil %>
+        <%= f.hidden_field :name, :index => nil %>
+        <%= f.hidden_field :permission, :index => nil %>
+        <td><%= h instance_list_reader.name %></td>
+        <td><%= f.text_field :s3_user_id, :index => nil, :readonly => true, :onclick => '$(this).focus();$(this).select()' %></td>
+        <!--td><%= h instance_list_reader.permission %></td-->
+        <td>
+            <% if instance_list_reader.is_owner? %>
+                <span class="disabled">owner</span>
+            <% else %>
+                <%= link_to_function 'remove', "mark_for_destroy(this, $(this).up('.instance_list_reader'))"%>
+                <%= f.hidden_field :should_destroy, :index => nil, :class => 'should_destroy' %>
+            <% end %>
+        </td>
+    <% end %>
+<% end %>

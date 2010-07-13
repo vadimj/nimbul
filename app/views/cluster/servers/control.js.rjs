@@ -1,0 +1,8 @@
+@servers ||= []
+@servers.each do |i|
+	page["server_#{i.id}"].replace_html :partial => "servers/server_row", :locals => { :server => i }
+end
+@instances ||= []
+@instances.each do |i|
+	page["instance_#{i.id}"].replace_html :partial => "instances/row", :locals => { :instance => i }
+end

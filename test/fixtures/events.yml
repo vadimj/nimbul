@@ -1,0 +1,21 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  provider_account_id: MyString
+  security_group_id: MyString
+  server_id: 1
+  user_id: MyString
+  subject: MyString
+  action: MyString
+  object: MyString
+  description: MyText
+
+two:
+  provider_account_id: MyString
+  security_group_id: MyString
+  server_id: 1
+  user_id: MyString
+  subject: MyString
+  action: MyString
+  object: MyString
+  description: MyText

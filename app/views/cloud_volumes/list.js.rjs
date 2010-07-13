@@ -1,0 +1,2 @@
+page["#{@parent_type}_#{@parent.id}_cloud_volumes_total"].replace_html "#{@volumes.total_entries}"
+page["#{@parent_type}_#{@parent.id}_cloud_volumes"].replace_html :partial => "cloud_volumes/list"

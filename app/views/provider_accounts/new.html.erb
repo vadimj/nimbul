@@ -1,0 +1,12 @@
+<% subtitle 'New Provider Account' %>
+
+<h1>New Provider Account</h1>
+
+<br />
+
+<% form_for :provider_account,
+    :url => provider_accounts_path do |f| %>
+    <%= render :partial => 'fields', :locals => { :f => f } %>
+    <%= submit_tag 'Create Provider Account', :disabled => false, :disable_with => "Creating&hellip;" %>
+    <%= submit_tag 'Cancel', :name => 'cancel_button' %>
+<% end %>

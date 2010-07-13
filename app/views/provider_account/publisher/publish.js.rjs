@@ -1,0 +1,8 @@
+if @errors.size > 0
+    page["last_published"].replace_html :text => @errors.join('<br />')
+elsif !@provider_account.last_published.blank?
+    page["last_published"].replace_html :text => time_ago_in_words(@provider_account.last_published) + ' ago'
+end
+@provider_account.instance_list_readers.each do |r|
+    page["instance_list_reader_#{r.id}"].replace_html :partial => 'provider_accounts/instance_list_reader_row', :locals => { :instance_list_reader => r }
+end

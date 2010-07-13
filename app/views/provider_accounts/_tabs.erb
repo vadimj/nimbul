@@ -1,0 +1,187 @@
+<ul class="tabselector" id="tabcontrol1">
+    <li class="tab-selected" id="instances_tab">
+        <%= link_to_function(
+			'Instances',
+			"tabselect($('instances_tab'));
+			paneselect($('instances_pane'));
+			return true;",
+			:href => '#instances'
+		) %>
+    </li>
+    <li class="tab-unselected" id="addresses_tab">
+        <%= link_to_function(
+			'Addresses',
+			"loadDiv($('provider_account_#{@provider_account.id}_addresses_index'), '" + provider_account_addresses_url(@provider_account) + "');
+			tabselect($('addresses_tab'));
+			paneselect($('addresses_pane'));
+			return true;",
+			:href => '#addresses'
+		) %>
+    </li>
+    <li class="tab-unselected" id="storage_tab">
+        <%= link_to_function('Storage',
+			"loadDiv($('provider_account_#{@provider_account.id}_volumes_index'), '" + provider_account_volumes_url(@provider_account) + "');
+			loadDiv($('provider_account_#{@provider_account.id}_snapshots_index'), '" + provider_account_snapshots_url(@provider_account) + "');
+			tabselect($('storage_tab'));
+			paneselect($('storage_pane'));
+			return true;",
+			:href => '#storage'
+		) %>
+    </li>
+    <li class="tab-unselected" id="auto_scaling_tab">
+        <%= link_to_function(
+			'Auto-Scaling',
+			"loadPane($('auto_scaling_pane'), '" + provider_account_auto_scaling_index_url(@provider_account) + "');
+			tabselect($('auto_scaling_tab'));
+			paneselect($('auto_scaling_pane'));
+			return true;",
+			:href => '#auto_scaling'
+		) %>
+    </li>
+    <li class="tab-unselected" id="images_tab">
+        <%= link_to_function(
+			'Images',
+			"loadDiv($('provider_account_#{@provider_account.id}_server_images_index'), '" + provider_account_server_images_url(@provider_account) + "');
+			tabselect($('images_tab'));
+			paneselect($('images_pane'));
+			return true;",
+			:href => '#images'
+		) %>
+    </li>
+    <li class="tab-unselected" id="security_groups_tab">
+        <%= link_to_function(
+			'Groups',
+			"loadPane($('security_groups_pane'), '" + provider_account_security_groups_url(@provider_account) + "');
+			tabselect($('security_groups_tab'));
+			paneselect($('security_groups_pane'));
+			return true;",
+			:href => '#security_groups'
+		) %>
+    </li>
+    <li class="tab-unselected" id="firewall_rules_tab">
+        <%= link_to_function(
+			'Firewall',
+			"loadPane($('firewall_rules_pane'), '" + provider_account_firewall_rules_url(@provider_account) + "');
+			tabselect($('firewall_rules_tab'));
+			paneselect($('firewall_rules_pane'));
+			return true;",
+			:href => '#firewall_rules'
+		) %>
+    </li>
+    <li class="tab-unselected" id="variables_tab">
+        <%= link_to_function(
+			'Variables',
+			"tabselect($('variables_tab'));
+			paneselect($('variables_pane'));
+			return true;",
+			:href => '#variables'
+		) %>
+    </li>
+    <li class="tab-unselected" id="communication_tab">
+        <%= link_to_function(
+			'Communication',
+			"tabselect($('communication_tab'));
+			paneselect($('communication_pane'));
+			return true;",
+			:href => '#communication'
+		) %>
+    </li>
+    <li class="tab-unselected" id="dns_tab">
+        <%= link_to_function(
+			'DNS',
+			"loadPane($('dns_pane'), '#{provider_account_dns_hostnames_url(@provider_account)}');
+			tabselect($('dns_tab'));
+			paneselect($('dns_pane'));
+			return true;",
+			:href => '#dns'
+		) %>
+    </li>
+    <li class="tab-unselected" id="security_tab">
+        <%= link_to_function(
+			'Security',
+			"tabselect($('security_tab'));
+			paneselect($('security_pane'));
+			return true;",
+			:href => '#security'
+		) %>
+    </li>
+    <li class="tab-unselected" id="stats_tab">
+        <%= link_to_function(
+			'Stats',
+			"loadPane($('stats_pane'), '" + provider_account_stats_url(@provider_account) + "');
+			tabselect($('stats_tab'));
+			paneselect($('stats_pane'));
+			return true;",
+			:href => '#stats'
+		) %>
+    </li>
+</ul>
+<div id="pane-content">
+<ul class="panes" id="panecontrol1">
+    <li id="instances_pane" class="pane-selected">
+		<div id="provider_account_<%= @provider_account.id %>_instances_index"></div>
+    </li>
+    <li id="addresses_pane" class="pane-unselected">
+		<div id="provider_account_<%= @provider_account.id %>_addresses_index"></div>
+	</li>
+    <li id="storage_pane" class="pane-unselected">
+		<h1>Volumes</h1><br/>
+		<div id="provider_account_<%= @provider_account.id %>_volumes_index"></div>
+		<h1>Snapshots</h1><br/>
+		<div id="provider_account_<%= @provider_account.id %>_snapshots_index"></div>
+	</li>
+    <li id="auto_scaling_pane" class="pane-unselected"></li>
+    <li id="images_pane" class="pane-selected">
+		<div id="provider_account_<%= @provider_account.id %>_server_images_index"></div>
+    </li>
+    <li id="security_groups_pane" class="pane-unselected"></li>
+    <li id="firewall_rules_pane" class="pane-unselected"></li>
+    <li id="variables_pane" class="pane-unselected">
+        <%= render :partial => 'provider_account_parameters/list' %>
+    </li>
+    <li id="communication_pane" class="pane-unselected">
+        <%= render :partial => 'communication' %>
+    </li>
+    <li id="dns_pane" class="pane-unselected"></li>
+    <li id="security_pane" class="pane-unselected">
+        <%= render :partial => 'security' %>
+    </li>
+    <li id="stats_pane" class="pane-unselected"></li>
+</ul>
+</div>
+<%= javascript_tag "
+    var anchor = '';
+    if (location.hash != '') {
+        anchor = location.hash.substring(1, location.hash.length);
+        if (anchor == 'addresses') {
+			loadDiv($('provider_account_#{@provider_account.id}_addresses_index'), '" + provider_account_addresses_url(@provider_account) + "');
+        }
+        if (anchor == 'storage') {
+			loadDiv($('provider_account_#{@provider_account.id}_volumes_index'), '" + provider_account_volumes_url(@provider_account) + "');
+			loadDiv($('provider_account_#{@provider_account.id}_snapshots_index'), '" + provider_account_snapshots_url(@provider_account) + "');
+        }
+        if (anchor == 'auto_scaling') {
+            loadPane($('auto_scaling_pane'), '#{provider_account_auto_scaling_index_url(@provider_account)}');
+        }
+        if (anchor == 'images') {
+            loadDiv($('provider_account_#{@provider_account.id}_server_images_index'), '" + provider_account_server_images_url(@provider_account) + "');
+        }
+        if (anchor == 'security_groups') {
+			loadPane($(anchor+'_pane'), '#{provider_account_security_groups_url(@provider_account)}');
+		}
+        if (anchor == 'firewall_rules') {
+			loadPane($(anchor+'_pane'), '#{provider_account_firewall_rules_url(@provider_account)}');
+		}
+        if (anchor == 'dns') {
+			loadPane($(anchor+'_pane'), '#{provider_account_dns_hostnames_url(@provider_account)}');
+		}
+        if (anchor == 'stats') {
+			loadPane($(anchor+'_pane'), '" + provider_account_stats_url(@provider_account) + "');
+		}
+        if ($(anchor+'_pane') != null) {
+            tabselect($(anchor+'_tab'));
+            paneselect($(anchor+'_pane'));
+        }
+    }
+" %>
+<%= javascript_tag(remote_function(:url => provider_account_instances_url(@provider_account), :method => :get) ) %>

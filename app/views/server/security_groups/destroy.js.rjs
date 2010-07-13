@@ -1,0 +1,1 @@
+page["security_group_#{@security_group.id}"].remove

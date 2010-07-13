@@ -1,0 +1,8 @@
+if @error_message.blank?
+    page["firewall_rule_#{@firewall_rule.id}"].remove
+else
+    page['status_message'].hide
+    page['status_message'].replace_html @error_message
+    page['status_message'].appear
+    page.visual_effect :highlight, "firewall_rule_#{@firewall_rule.id}"
+end

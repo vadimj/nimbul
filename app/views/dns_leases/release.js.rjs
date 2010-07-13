@@ -1,0 +1,1 @@
+page["lease_#{@lease.id}"].replace :partial => 'lease', :locals => { :lease => @lease }

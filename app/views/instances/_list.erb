@@ -1,0 +1,74 @@
+<%= javascript_tag "Editable.setupAll('.instance-editable');" %>
+<div id="instances">
+
+<%= show_all_link 'Show all' %>
+<%= filter_by_user_id_link 'Started by me', current_user.id.to_s %>
+<%= filter_by_state_link 'Running', 'running' %>
+<%= filter_by_state_link 'Terminated', 'terminated' %>
+<%= filter_by_state_link 'Pending', 'pending' %>
+<br/>
+<br/>
+<%= will_paginate_remote @instances, nil %>
+
+<table>
+  <thead>
+  <tr>
+    <% unless @parent.is_a?(User) %>
+        <th>
+        <% unless (@instances.total_entries == 0) or @parent.is_a?(Server) -%>
+            <%= better_select_all_check_box :select_all_instances, "#{@parent_type}-#{@parent.id}-instance" %>
+        <% end %>
+        </th>
+    <% end %>
+    <th <%= sort_td_class_helper "instance_id" %>>
+      <%= instances_sort_link "Instance", "instance_id" %>
+    </th>
+    <% unless @parent.is_a?(Server) %>
+        <th <%= sort_td_class_helper "server_id" %>>
+          <%= instances_sort_link "Server", "server_id" %>
+        </th>
+    <% end %>
+    <% unless @parent.is_a?(AutoScalingGroup) %>
+        <th <%= sort_td_class_helper "auto_scaling_group_id" %>>
+          <%= instances_sort_link "Scaling Group", "auto_scaling_group_id" %>
+        </th>
+    <% end %>
+    <th <%= sort_td_class_helper "user_id" %>>
+      <%= instances_sort_link "Owner", "user_id" %>
+    </th>
+    <th <%= sort_td_class_helper "type" %>>
+      <%= instances_sort_link "Type", "type" %>
+    </th>
+    <th <%= sort_td_class_helper "zone_id" %>>
+      <%= instances_sort_link "Zone", "zone_id" %>
+    </th>
+    <th>Groups</th>
+    <th <%= sort_td_class_helper "public_dns" %>>
+      <%= instances_sort_link "Public DNS", "public_dns" %>
+    </th>
+    <th <%= sort_td_class_helper "launch_time" %>>
+      <%= instances_sort_link "Runtime", "launch_time" %>
+    </th>
+    <th <%= sort_td_class_helper "state" %>>
+      <%= instances_sort_link "State", "state" %>
+    </th>
+    <th <%= sort_td_class_helper "dns_active" %>>
+      <%= instances_sort_link "DNS<br />Active?", "dns_active" %>
+    </th>
+    <th <%= sort_td_class_helper "is_ready" %>>
+      <%= instances_sort_link "Ready?", "is_ready" %>
+    </th>
+    <th <%= sort_td_class_helper "is_locked" %>>
+      <%= instances_sort_link "Locked?", "is_locked" %>
+    </th>
+    <th>&nbsp;</th>
+  </tr>
+  </thead>
+  <tbody id="instance_records">
+    <%= render :partial => "instances/instance", :collection => @instances %>
+  </tbody>
+</table>
+
+<%= will_paginate_remote @instances, nil %>
+
+</div>

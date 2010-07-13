@@ -1,0 +1,54 @@
+<%= javascript_tag "Editable.setupAll('.server-image-editable');" %>
+<div id="server_images">
+
+<%= will_paginate_remote @server_images, 'server_images' %>
+
+<table>
+  <thead>
+  <tr>
+    <% unless @parent.is_a?(User) -%>
+    <th>
+        <% if @server_images.total_entries > 0 -%>
+            <%= better_select_all_check_box :select_all_server_images, :server_image %>
+        <% end -%>
+    </th>
+    <% end -%>
+    <th <%= sort_td_class_helper "name" %>>
+      <%= server_images_sort_link "Name", "name" %>
+    </th>
+    <% if @parent.is_a?(User) -%>
+        <th <%= sort_td_class_helper "provider_account_id" %>>
+          <%= server_images_sort_link "Account", "provider_account_id" %>
+        </th>
+    <% end -%>
+    <th <%= sort_td_class_helper "image_id" %>>
+      <%= server_images_sort_link "AMI", "image_id" %>
+    </th>
+    <th <%= sort_td_class_helper "location" %>>
+      <%= server_images_sort_link "Manifest", "location" %>
+    </th>
+    <th <%= sort_td_class_helper "architecture" %>>
+      <%= server_images_sort_link "Arch", "architecture" %>
+    </th>
+    <th <%= sort_td_class_helper "state" %>>
+      <%= server_images_sort_link "State", "state" %>
+    </th>
+    <th <%= sort_td_class_helper "owner_id" %>>
+      <%= server_images_sort_link "Owner", "owner_id" %>
+    </th>
+    <th <%= sort_td_class_helper "is_public" %>>
+      <%= server_images_sort_link "Is Public", "is_public" %>
+    </th>
+    <th <%= sort_td_class_helper "is_enabled" %>>
+      <%= server_images_sort_link "Enabled", "is_enabled" %>
+    </th>
+  </tr>
+  </thead>
+  <tbody id="server_image_records">
+    <%= render :partial => "server_images/server_image", :collection => @server_images %>
+  </tbody>
+</table>
+
+<%= will_paginate_remote @server_images, 'server_images' %>
+
+</div>

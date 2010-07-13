@@ -1,0 +1,43 @@
+<%
+    @clusters = @provider_account.clusters
+	@server_profiles = @provider_account.server_profiles
+	@server_profile_revisions = []
+	if @server_profiles.size > 0
+		@server_profiles = @server_profiles.sort!{ |a,b| a.name.downcase <=> b.name.downcase }
+		@server_profiles.each do |profile|
+			@server_profile_revisions = @server_profile_revisions + profile.server_profile_revisions.sort{ |a,b| b.revision <=> a.revision }
+		end
+	end
+%>
+
+<%= f.error_messages %>
+
+<table>
+    <% if @server.new_record? %>
+        <tr>
+            <th><%= f.label :server_profile_revision_id, "Choose a Server Profile" %> <small>(optional)</small></th>
+            <td><%= f.collection_select :server_profile_revision_id, @server_profiles, :id, :name, :prompt => "New Profile" %></td>
+        </tr>
+        <% if @instance %>
+            <%= hidden_field_tag :instance_id, @instance.id %>
+        <% end %>
+    <% end %>
+    <% if @cluster %>
+        <%= hidden_field_tag :cluster_id, @cluster.id %>
+    <% else %>
+        <tr>
+            <th><%= f.label :cluster_id, "Choose a Cluster" %> <small>required</small></th>
+            <td><%= select_tag :cluster_id, options_from_collection_for_select(@clusters, :id, :name) %></td>
+        </tr>
+    <% end %>
+    <tr>
+        <th><%= f.label :name, "Server Name" %> <small>required (e.g. 'Front End')</small></th>
+        <td><%= f.text_field :name %></td>
+    </tr>
+    <% unless @server.new_record? %>
+        <tr>
+            <th><%= f.label :server_profile_revision_id, "Server Profile" %></th>
+            <td><%= h(@server.server_profile_revision) %></td>
+        </tr>
+    <% end %>
+</table>

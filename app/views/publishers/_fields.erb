@@ -1,0 +1,43 @@
+<%= f.error_messages %>
+
+<%
+if @publisher.publisher_parameters.size == 0
+    @parameters = @publisher.initialize_parameters
+else
+    @parameters = @publisher.publisher_parameters
+end
+%>
+
+<table>
+    <tr>
+        <th>Publisher</th>
+        <td><%= h @publisher.class_type.constantize.label %></td>
+        <%= f.hidden_field :class_type %>
+    </tr>
+    <tr>
+        <th>Description</th>
+        <td><%= h @publisher.description %></td>
+        <%= f.hidden_field :description %>
+    </tr>
+    <% @parameters.each do |p| %>
+        <% fields_for "publisher[publisher_parameter_attributes][]", p do |p_form| %>
+            <tr>
+                <th>
+                    <%=h p.name.titleize %>
+                    <% unless p.description.blank? %>
+                        <small><br /><%=h p.description %> </small>
+                    <% end %>
+                </th>
+                <% unless p.new_record? %>
+                    <%= p_form.hidden_field :id, :index => nil %>
+                <% end %>
+                <%= p_form.hidden_field :name, :index => nil %>
+                <%= p_form.hidden_field :description, :index => nil %>
+                <%= p_form.hidden_field :control_type, :index => nil %>
+                <td>
+                    <%= p_form.text_field :value, :index => nil %>
+                </td>
+            </td>
+        <% end %>
+    <% end %>
+</table>

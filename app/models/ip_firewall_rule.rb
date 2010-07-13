@@ -1,0 +1,2 @@
+class IpFirewallRule < FirewallRule
+end

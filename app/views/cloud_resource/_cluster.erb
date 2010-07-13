@@ -1,0 +1,8 @@
+<tr id="cloud_resource_<%= @cloud_resource.id %>_cluster_<%= cluster.id %>" class="cluster">
+    <td>
+        <%= link_to h(cluster.name), cluster_path(cluster) %>
+    </td>
+    <td>
+        [ <%= remove_cloud_resource_cluster_link 'remove', @cloud_resource, cluster %> ]
+    </td>
+</tr>

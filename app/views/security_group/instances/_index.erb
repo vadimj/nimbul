@@ -1,0 +1,12 @@
+<br/>
+Search: <%= will_paginate_search_field 'instance_search', 'instances', nil, :list %>
+
+<%= refresh_image 'Refresh', 'instances', nil, :list %>
+
+<span class="vr">&nbsp;</span>
+
+<b>Total: <span id="instances_total"><%= @instances.total_entries %></span></b>
+
+<hr>
+
+<%= render :partial => 'list' %>

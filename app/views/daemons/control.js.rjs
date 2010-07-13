@@ -1,0 +1,3 @@
+@daemons.each do |d|
+	page["daemon_#{d.id}"].replace_html :partial => "daemon_row", :locals => { :daemon => d }
+end

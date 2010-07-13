@@ -1,0 +1,8 @@
+if @error_message.blank? and @volume
+    page.insert_html :bottom, 'volume_records', :partial => 'cloud_volumes/volume', :object => @volume
+    page << "Editable.setupAll('.volume-#{@volume.id}-editable');"
+    page['small_redbox'].hide
+else
+    page['error_redbox'].replace_html :partial => 'shared/error_redbox'
+    page['error_redbox'].appear
+end

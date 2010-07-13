@@ -1,0 +1,89 @@
+
+Virtual Hosts:
+--------------
+  /nimbul 
+    - Description: Container for /all/ nimbul related events/communication
+
+Topic Exchange Routes:
+---------------------
+
+  request.<account_id>.<cluster_id>.<server_id>.<instance_id> 
+    - Description: Used by Nimbul to publish request events to relevent consumers
+    - Consumer: Nodes
+    - Publisher: Nimbul
+
+  shutdown.<account_id>.<cluster_id>.<server_id>.<instance_id> 
+    - Description: Used by nodes to send notice that communication channel is going away
+    - Consumer: Nimbul
+    - Publisher: Nodes
+
+  startup.<account_id>.<cluster_id>.<server_id>.<instance_id> 
+    - Description: Used by nodes to send notify they are up and communicating - includes public ip and local (lan) ip
+    - Consumer: Nimbul
+    - Publisher: Nodes
+
+  info.stats.<account_id>.<cluster_id>.<server_id>.<instance_id>.(cpu|network|etc) 
+    - Description: Node statistics, including cpu utilization, network io, disk io, etc
+    - Consumer: Nimbul
+    - Publisher: Nodes
+
+Direct Exchange Routes:
+----------------------
+  nimbul
+    - Description: Used for responses from nodes to nimbul
+    - Publisher: Nodes/Nimbul
+    - Consumer: Nimbul
+
+  control
+    - Description: Used by nimbul for asynchronous background job processing
+    - Consumer: Nimbul
+    - Publisher: Nimbul
+
+   rabbitmq
+    - Description: Used by nimbul for passing add/del user and password changing requests to rabbitmq
+    - Consumer: master user
+    - Publisher: Nimbul
+
+
+Users:
+-----
+
+  nimbul
+    - Description: Limited account for main Nimbul user
+
+  nimbul_pa_<account_id>
+    - Description: Limited per account user used by nodes under a given account
+
+  master
+    - Description: Master user with complete access
+  
+Permission Settings:
+-------------------
+
+  -vhost- -user-       -config-perm-                  -write-perm-                              -read-perm-
+
+  /nimbul nimbul       '.*'                           '.*'                                      '.*'
+  /nimbul nimbul_pa_1  '^i-[a-f0-9]{8}$'              '^((startup|info|shutdown).1.*|nimbul)$'  '^request.1.*$'
+  /nimbul nimbul_pa_2  '^i-[a-f0-9]{8}$'              '^((startup|info|shutdown).2.*|nimbul)$'  '^request.2.*$'
+  /nimbul nimbul_pa_3  '^i-[a-f0-9]{8}$'              '^((startup|info|shutdown).3.*|nimbul)$'  '^request.3.*$'
+  /nimbul nimbul_pa_99 '^i-[a-f0-9]{8}$'              '^((startup|info|shutdown).99.*|nimbul)$' '^request.99.*$'
+
+
+Config For RabbitMQ Instance:
+----------------------------
+
+[amqp]
+
+master = {
+  URI = amqps://master:<pass>@localhost:5671/nimbul
+  subscriptions = [ rabbitmq ]
+  disable = [ startup, shutdown, info ]
+}
+
+node = {
+  URI = amqps://nimbul_pa_#:<pass>@localhost:5672/nimbul
+  subscriptions = [ ... ]
+  startup = ...
+  shutdown = ...
+  stats = { ... }
+}

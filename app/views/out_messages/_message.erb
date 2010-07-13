@@ -1,0 +1,13 @@
+  <tr>
+    <td><%= time_and_time_ago message.sent_at %></td>
+    <td>
+        <%= link_to message.message_id, message %>
+        <%= link_to 'Edit', edit_out_message_path(message) %>
+        <%= link_to 'Delete', message, :confirm => 'Are you sure?', :method => :delete %>
+    </td>
+    <td><%=h message.provider_account.name %></td>
+    <td><%=h message.recipient %></td>
+    <td><%=h message.sender %></td>
+    <td><%=h message.handler %></td>
+    <td class="<%= h message.state %>"><%=h message.state %></td>
+  </tr>

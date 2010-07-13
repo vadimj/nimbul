@@ -1,0 +1,33 @@
+<%= javascript_tag "Editable.setupAll('.security-group-editable'); $('security_groups_total').innerHTML = '#{@security_groups.total_entries}';" %>
+<div id="security_groups">
+
+<%= will_paginate_remote @security_groups, 'security_groups' %>
+
+<table>
+  <thead>
+  <tr>
+    <th <%= sort_td_class_helper "name" %>>
+      <%= security_groups_sort_link "Name", "name" %>
+    </th>
+    <th <%= sort_td_class_helper "description" %>>
+      <%= security_groups_sort_link "Description", "description" %>
+    </th>
+    <th>
+      Instances
+    </th>
+    <th>
+      Servers
+    </th>
+    <% if @controls_enabled %>
+        <th>Actions</th>
+    <% end %>
+  </tr>
+  </thead>
+  <tbody id="security_group_records">
+    <%= render :partial => "security_groups/security_group", :collection => @security_groups %>
+  </tbody>
+</table>
+
+<%= will_paginate_remote @security_groups, 'security_groups' %>
+
+</div>

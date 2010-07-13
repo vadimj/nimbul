@@ -1,0 +1,3 @@
+page["server_task_#{@server_task.id}"].hide
+page["server_task_#{@server_task.id}"].replace_html :partial => "server_tasks/row", :object => @server_task
+page["server_task_#{@server_task.id}"].appear

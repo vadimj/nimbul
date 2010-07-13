@@ -1,0 +1,15 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  id: 
+  dns_hostname_id: 
+  server_id: 
+  cluster_id: 
+  account_id: 
+
+two:
+  id: 
+  dns_hostname_id: 
+  server_id: 
+  cluster_id: 
+  account_id: 

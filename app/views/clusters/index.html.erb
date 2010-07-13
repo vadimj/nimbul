@@ -1,0 +1,45 @@
+<% subtitle 'All Clusters' %>
+
+<h1><%= link_to 'Dashboard', '/dashboard' %> / All Clusters</h1>
+
+<br />
+<% if @clusters.length > 0 %>
+You have access to the clusters listed below.
+<% else %>
+No clusters are currently configured.<br/>
+<%= link_to "Add a new Cluster", new_cluster_path %>
+<% end %>
+<br/>
+<br/>
+
+<% current_provider_account_id = 0 %>
+<% @clusters.each do |cluster| %>
+    <% unless cluster.provider_account_id == current_provider_account_id -%>
+        <% if current_provider_account_id > 0 %>
+                </tbody>
+            </table>
+        <% end %>
+        <% current_provider_account_id = cluster.provider_account_id %>
+        <strong><%=h cluster.provider_account.name %></strong>
+        <% if current_user.has_provider_account_access?(cluster.provider_account_id) -%>
+            - you are <strong>Account Admin</strong>, <%= link_to "Add a new Cluster", new_provider_account_cluster_path(cluster.provider_account) %></h1>
+        <% end -%>
+        <hr>
+        <table>
+            <thead>
+            <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Instances</th>
+            <th>Servers</th>
+        	<% if current_user.has_provider_account_access?(cluster.provider_account_id) %>
+        		<th>Actions</th>
+        	<% end %>
+            </tr>
+            </thead>
+            <tbody id="cluster_records">
+    <% end -%>
+    <%= render :partial => "cluster", :object => cluster %>
+<% end %>
+    </tbody>
+</table>

@@ -1,0 +1,18 @@
+<table>
+<tr>
+    <th><%= f.label :name, 'Name' %></th>
+    <td><%= f.text_field :name %></td>
+</tr>
+<tr>
+    <th><%= f.label :email, 'E-Mail' %></th>
+    <td><%= f.text_field :email %></td>
+</tr>
+<tr>
+    <th><%= f.label :time_zone, 'Time Zone' %></th>
+    <td><%= f.time_zone_select :time_zone, ActiveSupport::TimeZone.us_zones %></td>
+</tr>
+<tr>
+    <th><%= f.label :public_key, 'Public Key' %></th>
+    <td><%= f.text_area :public_key, :size => '60x6', :warp => 'soft' %></td>
+</tr>
+</table>

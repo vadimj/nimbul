@@ -1,0 +1,25 @@
+<div id="instance_<%=@instance.id%>_unassigned_hostnames" class="unassigned_hostnames">
+	<ul>
+<% if @instance.unleased_hostnames.size > 0 
+		@instance.unleased_hostnames.each do |h|
+			content_tag_for :li, h do %>
+				<%= h h.name %><%- if @instance.is_ready? && @instance.dns_active? %>,
+				<%= link_to_function(
+					image_tag(
+						'acquire.png', :align => 'absmiddle', :alt => "Acquire lease",
+						:title => "Acquire lease on hostname '#{h.name}'",
+						:width => 16, :height => 16
+					),
+					"
+					#{ remote_function({ :url => acquire_instance_dns_hostname_path(@instance, h.dns_hostname), :method => :post }) }
+					setTimeout(function() { #{ remote_function({ :url => instance_dns_hostname_path(@instance, h.dns_hostname), :method => :get }) } }, 3000);
+					"
+				)%>
+				<%- end %>
+<%-			end
+		end
+	else %>
+		<li><strong>none</strong></li>
+<%- end %>
+	</ul>
+</div>

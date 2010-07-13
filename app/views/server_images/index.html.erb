@@ -1,0 +1,21 @@
+<% subtitle 'All Server Images' %>
+
+<h1><%= link_to 'Dashboard', '/dashboard' %> / All Server Images</h1>
+
+<br/>
+
+<%= will_paginate_search_field "user_#{@user.id}_server_image_search", nil, nil, :list %>
+
+<%= refresh_image 'Refresh', 'server_images', nil, :list, nil %>
+
+<span class="vr">&nbsp;</span>
+
+<b>Total: <span id="user_<%= @user.id %>_server_images_total"><%= @server_images.total_entries %></span></b>
+
+<hr>
+
+<div id="user_<%= @user.id %>_server_images">
+
+<%= render :partial => 'server_images/list' %>
+
+</div>

@@ -1,0 +1,13 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  load_balancer_id: 1
+  load_balancer_port: 1
+  instance_port: 1
+  protocol: MyString
+
+two:
+  load_balancer_id: 1
+  load_balancer_port: 1
+  instance_port: 1
+  protocol: MyString

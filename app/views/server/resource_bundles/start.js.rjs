@@ -1,0 +1,11 @@
+if @resource_bundle
+    page["resource_bundle_#{@resource_bundle.id}"].replace_html :partial => "server/resource_bundles/row", :object => @resource_bundle
+    page << "Editable.setupAll('.resource-bundle-#{@resource_bundle.id}-editable');"
+    @resource_bundle.server_resources.each do |server_resource|
+        page << "Editable.setupAll('.server-resource-#{server_resource.id}-editable');"
+    end
+end
+unless @error_messages.empty?
+    page['error_redbox'].replace_html :partial => 'shared/error_redbox'
+    page['error_redbox'].appear
+end

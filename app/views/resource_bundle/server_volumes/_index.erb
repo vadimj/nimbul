@@ -1,0 +1,6 @@
+<tbody id="resource_bundle_<%= resource_bundle.id %>_server_volumes">    
+    <%= render :partial => 'resource_bundle/server_volumes/server_volume', :collection => resource_bundle.volumes, :locals => { :resource_bundle => resource_bundle } %>
+</tbody>
+<tr id="add_resource_bundle_<%= resource_bundle.id %>_server_volume" <% unless resource_bundle.can_use_more_of?('ServerVolume') %>style="display:none;"<% end %>>
+    <%= render :partial => 'resource_bundle/server_volumes/add', :locals => { :resource_bundle => resource_bundle } %>
+</tr>

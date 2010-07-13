@@ -1,0 +1,14 @@
+@servers ||= []
+@instances ||= []
+if @error_messages.empty?
+    @servers.each do |v|
+        page["server_#{v.id}"].replace_html :partial => "servers/row", :object => v
+        page["server_#{v.id}"].visual_effect :highlight
+    end
+    @instances.each do |i|
+        page["instance_#{i.id}"].replace_html :partial => "instances/row", :locals => { :instance => i }
+    end
+else
+    page['error_redbox'].replace_html :partial => 'shared/error_redbox'
+    page['error_redbox'].appear
+end

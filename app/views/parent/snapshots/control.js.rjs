@@ -1,0 +1,15 @@
+@volumes ||= []
+@snapshots ||= []
+if @error_message.blank?
+    @volumes.each do |v|
+        page.insert_html :bottom, 'volume_records', :partial => 'cloud_volumes/volume', :object => v
+        page["cloud_volume_#{v.id}"].visual_effect :highlight
+    end
+    @snapshots.each do |s|
+        page["cloud_snapshot_#{s.id}"].replace_html :partial => "cloud_snapshots/row", :object => s
+        page["cloud_snapshot_#{s.id}"].visual_effect :highlight
+    end
+else
+    page['error_redbox'].replace_html :partial => 'shared/error_redbox'
+    page['error_redbox'].appear
+end

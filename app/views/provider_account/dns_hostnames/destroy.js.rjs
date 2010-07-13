@@ -1,0 +1,15 @@
+if @error_message.blank?
+    page["hostname_#{@hostname.id}"].remove
+else
+    page.visual_effect :highlight, "hostname_#{@hostname.id}", :duration => 2.0
+    page['hostname_status_message'].hide
+    page['hostname_status_message'].replace_html @error_message
+    page['hostname_status_message'].appear
+    page.delay(10) do
+		page['hostname_status_message'].fade()
+		page.delay(5) do 
+			page['hostname_status_message'].replace_html ''
+		end
+    end
+
+end

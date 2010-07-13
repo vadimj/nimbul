@@ -1,0 +1,49 @@
+<div id="users">
+<%= will_paginate_remote @users, 'users' %>
+
+Search: <%= text_field_tag("search", params['search'], :size => 10, :title => 'Search by '+User.search_fields.collect{|f| f.titleize}.join(', ') ) %>
+<%= observe_field 'search',
+    :frequency => 2,
+    :update => 'users',
+    :url => { :action => :list },
+    :with => 'search' %>
+	
+<br />
+<br />
+
+<table>
+	<tr>
+    <th <%= sort_td_class_helper "login" %>>
+		<%= users_sort_link "Login", "login" %>
+    </th>
+	<th <%= sort_td_class_helper "name" %>>
+        <%= users_sort_link "Name", "name" %>
+    </th>
+	<th <%= sort_td_class_helper "email" %>>
+        <%= users_sort_link "E-Mail", "email" %>
+    </th>
+	<th>
+        Admin?
+    </th>
+	<th <%= sort_td_class_helper "activated_at" %>>
+        <%= users_sort_link "Active?", "activated_at" %>
+    </th>
+	<th <%= sort_td_class_helper "enabled" %>>
+        <%= users_sort_link "Enabled?", "enabled" %>
+    </th>
+	<th <%= sort_td_class_helper "user_type" %>>
+        <%= users_sort_link "Auth", "user_type" %>
+    </th>
+	<th>Roles</th>
+	<th>Access Rules</th>
+	<% if_in_beta? do %>
+		<th>Invitations</th>
+	<% end %>
+	</tr>
+<% for user in @users %>
+    <%= render :partial => 'shared/user', :object => user %>
+<% end %>
+</table>
+
+<%= will_paginate_remote @users, 'users' %>
+</div>

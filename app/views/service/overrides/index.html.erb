@@ -1,0 +1,38 @@
+<% subtitle 'Service Overrides' %>
+
+<h1><%= link_to 'Admin Controls', admin_controls_path %> / Service Overrides</h1>
+
+<br/>
+
+Service Overrides expose existing Service Providers to different parts of your infrastructure.<br/>
+You can also use Service Overrides to define a different Service Provider for parts of your infrastructure.<br/>
+For example, for your Production Account you might consider specifying a Source Control Service Provider<br/>
+that's different from the overall EC2 Source Control Service Provider. Since both will be accessible through<br/>
+the same URL (e.g. https://svn.mydomain.com), no deployment configuration change will be necessary.
+
+<br/><br/>
+
+To add a new Service Override, click here: 
+<%= link_to image_tag('add.png', { :alt => "Add", :class => 'control-icon', :title => 'Add New Service Override' }), new_service_override_path %>
+
+<table>
+  <tr>
+    <th>Service</th>
+    <th>Provider</th>
+    <th>Target</th>
+    <th>Overridable?</th>
+    <th>Actions</th>
+  </tr> 
+  <% @service_overrides.each do |service_override|  %>
+    <tr>
+      <td><%=h service_override.type.name.titleize%></td>
+      <td><%=h service_override.provider.name %></td>
+      <td><%=h "#{service_override.target_type}: #{service_override.target.name}" %></td>
+      <td><%=h service_override.overridable ? 'Yes' : 'No' %></td>
+      <td>
+        <%= link_to image_tag('verify.png', { :alt => "Edit", :class => 'control-icon' }), edit_service_override_path(service_override)-%>
+        <%= link_to image_tag('trash.png', { :alt => "Delete", :class => 'control-icon' }), service_override, :confirm => 'Are you sure?', :method => :delete -%>
+      </td>
+    </tr>
+  <% end %>
+</table>

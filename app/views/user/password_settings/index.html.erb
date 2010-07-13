@@ -1,0 +1,24 @@
+<h1>Change your password</h1>
+<br />
+<% form_tag url_for(:action => 'create') do %>
+<table>
+    <tr>
+    <th><label for="old_password" class="block">Old Password</label></th>
+    <td><%= password_field_tag 'old_password', @old_password, :size => 45 %></td>
+    </tr>
+    <tr>
+    <th><label for="password" class="block">New Password</label></th>
+    <td><%= password_field_tag 'password', {}, :size => 45 %>&nbsp;<span class="description">Between 6 and 40 characters</span></td>
+    </tr>
+    <tr>
+    <th><label for="password_confirmation"  class="block">Confirm New Password</label></th>
+    <td><%= password_field_tag 'password_confirmation', {}, :size => 45 %><br /></td>
+    </tr>
+    <tr>
+    <th>&nbsp;</th>
+    <td><%= submit_tag 'Change Password', :disable_with => "Please wait&hellip;"  %></td>
+    </tr>
+</table>
+<% end %>
+
+

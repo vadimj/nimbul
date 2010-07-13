@@ -1,0 +1,61 @@
+<% remote_form_for :provider_account, :url => update_provider_account_addresses_path(@provider_account) do |f| %>
+<%= javascript_tag "Editable.setupAll('.address-editable');" %>
+<div id="addresses">
+
+Search: <%= will_paginate_search_field 'address_search', 'addresses', nil, :list %>
+
+<%= refresh_link image_tag("refresh.png", :align => "absmiddle", :alt => "Refresh"), 'addresses', nil, :list %>
+
+<% if current_user and @provider_account and current_user.has_provider_account_access?(@provider_account) %>
+	<%= image_submit_tag "enable.png", :align => "absmiddle",
+    :alt => "Enable", :title => "Enable selected Addresses",
+    :onclick => '$(this).next(".command").value="enable";',
+    :name => 'enable', :value => 1
+	%>
+
+	<%= image_submit_tag "disable.png", :align => "absmiddle",
+    :alt => "Disable", :title => "Disable selected Addresses",
+    :onclick => '$(this).next(".command").value="disable";',
+    :name => 'disable', :value => 1
+	%>
+
+    <%= hidden_field_tag :command, '', :class => :command %>
+<% end %>
+
+<b>Total: <%= @addresses.total_entries %></b>
+
+<br />
+<br />
+
+<%= will_paginate_remote @addresses, 'addresses' %>
+
+<table>
+  <thead>
+  <tr>
+    <th><% if @addresses.total_entries > 0 %><%= better_select_all_check_box :select_all_addresses, :address %><% end %></th>
+    <th <%= sort_td_class_helper "name" %>>
+      <%= addresses_sort_link "Name", "name" %>
+    </th>
+    <th <%= sort_td_class_helper "public_ip" %>>
+      <%= addresses_sort_link "Public IP", "public_ip" %>
+    </th>
+    <th <%= sort_td_class_helper "instance_id" %>>
+      <%= addresses_sort_link "Instance", "instance_id" %>
+    </th>
+	<th <%= sort_td_class_helper "state" %>>
+      <%= addresses_sort_link "State", "state" %>
+    </th>
+	<th <%= sort_td_class_helper "is_enabled" %>>
+      <%= addresses_sort_link "Enabled", "is_enabled" %>
+    </th>
+  </tr>
+  </thead>
+  <tbody id="address_records">
+    <%= render :partial => "address", :collection => @addresses %>
+  </tbody>
+</table>
+
+<%= will_paginate_remote @addresses, 'addresses' %>
+
+</div>
+<% end %>

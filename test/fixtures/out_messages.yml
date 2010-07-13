@@ -1,0 +1,17 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  provider_account_id: 1
+  message_id: MyString
+  recepient: MyString
+  handler: MyString
+  data: MyString
+  sent_at: 2009-04-30 12:33:44
+
+two:
+  provider_account_id: 1
+  message_id: MyString
+  recepient: MyString
+  handler: MyString
+  data: MyString
+  sent_at: 2009-04-30 12:33:44

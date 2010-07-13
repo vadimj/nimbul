@@ -1,0 +1,12 @@
+<% subtitle h(@provider_account.name)+': New Publisher' %>
+
+<h1><%= pagetitle h(@provider_account.name)+': New Publisher' %></h1>
+
+<br />
+
+<% form_for :publisher,
+    :url => provider_account_publishers_path(@provider_account) do |f| %>
+    <%= render :partial => 'fields', :locals => { :f => f } %>
+    <%= submit_tag 'Create Publisher', :disable_with => "Creating&hellip;" %>
+    <%= submit_tag 'Cancel', :name => 'cancel_button' %>
+<% end %>

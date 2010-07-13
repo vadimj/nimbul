@@ -1,0 +1,13 @@
+<% subtitle @security_group %>
+
+<h1><%= pagetitle @security_group, { :create_links => true } %></h1>
+<br />
+Review security group.
+<br />
+<br />
+<% fields_for :security_group do |f| %>
+<table>
+<%= render :partial => 'fields', :locals => { :f => f } %>
+</table>
+<% end %>
+<%= button_to 'Done', :back, :method => :get %>

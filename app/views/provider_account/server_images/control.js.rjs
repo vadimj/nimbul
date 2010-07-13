@@ -1,0 +1,14 @@
+@server_images ||= []
+if @error_message.blank?
+    @server_images.each do |i|
+        if i.destroyed
+            page["server_image_#{i.id}"].remove
+        else
+            page["server_image_#{i.id}"].replace_html :partial => "server_images/row", :locals => { :server_image => i }
+            page["server_image_#{i.id}"].visual_effect :highlight
+        end
+    end
+else
+    page['error_redbox'].replace_html :partial => 'shared/error_redbox'
+    page['error_redbox'].appear
+end

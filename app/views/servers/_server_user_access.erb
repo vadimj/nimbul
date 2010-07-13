@@ -1,0 +1,24 @@
+<% fields_for 'server[server_user_access_attributes][]', server_user_access do |f| %>
+<% content_tag_for :tr, server_user_access do %>
+    <% if server_user_access.new_record? %>
+    	<td><%= f.collection_select :user_id, @users, :id, :login_and_name, :index => nil %></td>
+    	<td><%= f.select :server_user, EC2_SERVER_USERS, :index => nil %></td>
+        <td>&nbsp;</td>
+	<% else %>
+        <%= f.hidden_field :id, :index => nil %>
+        <%= f.hidden_field :user_id, :index => nil %>
+        <%= f.hidden_field :server_user, :index => nil %>
+    	<td><%= h server_user_access.user.login %> (<%= h server_user_access.user.name %>)</td>
+    	<td><%= h server_user_access.server_user %></td>
+    	<td><%= h server_user_access.status_message %></td>
+	<% end %>
+	<td>
+	<% if server_user_access.new_record? %>
+        <%= link_to_function 'remove', "$(this).up('.server_user_access').remove()"%>
+    <% else %>
+        <%= link_to_function 'remove', "mark_for_destroy(this, $(this).up('.server_user_access'))"%>
+        <%= f.hidden_field :should_destroy, :index => nil, :class => 'should_destroy' %>
+    <% end %>
+	</td>
+<% end %>
+<% end %>

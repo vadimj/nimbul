@@ -1,0 +1,140 @@
+/*
+Copyright (c) 2008, Yahoo! Inc. All rights reserved.
+Code licensed under the BSD License:
+http://developer.yahoo.net/yui/license.txt
+version: 3.0.0pr1
+*/
+/* base.css, part of YUI's CSS Foundation */
+h1 {
+	font-size:13px;  
+}
+h2 {
+	font-size:123.1%; 
+}
+h3 {
+	font-size:108%;  
+}
+h1,h2,h3 {
+	/* top & bottom margin based on font size */
+	margin:1em 0;
+}
+h1,h2,h3,h4,h5,h6,strong {
+	/*bringing boldness back to headers and the strong element*/
+	font-weight:bold; 
+}
+abbr,acronym {
+	/*indicating to users that more info is available */
+	border-bottom:1px dotted #000;
+	cursor:help;
+} 
+em {
+	/*bringing italics back to the em element*/
+	font-style:italic;
+}
+blockquote,ul,ol,dl {
+	/*giving blockquotes and lists room to breath*/
+	margin:1em;
+}
+ol,ul,dl {
+	/*bringing lists on to the page with breathing room */
+	margin-left:2em;
+}
+ol li {
+	/*giving OL's LIs generated numbers*/
+	list-style: decimal outside;	
+}
+ul li {
+	/*giving UL's LIs generated disc markers*/
+	list-style: disc outside;
+}
+dl dd {
+	/*giving UL's LIs generated numbers*/
+	margin-left:1em;
+}
+.table {
+    display: table;
+    vertical-align: middle;
+    margin: 2px;
+    border: 1px solid #999999;
+    padding: 0px;
+    border-spacing: 0px;
+}
+.tr {
+    display: table-row;
+}
+th {
+	border:1px solid #DCDCDC;
+	padding:.5em;
+	font-weight:bold;
+	text-align:center;
+}
+th.vertical {
+	text-align:right;
+	vertical-align:top;
+}
+.th {
+    display: table-cell;
+    background-color: #E7E7E7;
+    color: #777777;
+	border:1px solid #DCDCDC;
+	padding:.5em;
+	font-weight:bold;
+	text-align:center;
+}
+td {
+    border:1px solid #E7E7E7;
+    padding:.2em;
+    vertical-align:middle;
+    font-size: 12px;
+    line-height: 13px;
+}
+td.noborder {
+	border:0px;
+	padding:.1em;
+	spacing:0px;
+	vertical-align:middle;
+}
+td.dashboard {
+    padding:0.4em;
+}
+.td {
+    display: table-cell;
+    color: #000000;
+	border:1px solid #E7E7E7;
+	padding:.2em;
+	vertical-align:middle;
+}
+caption {
+	margin-bottom:.5em;
+	text-align:center;
+}
+p,fieldset,table,pre {
+	margin-bottom:1em;
+}
+input[type=text],input[type=password]{
+    width: 12.25em;
+}
+
+input[type=text].value {
+    width: 250px;
+}
+
+input[type=text].long {
+    width: 300px;
+}
+
+input[type=text].medium {
+    width: 60px;
+}
+
+input[type=text].short {
+    width: 40px;
+}
+
+input[type=text].tiny {
+    width: 20px;
+}
+
+.nowrap {
+    white-space:nowrap;
+}

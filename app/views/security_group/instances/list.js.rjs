@@ -1,0 +1,1 @@
+page["security_group_#{@security_group.id}_instance_records"].replace_html :partial => 'list'

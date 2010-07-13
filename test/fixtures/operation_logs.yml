@@ -1,0 +1,15 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  operation_id: 1
+  step_name: MyString
+  is_success: false
+  result_code: MyString
+  result_message: MyText
+
+two:
+  operation_id: 1
+  step_name: MyString
+  is_success: false
+  result_code: MyString
+  result_message: MyText

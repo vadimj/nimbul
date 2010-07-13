@@ -1,0 +1,54 @@
+<br/>
+
+<h1>General Information</h1>
+<hr>
+<table>
+<tr>
+    <th><%= label_tag :instance_is_locked, 'Locked' %></th>
+	<th><%= label_tag :instance_is_ready, 'Ready ?' %></th>
+	<th><%= label_tag :instance_dns_active, 'DNS Active ?' %></th>
+	<th><%= label_tag :state, 'State' %></th>
+    <th>Actions</th>
+</tr>
+<tr id="instance_state">
+    <%= render :partial => 'state', :locals => { :instance => @instance } %>
+</tr>
+</table>
+
+<table>
+<tr>
+    <th><%= label_tag :launch_time, 'Launch Time' %></th>
+    <th><%= label_tag :image_id, 'Server Image' %></th>
+	<th><%= label_tag :type, 'Type' %></th>
+    <th><%= label_tag :zone, 'Zone' %></th>
+    <th>Security Groups</th>
+</tr>
+<tr>
+    <td><%= h @instance.launch_time %> - <%= time_ago_in_words(@instance.launch_time) %> ago</td>
+    <td><%= h @instance.image_id %></td>
+    <td><%= h @instance.type %></td>
+    <td><%= h @instance.zone %></td>
+    <td>
+        <table>
+        <tbody id="security_groups>
+        <%= render :partial => 'security_group', :collection => @instance.security_groups %>
+        </tbody>
+        </table>
+    </td>
+</tr>
+</table>
+
+<%= render :partial => 'dns' %>
+
+<h1>Address</h1>
+<hr>
+<div id="instance_addresses_index"></div>
+
+<h1>Storage</h1>
+<hr>
+<div id="instance_volumes_index"></div>
+<%= javascript_tag(remote_function(:url => instance_addresses_url(@instance), :method => :get) ) %>
+<%= javascript_tag(remote_function(:url => instance_volumes_url(@instance), :method => :get) ) %>
+<%= periodically_call_remote(:url => list_instance_addresses_url(@instance), :method => :get, :frequency => '20') %>
+<%= periodically_call_remote(:url => list_instance_volumes_url(@instance), :method => :get, :frequency => '20') %>
+<%= periodically_call_remote(:url => instance_url(@instance), :method => :get, :frequency => '20') %>

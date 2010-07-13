@@ -1,0 +1,74 @@
+<%
+    @server_images = @provider_account.server_images.collect{|a| a if a.is_enabled?}.compact.sort{ |a,b| a.name.downcase <=> b.name.downcase }
+    @key_pairs = @provider_account.key_pairs.sort{ |a,b| a.name.downcase <=> b.name.downcase }
+    @volumes = @provider_account.volumes.collect{|a| a if a.is_enabled?}.compact.sort{ |a,b| a.name.downcase <=> b.name.downcase }
+    @addresses = @provider_account.addresses.collect{|a| a if a.is_enabled?}.compact.sort{ |a,b| a.name.downcase <=> b.name.downcase }
+%>
+<% form_for :server,
+    :url => server_path(@server),
+    :html => { :method => 'put' } do |f| %>
+<%= f.error_messages %>
+<table>
+<tr>
+<td valign="top">
+    <table>
+    <caption>General Settings</caption>
+	<tr>
+		<th><%= f.label :is_locked, 'Lock Created Instances' %></th>
+        <td><%= f.check_box :is_locked, :title => 'If checked, Instances of this Server will be created in a "Locked" state. You will need to "Unlock" such an instance before you can Stop or Reboot it.' %></td>
+	</tr>
+	<tr>
+		<th><%= f.label :type, 'Type' %></th>
+        <td><%= f.select :type, EC2_INSTANCE_TYPES %></td>
+    </tr>
+	<% fields_for "server[server_profile_attributes][]", @server.server_profile do |sp_form| %>
+	<tr>
+		<th><%= sp_form.label :image_id, 'Server Image' %></th>
+        <td><%= sp_form.collection_select :image_id, @server_images, :image_id, :name, :prompt => "Choose One" %></td>
+	</tr>
+    <li>
+        <b>Environment Variables</b>
+        (<%= link_to_function 'show/hide', "$$('.server_parameters_table').each(function(d) { Effect.toggle(d, 'appear') });" %>)
+        <span class="server_parameters_table" style="display:none">
+            <br /><br />
+            <table><tr><th>&nbsp;</th><th>Name</th><th>Value (<span class="small">* line breaks are ignored</span>)</th><th>Password?</th><th>&nbsp;</th></tr>
+            <tbody id="server_parameters">
+            <%= render :partial => 'server_parameter', :collection => @server.server_parameters %>
+            </tbody>
+            <%= sortable_element("server_parameters", :url => sort_server_parameters_path, :tag => "tr", :handle => "handle" ) %>
+            <tr><td align="right" colspan="5"><%= add_server_server_parameter_link 'add parameter' %></td>
+            </tr></table>
+            <% unless @server.new_record? %>
+                <%= submit_tag "Update", :disable_with => "Updating&hellip;"  %>
+            <% end %>
+            <br />
+            <br />
+        </span>
+    </li>
+
+    <li>
+        <b>Server Startup Script</b>
+        (<%= link_to_function 'show/hide', "$$('.startup_script').each(function(d) { Effect.toggle(d, 'appear') });" %>)
+        <span class="startup_script" style="display:none">
+            <br /><br />
+            <%= sp_form.text_area :startup_script, :size => '90x15', :class => "startup_script", :style => "display:none" %>
+            <br />
+            <% unless @server.new_record? %>
+                <%= submit_tag "Update", :disable_with => "Updating&hellip;"  %>
+            <% end %>
+            <br />
+            <br />
+        </span>
+    </li>
+	<% unless @server.new_record? %>
+		<li>
+		<b>Full Startup Script</b>
+		(<%= link_to 'preview', show_server_server_user_data_path(@server),
+			:popup => [ "server_server_user_data_path_#{@server.id}", 'height=640,width=760' ] %>)
+		</li>
+	<% end %>
+    </ul>
+</td>
+</tr>
+</table>
+

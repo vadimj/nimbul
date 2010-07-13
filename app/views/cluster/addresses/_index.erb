@@ -1,0 +1,11 @@
+Search: <%= will_paginate_search_field "cluster_#{@cluster.id}_address_search", nil, nil, :list %>
+
+<%= refresh_image 'Refresh', 'addresses', nil, :list, nil %>
+
+<span class="vr">&nbsp;</span>
+
+<b>Total: <span id="cluster_<%= @cluster.id %>_addresses_total"><%= @addresses.total_entries %></span></b>
+
+<hr>
+
+<%= render :partial => 'cluster/addresses/list' %>

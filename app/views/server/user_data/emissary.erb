@@ -1,0 +1,67 @@
+<%-
+  provider_id = user_data.server.cluster.provider_account.id
+  cluster_id  = user_data.server.cluster.id
+  server_id   = user_data.server.id
+  account     = @provider_account
+  
+  request_path = [ provider_id, cluster_id, server_id ]
+
+  s = Server.find(server_id)
+  
+  lock_host = s.get_server_parameter("MYSQL_LOCK_HOST") ||  "localhost"
+  lock_user = s.get_server_parameter("MYSQL_LOCK_USER")
+  lock_pass = s.get_server_parameter("MYSQL_LOCK_PASS")
+  coordinates_file = s.get_server_parameter("MYSQL_COORDINATES_FILE")
+
+-%>
+
+[agents]
+    execute = {
+        safe_path = /opt/nyt/emissary/bin
+    }
+    
+    sshkeys = {
+        valid_users = [
+            <%= EC2_SERVER_USERS.join(', ') %>
+        ]
+    }
+    
+<% unless s.get_server_parameter('MYSQL_LOCK_PASS').nil? %>
+    mysql = {
+        lock_user = <%= lock_user -%>
+        lock_pass = <%= lock_pass -%>
+        lock_host = <%= lock_host %>
+        data_path = <%= coordinates_file -%>
+    }
+<% end -%>
+
+[amqp]
+    node = {
+        # URI schema is: <scheme>://<user>:<pass>@<server>:<port>/<vhost>
+        # scheme is either amqp (non-ssl) or amqps (ssl)
+        URI = <%= user_data.server.cluster.provider_account.messaging_url -%>
+        
+        # Account: <%= user_data.server.cluster.provider_account.name %> [<%= provider_id %>]
+        # Cluster: <%= user_data.server.cluster.name %> [<%= cluster_id %>]
+        # Server: <%= user_data.server.name %> [<%= server_id %>]
+
+        # all routing keys are based on <RouteType>.<Account ID>.<Cluster ID>.<Server Id>.<Instance ID>
+        
+        subscriptions = [
+            request.<%= request_path[0,1].join('.') %>:topic
+            request.<%= request_path[0,2].join('.') %>:topic
+            request.<%= request_path[0,3].join('.') %>:topic
+            request.<%= request_path[0,3].join('.') -%>.__ID_INSTANCE_ID__:topic
+        ]
+        
+        startup  = startup.<%= request_path[0,3].join('.') -%>.__ID_INSTANCE_ID__:topic
+        shutdown = shutdown.<%= request_path[0,3].join('.') -%>.__ID_INSTANCE_ID__:topic
+        
+        stats    = {
+            interval = 300
+            queue_base = info.stat.<%= request_path[0,3].join('.') -%>.__ID_INSTANCE_ID__:topic
+        }
+
+        disable = [ ]
+    }
+

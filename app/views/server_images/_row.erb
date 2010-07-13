@@ -1,0 +1,23 @@
+<% unless @parent.is_a?(User) -%>
+    <td class="select-handle">
+        <%= better_check_box_tag "server_image_ids[]", server_image.id, false, :server_image %>
+    </td>
+<% end -%>
+<td><%= edit_in_place(server_image, :name, :class => 'server-image-editable') %></td>
+<% if @parent.is_a?(User) -%>
+    <td>
+        <%= link_to server_image.provider_account.name, provider_account_path(server_image.provider_account_id) -%>
+    </td>
+<% end -%>
+<td><%=h server_image.image_id %></td>
+<td><%= text_field_tag nil, server_image.location, { :readonly => 'readonly', :class => :long, :onclick => '$(this).focus();$(this).select()' } %></td>
+<td><%=h server_image.architecture %></td>
+<td class="<%=h server_image.state %>"><%=h server_image.state %></td>
+<td>
+    <%=h server_image.owner_id %>
+  	    <% if server_image.owner_id == server_image.provider_account.account_id -%>
+  	        - me
+  	    <% end -%>
+</td>
+<td><%=h server_image.is_public %></td>
+<td class="<%=h server_image.is_enabled %>"><%=h server_image.is_enabled %></td>

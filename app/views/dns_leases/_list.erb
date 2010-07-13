@@ -1,0 +1,14 @@
+<table id="dns-leases">
+	<thead>
+		<tr>
+			<th class="lease-controls">Controls</th>
+			<th class="lease-state">State</th>
+			<th class="lease-fqdn">FQDN</th>
+			<th class="lease-instance">Instance ID</th>
+			<th class="lease-server">Server</th>
+		</tr>
+	</thead>
+	<tbody>
+		<%= render :partial => 'dns_leases/lease', :collection => @leases %>
+	</tbody>
+</table>

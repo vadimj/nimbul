@@ -1,0 +1,17 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  server_task_id: 1
+  type: MyString
+  name: MyString
+  description: MyString
+  value: MyString
+  control_type: MyString
+
+two:
+  server_task_id: 1
+  type: MyString
+  name: MyString
+  description: MyString
+  value: MyString
+  control_type: MyString

@@ -1,0 +1,5 @@
+<td class="select-handle"><%= better_check_box_tag "provider_account_ids[]", provider_account.id, false, :provider_account %></td>
+<td><%= link_to h(provider_account.name), provider_account %></td>
+<td><%= h(provider_account.description) %></td>
+<td><%= provider_account.instances.count %></td>
+<td><%= time_ago(provider_account.refreshed_at) %></td>

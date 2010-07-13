@@ -1,0 +1,26 @@
+<% fields_for 'provider_account[firewall_rule_attributes][]', firewall_rule do |f| %>
+      <% if firewall_rule.new_record? %>
+        <td><%= link_to_function "del", "$(this).up('.firewall_rule_record').remove()" %></td>
+        <td><%= f.text_field :name, :index => nil %></td>
+      <% else %>
+        <%= f.hidden_field :id, :index => nil %>
+        <td class="select-handle"><%= better_check_box_tag "firewall_rule_ids[]", firewall_rule.id, false, :firewall_rule %></td>
+		<td><%= edit_in_place(firewall_rule, :name, :class => 'firewall-rule-editable') %>
+        <%= firewall_rule.status_message %>
+        </td>
+      <% end %>
+      <td><%= link_to pluralize(firewall_rule.security_groups.size, 'group'), firewall_rule_security_groups_path(firewall_rule) %></td>
+      <td><%=h firewall_rule.ip_range %></td>
+      <td><%= (firewall_rule.protocol.blank? ? '' : firewall_rule.protocol.upcase) %></td>
+      <td><%=h firewall_rule.from_port %></td>
+      <td><%=h firewall_rule.to_port %></td>
+      <td>
+			<%=h firewall_rule.group_user_id %>
+	  	    <% if firewall_rule.group_user_id == firewall_rule.provider_account.account_id -%>
+	  	        - me
+	  	    <% end -%>
+      </td>
+      <td><%=h firewall_rule.group_name %></td>
+	  <td class="<%=h firewall_rule.is_enabled %>"><%=h firewall_rule.is_enabled %></td>
+      <%= f.hidden_field :is_enabled, :index => nil, :class => 'is_enabled' %>
+<% end %>

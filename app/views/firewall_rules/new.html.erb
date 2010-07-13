@@ -1,0 +1,38 @@
+<div class="centered">
+
+	<h1>New firewall_rule</h1>
+	
+	<% form_for(@firewall_rule) do |f| %>
+	  <%= f.error_messages %>
+	
+	  <p>
+		<%= f.label :provider_account_id %><br />
+		<%= f.text_field :provider_account_id %>
+	  </p>
+	  <p>
+		<%= f.label :type %><br />
+		<%= f.text_field :type %>
+	  </p>
+	  <p>
+		<%= f.label :protocol %><br />
+		<%= f.text_field :protocol %>
+	  </p>
+	  <p>
+		<%= f.label :from_port %><br />
+		<%= f.text_field :from_port %>
+	  </p>
+	  <p>
+		<%= f.label :to_port %><br />
+		<%= f.text_field :to_port %>
+	  </p>
+	  <p>
+		<%= f.label :ip_range %><br />
+		<%= f.text_field :ip_range %>
+	  </p>
+	  <p>
+		<%= f.submit "Create" %>
+	  </p>
+	<% end %>
+	
+	<%= link_to 'Back', firewall_rules_path %>
+</div>

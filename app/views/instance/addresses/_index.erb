@@ -1,0 +1,30 @@
+<table>
+    <tr><th>Actions</th><th>Name</th><th>Address</th><th>State</th><th>Details</th><th>Force Allocation</th></tr>
+    <tbody id="instance_addresses">    
+        <%= render :partial => 'instance/addresses/list', :locals => { :addresses => @instance_addresses } %>
+    </tbody>
+    <tbody id="add_address" <% unless @instance.can_use_more_of?('InstanceAddress') %>style="display:none;"<% end %>>
+        <tr><td align="right" colspan="6">
+            [ <%= add_instance_address_link 'add', @instance %> ]
+        </td></tr>
+    </tbody>
+    <tbody id="new_address" style="display:none;">
+        <tr>
+            <td colspan="6">
+            <% remote_form_for :instance_resource,
+                :url => instance_instance_resources_path(@instance),
+                :html => { :method => :post } do |f| %>
+                <%= hidden_field_tag :anchor, 'address' %>
+                <%= hidden_field_tag :update, 'instance_addresses' %>
+                <%= f.hidden_field :class_type, :value => 'InstanceAddress' %>
+                <%= f.hidden_field :mount_type, :value => CloudAddress.default_mount_type %>
+                <%= f.hidden_field :state, :value => 'pending' %>
+                <%= f.collection_select :cloud_resource_id, @addresses, :id, :name_zone_state %>
+                <%= f.check_box :force_allocation, :title => 'If checked, this address will be moved to a new instance even if it is already associated with a running instance' %>
+                <%= f.submit 'Add' %>
+                <%= cancel_add_instance_address_button 'Cancel', @instance %>
+            <% end %>
+            </td>
+        </tr>
+    </tbody>
+</table>

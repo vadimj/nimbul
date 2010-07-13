@@ -1,0 +1,28 @@
+<% remote_form_for :provider_account,
+    :url => control_provider_account_firewall_rules_path(@provider_account) do |f| %>
+
+Search: <%= will_paginate_search_field 'firewall_rule_search', 'firewall_rules', nil, :list %>
+
+<%= refresh_image 'Refresh', 'firewall_rules', nil, :list %>
+
+<% if current_user and @provider_account and current_user.has_provider_account_access?(@provider_account) %>
+    <span class="vr">&nbsp;</span>
+    
+    <%= add_firewall_rule_button 'Add' %>
+    <%= remove_firewall_rule_submit 'Delete' %>
+
+    <span class="vr">&nbsp;</span>
+
+    <%= enable_firewall_rules_submit 'Enable' %>
+    <%= disable_firewall_rules_submit 'Disable' %>
+    <%= hidden_field_tag :command, '', :class => :command %>
+<% end %>
+
+<span class="vr">&nbsp;</span>
+
+<b>Total: <span id="firewall_rules_total"><%= @firewall_rules.total_entries %></span></b>
+
+<hr/>
+
+<%= render :partial => "firewall_rules/list" %>
+<% end %>

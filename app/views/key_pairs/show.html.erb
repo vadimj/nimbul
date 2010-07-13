@@ -1,0 +1,28 @@
+<p>
+  <b>Provider account:</b>
+  <%=h @key_pair.provider_account_id %>
+</p>
+
+<p>
+  <b>Name:</b>
+  <%=h @key_pair.name %>
+</p>
+
+<p>
+  <b>Fingerprint:</b>
+  <%=h @key_pair.fingerprint %>
+</p>
+
+<p>
+  <b>Private Key:</b>
+  <%=h @key_pair.private_key %>
+</p>
+
+<p>
+  <b>Public Key:</b>
+  <%=h @key_pair.public_key %>
+</p>
+
+
+<%= link_to 'Edit', edit_key_pair_path(@key_pair) %> |
+<%= link_to 'Back', key_pairs_path %>

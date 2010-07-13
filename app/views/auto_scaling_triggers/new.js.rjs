@@ -1,0 +1,2 @@
+page['large_redbox'].replace_html :partial => 'auto_scaling_triggers/fields', :object => AutoScalingTrigger.new
+page['large_redbox'].appear

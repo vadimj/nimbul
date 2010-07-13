@@ -1,0 +1,25 @@
+<% title "Service Override" %>
+
+<table>
+  <tr>
+    <th>Service</th>
+    <td><%=link_to(h(@service_override.type.name.titleize), @service_override.type) %></td>
+  </tr>
+  <tr>
+    <th>Provider</th>
+    <td><%= link_to(h(@service_override.service_provider.name), @service_override.service_provider) %></td>
+  </tr>
+    <th>Target</th>
+      <td><%=link_to(h("#{@service_override.target_type}: #{@service_override.target.name}"), @service_override.target) %></td>
+  </tr>
+  <tr>
+    <th>Overridable?</th>
+      <td><%=h @service_override.overridable ? 'Yes' : 'No' %></td>
+  </tr> 
+</table>
+
+<p>
+  <%= link_to "Edit", edit_service_override_path(@service_override) %> |
+  <%= link_to "Destroy", @service_override, :confirm => 'Are you sure?', :method => :delete %> |
+  <%= link_to "View All", service_overrides_path %>
+</p>

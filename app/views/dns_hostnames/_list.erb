@@ -1,0 +1,67 @@
+
+<%# Removing pagination until a way is figured out how to load it in :list view from the context of the :index view %>
+<%#= will_paginate_remote @hostnames, 'dns_hostname_data' %>
+
+<table id="dns">
+	<thead>
+		<tr>
+			<th class="dns-controls">Controls</th>
+			<th <%= sort_td_class_helper "name", "dns-hostname" %>>
+				<%= dns_hostname_sort_link "Hostname", "name" %>
+			</th>
+			<th class="dns-servers">Servers</th>
+			<th>
+				<span title="Total number of leases accrued for the given hostname, regardless of available/in-use state.">Accrued Leases</span> <%-
+				%><small title="Total number of in-use leases for the given hostname.">(In-Use Leases)</small>
+			</th>
+		</tr>
+	</thead>
+	<tbody id="dns_hostname_entries">
+		<%= render :partial => 'dns_hostnames/hostname', :collection => @hostnames %>
+	</tbody>
+
+<%# don't allow adding of hostnames to clusters - only allow through server/provider account interfaces %>
+
+<%- if %w{ ProviderAccount Server }.include? @model.class.name %>
+	<tfoot>
+		<tr>
+			<th>Add Hostname</th>
+			<td colspan="3">
+				<% 	remote_form_for :dns_hostnames,
+						:url => polymorphic_url([@model, :dns_hostnames]),
+						:html => { :method => :post } do |f|
+				%>
+				<%= text_field_with_auto_complete :dns_hostname, :id,
+					{
+						:autocomplete => 'off',
+						:class => 'auto_complete',
+						:value => 'Add Hostname',
+						:onfocus => "if ($(this).value == 'Add Hostname') { $(this).value = ''; }",
+					},
+					{
+						:skip_style => true,
+						:indicator => 'indicator',
+						:min_chars => 3,
+						:max_chars => 64,
+						:select => 'dns_hostname_id',
+						:after_update_element => "function(element,value) { element.hide(); element.form.onsubmit(); }",
+						:with => "'dns_hostname_search='+  encodeURIComponent($('dns_hostname_id').value) +'&#{polymorphic_foreign_key_name @model}=' + encodeURIComponent('#{@model.id}')",
+					}
+				%>
+				<%= image_tag('indicator.gif',
+					  :align => "absmiddle",
+					  :border => 0,
+					  :id => 'indicator',
+					  :style => 'display: none;' ) %>
+				<%- end %>
+				<span>Type in a name and press enter to add it</span>
+				<p id="hostname_status_message" style="display:none;"></p>
+			</td>
+		</tr>
+	</tfoot>
+</table>
+
+<%- end %>
+
+<%# Removing pagination until a way is figured out how to load it in :list view from the context of the :index view %>
+<%#= will_paginate_remote @hostnames, 'dns_hostname_data' %>

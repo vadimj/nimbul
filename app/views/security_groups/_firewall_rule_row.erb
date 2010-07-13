@@ -1,0 +1,6 @@
+<td><%= firewall_rule_description(firewall_rule) %></td>
+<% if @editable -%>
+<td>
+	[<%= remove_security_group_firewall_rule_link 'remove', @security_group, firewall_rule %>]
+</td>
+<% end -%>

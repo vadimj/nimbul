@@ -1,0 +1,36 @@
+<ul class="tabselector" id="tabcontrol1">
+    <li class="tab-selected" id="servers_tab">
+        <%= link_to_function('Servers', "loadPane($('servers_pane'), '" + cluster_servers_url(@cluster) + "'), tabselect($('servers_tab')); paneselect($('servers_pane'))") %>
+    </li>
+    <li class="tab-unselected" id="variables_tab">
+        <%= link_to_function('Variables', "tabselect($('variables_tab')); paneselect($('variables_pane'))") %>
+    </li>
+    <li class="tab-unselected" id="users_tab">
+        <%= link_to_function('Security', "tabselect($('users_tab')); paneselect($('users_pane'))") %>
+    </li>
+</ul>
+<div id="pane-content">
+<ul class="panes" id="panecontrol1">
+    <li id="servers_pane" class="pane-selected">
+        <%= render :partial => 'cluster/servers', :object => @cluster %>
+    </li>
+    <li id="variables_pane" class="pane-unselected">
+        <%= render :partial => 'cluster_parameters/list' %>
+    </li>
+    <li id="users_pane" class="pane-unselected">
+        <%= render :partial => 'users' %>
+    </li>
+</ul>
+</div>
+<%= javascript_tag "
+    var anchor = '';
+    if (location.hash != '') {
+        anchor = location.hash.substring(1, location.hash.length);
+        if ($(anchor+'_pane') != null) {
+            tabselect($(anchor+'_tab'));
+            paneselect($(anchor+'_pane'));
+        }
+    } else {
+        loadPane($('servers_pane'), '" + cluster_instances_url(@cluster) + "');
+    }
+" %>

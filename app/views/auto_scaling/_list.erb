@@ -1,0 +1,95 @@
+<%= stylesheet_link_tag 'auto_scaling', :media => "screen" %>
+
+<div id="auto_scaling">
+	<h1>Auto Scaling</h2>
+	<br />
+
+	<div id="launch_configurations">
+		<h1>Launch Configurations</h1>
+		These configurations can be used by Auto Scaling Groups.
+		<br />
+		<br />
+
+		<%=
+			will_paginate_search_field(
+				'launch_configuration_search',
+				'launch_configuration_data',
+				'auto_scaling',
+				:list, 'Search by ' + LaunchConfiguration.search_fields.collect{|f| f.titleize}.join(', ')
+			)
+		-%>
+		<%= refresh_link(
+				image_tag("refresh.png", :class => 'control-icon', :alt => "Refresh"),
+				'launch_configuration_data', :launch_configurations, :list, nil
+			)
+		-%>
+		
+        <span class="vr">&nbsp;</span>
+		
+		<%= link_to(
+				image_tag('add.png', :class => 'control-icon', :alt => 'Add', :title => 'Add a New Launch Configuration'),
+				new_provider_account_launch_configuration_path(@provider_account)
+			)
+		-%>
+		
+        <span class="vr">&nbsp;</span>
+
+        <b>Total: <span id="launch_configurations_total"><%= @launch_configurations.total_entries %></span></b>
+
+        <hr>
+
+		<%= will_paginate_remote @launch_configurations, 'launch_configuration_data' %>
+		<%= render :partial => 'launch_configurations/list' %>
+		<%= will_paginate_remote @launch_configurations, 'launch_configuration_data' %>
+
+	</div>
+
+	<hr style="margin: 1.5em 0;">
+
+	<div id="auto_scaling_groups">
+		<h1>Auto-Scaling Groups</h1>
+		Groups are containers for launch configurations and triggers, and define an atomic auto-scaling vector.
+		<br />
+		<br />
+
+		<%=
+			will_paginate_search_field(
+				'auto_scaling_group_search',
+				'auto_scaling_group_data',
+				'auto_scaling',
+				:list, 'Search by ' + AutoScalingGroup.search_fields.collect{|f| f.titleize}.join(', ')
+			)
+		-%>
+		<%=
+			refresh_link(
+				image_tag("refresh.png", :class => 'control-icon', :alt => "Refresh"),
+				'auto_scaling_group_data', 'auto_scaling_groups', :list, nil
+			)
+		-%>
+
+		<span class="vr">&nbsp;</span>
+		
+		<%= link_to_remote image_tag('add.png', :class => 'control-icon', :alt => 'Add', :title => 'Add a New Auto-Scaling Group'),
+				:url => new_provider_account_auto_scaling_group_path(@provider_account),
+				:method => :get
+		-%>
+                
+        <span class="vr">&nbsp;</span>
+
+        <b>Total: <span id="auto_scaling_groups_total"><%= @auto_scaling_groups.total_entries %></span></b>
+
+		<%#=
+			refresh_checkbox(
+				'Auto Refresh',
+				'auto_scaling_group_data', 'auto_scaling_groups', :list, nil
+			)
+		-%>
+		
+        <hr>
+
+		<%= will_paginate_remote @launch_configurations, 'auto_scaling_group_data' %>
+		<%= render :partial => 'auto_scaling_groups/list' %>
+		<%= will_paginate_remote @launch_configurations, 'auto_scaling_group_data' %>
+
+	</div>
+</div>

@@ -1,0 +1,16 @@
+<h1>DNS</h1>
+<hr>
+<table>
+<tr>
+    <th><%= label_tag :public_dns, 'Public DNS' %></th>
+    <th><%= label_tag :private_dns, 'Private DNS' %></th>
+    <th>Assigned Leases</th>
+    <th>Unassigned Hostnames</th>
+</tr>
+<tr>
+    <td><%= text_field_tag nil, @instance.public_dns, { :readonly => 'readonly', :length => '20', :onclick => '$(this).focus();$(this).select()' } %></td>
+    <td><%= text_field_tag nil, @instance.private_dns, { :readonly => 'readonly', :length => '20', :onclick => '$(this).focus();$(this).select()' } %></td></td>
+    <td><%= render :partial => 'instance/dns_leases/assigned_leases' %></td>
+    <td><%= render :partial => 'instance/dns_hostnames/unassigned_hostnames' %></td>
+</tr>
+</table>

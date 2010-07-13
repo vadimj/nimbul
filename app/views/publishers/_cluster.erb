@@ -1,0 +1,11 @@
+<% fields_for 'cluster_attributes[]', cluster do |f| %>
+	<tr class="selectable cluster_record">
+		<%= f.hidden_field :id, :index => nil %>
+		<td><%= selectable_check_box_tag "cluster_ids[]", cluster.id, false %></td>
+		<td><%= link_to cluster.name, cluster %></td>
+		<td><%=h cluster.provider_account.name %></td>
+		<td><%=h cluster.description %></td>
+		<td><%= link_to cluster.instances.count, cluster_instances_path(cluster) %></td>
+		<td><%= link_to cluster.servers.count, cluster_servers_path(cluster) %></td>
+	</tr>
+<% end %>

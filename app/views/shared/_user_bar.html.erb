@@ -1,0 +1,15 @@
+<div id="user-bar-greeting">
+<% if logged_in? %>
+	<%= link_to current_user.login, edit_user_profile_path(current_user), { :title => "My Account" } %> |
+	<% if_invites_available? do %>
+		<%= link_to "Invite Friends (#{current_user.invitation_limit})", new_user_invitation_path %> |
+	<% end %>
+	<%= link_to "Log Out", logout_path, { :title => "Log out" } %>
+<% else %>
+	<% unless ( controller.controller_name == 'sessions' && controller.action_name == 'new' ) %>
+		<%= link_to_remote "Log In", {:url => new_session_path, :method => :get}, :href => login_path %>
+	<% end %>
+	<%#= link_to "New Account", ldap_signup_path, { :title => "Create an account" } %>
+	<%= link_to "New Account", signup_path, { :title => "Create an account" } %>
+<% end %>
+</div>

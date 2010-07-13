@@ -1,0 +1,20 @@
+<td>
+<%= attach_instance_resource_link 'attach', @instance, row -%>
+<%= detach_instance_resource_link 'detach', @instance, row -%>
+<%= remove_instance_resource_link 'remove', @instance, row -%>
+</td>
+<td>
+    <%= edit_in_place(row.cloud_resource, :name, :class => "editable instance-resource-#{row.id}-editable") %>
+</td>
+<td>
+    <%= h(row.cloud_resource.cloud_id_zone_state) %>
+</td>
+<td class="<%= h(row.state) %>">
+    <%= h(row.state) %>
+</td>
+<td>
+    <%= h(row.state_description) %>
+</td>
+<td>
+    <%= instance_resource_force_allocation_check_box @instance, row %>
+</td>

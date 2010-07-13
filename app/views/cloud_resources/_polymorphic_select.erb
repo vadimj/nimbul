@@ -1,0 +1,104 @@
+<script type="text/javascript">
+var resources = new Array();
+var filters = new Array();
+
+<% for resource in resources -%>
+    resources.push(new Array("<%= resource.group %>", "<%= h(resource.label) %>", "<%= resource.value %>", "<%= resource.filter %>"));
+<% end -%>
+
+<% if filter_field.nil? %>
+    function <%= class_field.to_s %>Selected() {
+        klass = $('<%= class_field.to_s %>').getValue();
+        klass_text = $('<%= class_field.to_s %>').options[$('<%= class_field.to_s %>').selectedIndex].text;
+        options = $('<%= id_field.to_s %>').options;
+        options.length = 1;
+        resources.each(function(resource) {
+            if (resource[0] == klass) {
+                options[options.length] = new Option(resource[1], resource[2], (resource[2] == "<%= id_value %>"), (resource[2] == "<%= id_value %>"));
+            }
+        });
+    }
+<% else %>
+    function <%= filter_field.to_s %>Store() {
+        options = $('<%= filter_field.to_s %>').options;
+        for (var i = 0; i < options.length; i++) {
+            filters.push(new Array(options[i].text, options[i].value));
+        }
+    }
+
+    // change resource base on the class and filter
+    function <%= class_field.to_s %>Selected() {
+        klass = $('<%= class_field.to_s %>').getValue();
+        klass_text = $('<%= class_field.to_s %>').options[$('<%= class_field.to_s %>').selectedIndex].text;
+        id_value = $('<%= id_field.to_s %>').getValue() || "<%= id_value %>";
+        filter_value = $('<%= filter_field.to_s %>').getValue();
+        filter_text = $('<%= filter_field.to_s %>').options[$('<%= filter_field.to_s %>').selectedIndex].text;
+        
+        options = $('<%= id_field.to_s %>').options;
+        options.length = 1;
+        resources.each(function(resource) {
+            if (resource[0] == klass && (filter_value == '' || resource[3] == '' || filter_value == resource[3])) {
+                options[options.length] = new Option(resource[1], resource[2], (resource[2] == id_value), (resource[2] == id_value));
+            }
+        });
+        if (klass > '' && options.length == 1) {
+            alert("WARNING: "+klass_text+": no resources available in "+filter_text+" zone.");
+        }
+    }
+    
+    // change filter based on selected resource
+    function <%= id_field.to_s %>Selected() {
+        klass = $('<%= class_field.to_s %>').getValue();
+        klass_text = $('<%= class_field.to_s %>').options[$('<%= class_field.to_s %>').selectedIndex].text;
+        id_value = $('<%= id_field.to_s %>').getValue();
+        id_text = $('<%= id_field.to_s %>').options[$('<%= id_field.to_s %>').selectedIndex].text;
+        filter_value = '';
+        
+        // find the value of the filter corresponding to the resource
+        resources.each(function(resource) {
+            if (resource[0] == klass && resource[2] == id_value && resource[3] > '') {
+                filter_value = resource[3];
+            }
+        });
+        
+        // if there is a value for the filter - find the filter
+        filter = null;
+        if (filter_value > '') {
+            filters.each(function(f) {
+                if (f[1] == filter_value) {
+                    filter = f;
+                }
+            });
+        }
+        
+        // change the filter drop down if necessary
+        if (filter != null && $('<%= filter_field.to_s %>').getValue() != filter[1] ) {
+            options = $('<%= filter_field.to_s %>').options;
+            options.length = 0;
+            filters.each(function(f) {
+                options[options.length] = new Option(f[0], f[1], (f[1] == filter[1]), (f[1] == filter[1]));
+            });
+            alert("NOTICE: Your zone was adjusted to reflect that\n'"+id_text+"' belongs to "+filter[0]+".");
+        }
+    }
+<% end %>
+
+function <%= class_field.to_s %>_<%= id_field.to_s %>_Setup() {
+    <% unless filter_field.nil? -%>
+        <%= filter_field.to_s %>Store();
+    <% end -%>
+    <%= class_field.to_s %>Selected();
+    $('<%= class_field.to_s %>').observe('change', <%= class_field.to_s %>Selected);
+    <% unless filter_field.nil? -%>
+        $('<%= filter_field.to_s %>').observe('change', <%= class_field.to_s %>Selected);
+        $('<%= id_field.to_s %>').observe('change', <%= id_field.to_s %>Selected);
+    <% end -%>
+}
+
+document.observe('dom:loaded', function() {
+    <%= class_field.to_s %>_<%= id_field.to_s %>_Setup();
+});
+
+</script>
+<%= form.collection_select class_field, resource_classes, :value, :label, { :include_blank => 'Not Set' }, options.merge!({ :id => class_field }) %>
+<%= form.collection_select id_field, resources, :value, :label, { :include_blank => 'Not Set' }, options.merge!({ :id => id_field }) %>

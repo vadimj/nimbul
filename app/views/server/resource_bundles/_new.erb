@@ -1,0 +1,31 @@
+<% remote_form_for :resource_bundle,
+    :url => server_resource_bundles_path(@server),
+    :html => {
+        :method => :post,
+        :id => "new_resource_bundle_form",
+    } do |f| %>
+    <%= hidden_field_tag :anchor, 'resource_bundles' %>
+    <%= hidden_field_tag :update, 'resource_bundles' %>
+    <%= f.hidden_field :state, :value => 'available' %>
+    <table>
+        <tr>
+            <th><%= f.label :zone_id %></th>
+            <th><%= f.label :cloud_resource_id, 'Address (optional)' %></th>
+            <th>&nbsp;</th>
+        </tr>
+        <tr>
+            <td><%= f.collection_select :zone_id, @zones, :id, :name, { :include_blank => 'Not Set' }, { :id => :zone_id } %></td>
+            <td>
+                <% fields_for "resource_bundle[address_attributes][]", ServerAddress.new do |sr_form| %>
+                <%= sr_form.hidden_field :id, :index => nil %>
+                <%= sr_form.hidden_field :mount_type, :value => CloudAddress.default_mount_type %>
+                <%= sr_form.collection_select :cloud_resource_id, @addresses, :id, :name_zone_state, { :include_blank => 'Not Set' }, :index => nil  %>
+                <% end %>
+            </td>
+            <td>
+                <%= f.submit 'Add' %>
+                <%= f.submit 'Reset', :name => 'reset', :type => 'reset', :id => 'task_reset' %> 
+            </td>
+        </tr>
+    </table>
+<% end %>

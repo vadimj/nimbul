@@ -1,0 +1,3 @@
+@providers.each do |d|
+	page["provider_#{d.id}"].replace_html :partial => "provider_row", :locals => { :provider => d }
+end

@@ -1,0 +1,11 @@
+<%= will_paginate_search_field "author_#{@author.id}_audit_log_search", nil, nil, :list %>
+
+<%= refresh_image 'Refresh', 'audit_logs', nil, :list, nil %>
+
+<span class="vr">&nbsp;</span>
+
+<b>Total: <span id="author_<%= @author.id %>_audit_logs_total"><%= @audit_logs.total_entries %></span></b>
+
+<hr>
+
+<%= render :partial => 'author/audit_logs/list' %>

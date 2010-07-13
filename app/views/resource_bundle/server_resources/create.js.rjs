@@ -1,0 +1,9 @@
+if @error_message.blank? and
+    page.insert_html :bottom, params[:update], :partial => "resource_bundle/#{@server_resource[:type].tableize}/#{@server_resource[:type].underscore}", :object => @server_resource, :locals => { :resource_bundle => @resource_bundle }
+    page << "Editable.setupAll('.server-resource-#{@server_resource.id}-editable');"
+    page["add_resource_bundle_#{@resource_bundle.id}_#{@server_resource[:type].underscore}"].hide unless @resource_bundle.can_use_more_of?(@server_resource[:type])
+    page["add_resource_bundle_#{@resource_bundle.id}_#{@server_resource[:type].underscore}"].replace_html :partial => "resource_bundle/#{@server_resource[:type].tableize}/add", :locals => { :resource_bundle => @resource_bundle }
+else
+    page['error_redbox'].replace_html :partial => 'shared/error_redbox'
+    page['error_redbox'].appear
+end

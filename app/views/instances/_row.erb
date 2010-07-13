@@ -1,0 +1,66 @@
+<% unless @parent.is_a?(User) %>
+	<td class="select-handle">
+    <%- if instance.terminating? -%>
+        &nbsp;
+    <%- else -%>
+        <%= better_check_box_tag "instance_ids[]", instance.id, false, "#{@parent_type}-#{@parent.id}-instance" %>
+    <%- end -%>
+	</td>
+<% end %>
+	<td>
+		<%= link_to instance.instance_id, instance_path(instance) %>
+<%- if (instance.status_message || '').length > 0 %><%= link_to_function(image_tag(
+				'important.png', :width => 16, :height => 16, :align => 'absmiddle',
+				:alt => 'Important Information', :title => 'Important Information: click to read'
+			), 
+			"$('instance_#{instance.id}_status_message').toggle()"
+		)%>
+        <div id="instance_<%= instance.id %>_status_message" style="display:none; postion:fixed;">
+			<%= instance.status_message %>
+		</div>
+<%- end %>
+	</td>
+    <% unless @parent.is_a?(Server) %>
+    	<td class="nowrap">
+			<% if @parent.is_a?(User) %>
+				<%= link_to instance.provider_account.name, provider_account_path(instance.provider_account_id) -%>
+				<% if instance.server_id %>
+					<br/>&nbsp;&nbsp;<%= link_to instance.server.cluster.name, cluster_path(instance.server.cluster_id) -%>
+					<br/>&nbsp;&nbsp;&nbsp;&nbsp;
+				<% end %>
+			<% end %>
+            <% if instance.server_id %>
+                <%= link_to h(instance.server_name), server_path(instance.server_id) %>
+            <% else %>
+                <%= link_to 'Define', new_instance_servers_path(instance) %>
+            <% end %>
+        </td>
+    <% end %>
+    <% unless @parent.is_a?(AutoScalingGroup) %>
+    	<td>
+            <% if instance.auto_scaling_group_id %>
+                <%= link_to h(instance.auto_scaling_group.name), provider_account_path(instance.provider_account_id, :anchor => :auto_scaling) %>
+            <% else %>
+                None
+            <% end %>
+        </td>
+    <% end %>
+	<td>
+        <% if instance.user_id %>
+            <strong><%= User.find(instance.user_id).login_and_name %></strong>
+        <% else %>
+            System
+        <% end %>
+    </td>
+    <td><%= instance.type %></td>
+    <td><%= instance.zone %></td>
+    <td class="small"><%= instance.security_groups.collect{ |g| link_to(h(g.name), security_group_path(g)) }.join('<br />') %></td>
+    <td><%= text_field_tag nil, instance.public_dns, { :readonly => true, :length => '20', :onclick => '$(this).focus();$(this).select()' } %></td>
+    <td><%= instance.launch_time.nil? ? '' : time_ago_in_words(instance.launch_time) %></td>
+    <td class="<%= instance.state %>"><%=h instance.state.gsub('_',' ') %></td>
+    <td class="<%= instance.dns_active? %>"><%= check_box_tag nil, '1', instance.dns_active, { :readonly => true, :disabled => true } %></td>
+    <td class="<%= instance.is_ready? ? 'ready' : 'false' %>"><%= check_box_tag nil, '1', instance.is_ready, { :readonly => true, :disabled => true } %></td>
+    <td class="<%= !instance.is_locked? %>"><%= check_box_tag nil, '1', instance.is_locked, { :readonly => true, :disabled => true } %></td>
+    <td>
+        <%= instance_console_link 'Console Output', instance %>
+    </td>

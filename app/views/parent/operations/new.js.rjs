@@ -1,0 +1,2 @@
+page['small_redbox'].replace_html :partial => 'operations/fields', :object => Volume.new
+page['small_redbox'].appear

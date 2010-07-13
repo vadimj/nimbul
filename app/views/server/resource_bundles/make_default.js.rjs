@@ -1,0 +1,1 @@
+page["server_#{@server.id}_resource_bundles_index"].replace_html :partial => "server/resource_bundles/index"

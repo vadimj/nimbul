@@ -1,0 +1,28 @@
+<%-	leases = DnsLease.find_all_by_instance_id(@instance) %>
+<div id="instance_<%=@instance.id%>_assigned_leases" class="assigned_leases">
+	<ul>
+<% if not leases.empty?
+		leases.each do |l| 
+			content_tag_for :li, l do
+				state = l.active? ? 'in-use' : 'available'
+				host  = l.dns_hostname_assignment.dns_hostname %>
+		<%= h l.fqdn %><%- if @instance.is_ready? && @instance.dns_active? %>,
+			<%= link_to_function(
+					image_tag(
+						'release.png', :align => 'absmiddle', :alt => "Release lease",
+						:title => "Relinquish lease of '#{l.fqdn}' from this instance",
+						:width => 16, :height => 16
+					),
+					"
+					#{ remote_function({ :url => release_instance_dns_lease_path(@instance, l), :method => :delete }) }
+					setTimeout(function() { #{ remote_function({ :url => instance_dns_lease_path(@instance, l), :method => :get }) } }, 3000 );
+					"
+				)%>
+			<%- end 
+			end
+		end
+	else %>
+		<li><strong>none</strong></li>
+<%-	end %>
+	</ul>
+</div>

@@ -1,0 +1,6 @@
+<%- row_alt_name = cycle('even', 'odd') %>
+<tr id="auto_scaling_group_<%= auto_scaling_group.id %>" class="selectable auto_scaling_group_record_<%=row_alt_name%>">
+    <%= render :partial => 'auto_scaling_groups/auto_scaling_group_row', :locals => { :auto_scaling_group => auto_scaling_group } %>
+</tr>
+<tr id="auto_scaling_group_<%= auto_scaling_group.id %>_instances_index" class="auto_scaling_group_instances_<%=row_alt_name%>" style="display: none;"></tr>
+<tr id="auto_scaling_group_<%= auto_scaling_group.id %>_triggers" class="auto_scaling_group_triggers_<%=row_alt_name%>"></tr>

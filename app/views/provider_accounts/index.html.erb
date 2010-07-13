@@ -1,0 +1,26 @@
+<% subtitle 'All Provider Accounts' %>
+
+<h1><%= link_to 'Dashboard', '/dashboard' %> / All Provider Accounts</h1>
+
+<br />
+
+<% remote_form_for :provider_accounts,
+    :url => control_provider_accounts_path do |f| %>
+
+<%= will_paginate_search_field 'provider_account_search', 'provider_accounts', nil, :list, 'Search on '+ProviderAccount.search_fields.collect{|f| f.titleize}.join(', ') %>
+<%= refresh_image 'Refresh', 'provider_accounts', nil, :list %>
+
+<span class="vr">&nbsp;</span>
+
+<%= add_provider_account_link 'Add' %>
+<%= delete_provider_accounts_submit 'Delete' %>
+<%= hidden_field_tag :command, '', :class => :command %>
+
+<span class="vr">&nbsp;</span>
+
+<b>Total: <span id="provider_accounts_total"><%= @provider_accounts.total_entries %></span></b>
+
+<hr/>
+
+<%= render :partial => "list", :locals => { :f => f }  %>
+<% end %>

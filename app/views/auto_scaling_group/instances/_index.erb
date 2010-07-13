@@ -1,0 +1,23 @@
+<td colspan="10">
+<% remote_form_for :instances,
+    :url => control_auto_scaling_group_instances_path(@auto_scaling_group) do |f| %>
+
+<%= will_paginate_search_field "auto_scaling_group_#{@auto_scaling_group.id}_instance_search", nil, nil, :list %>
+
+<%= refresh_image 'Refresh', 'instances', nil, :list, nil %>
+
+<span class="vr">&nbsp;</span>
+
+<%= reboot_instance_image_submit 'Reboot', "#{@parent_type}-#{@parent.id}-instance" %>
+<%= terminate_instance_image_submit 'Terminate', "#{@parent_type}-#{@parent.id}-instance" %>
+<%= hidden_field_tag :instance_command, '', :class => :instance_command %>
+
+<span class="vr">&nbsp;</span>
+
+<b>Total: <span id="auto_scaling_group_<%= @auto_scaling_group.id %>_instances_total"><%= @instances.total_entries %></span></b>
+
+<hr>
+
+<%= render :partial => 'auto_scaling_group/instances/list' %>
+<% end %>
+</td>

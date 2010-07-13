@@ -1,0 +1,7 @@
+if @error_message.blank? and
+    page.insert_html :bottom, 'firewall_rules', :partial => "security_groups/firewall_rule", :locals => { :firewall_rule => @firewall_rule }
+else
+    page['error_redbox'].replace_html :partial => 'shared/error_redbox'
+    page['error_redbox'].appear
+end
+

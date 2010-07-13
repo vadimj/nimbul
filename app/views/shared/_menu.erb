@@ -1,0 +1,20 @@
+<div id="menu">
+<% if logged_in? %>
+    <%= menu_link_to_controller '/dashboard', nil %>
+    <%= menu_link_to_controller '/clusters', nil %>
+    <%#= menu_link_to_controller '/server_profiles', nil %>
+    <%= menu_link_to_controller '/provider_accounts', nil %>
+    <% if_admin? do %>
+        <%= menu_link_to_controller 'admin/controls', nil %>
+    <% end %>
+	<%= menu_link_to current_user.login.capitalize+"'s Account", edit_user_profile_path(current_user) %>
+	<%= menu_link_to "Log Out", logout_path %>
+<% else %>
+    <% unless ( controller.controller_name == 'sessions' && controller.action_name == 'new' ) %>
+        <%= menu_link_to_remote "Log In", { :url => new_session_path, :method => :get }, :href => login_path %>
+    <% end %>
+    <%#= menu_link_to "New Account", ldap_signup_path %>
+    <%= menu_link_to "New Account", signup_path %>
+<% end %>
+</div>
+

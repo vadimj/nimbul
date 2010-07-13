@@ -1,0 +1,7 @@
+if @error_message.blank? and
+    page["instance_#{@instance.id}_#{@instance_resource.short_type}_#{@instance_resource.id}"].remove
+    page["add_#{@instance_resource.short_type}"].appear if @instance.can_use_more_of?(@instance_resource[:type])
+else
+    page['error_redbox'].replace_html :partial => 'shared/error_redbox'
+    page['error_redbox'].appear
+end

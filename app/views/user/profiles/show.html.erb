@@ -1,0 +1,17 @@
+<h1>My Profile: <%=h @user.login %> <%= link_to '(edit)', edit_user_profile_path(current_user) %></h1>
+<br>
+<% if_invites_available? do -%>
+	<tr><th>You have <%=h @user.invitation_limit %> invitations left. <%= link_to "Invite friends to join",
+				new_user_invitation_path %>.</p>
+<% end -%>
+<table>
+<tr><th>Joined</th><td><%=h @user.created_at.to_s(:long) %></td></tr>
+<tr><th>Name</th><td><%=h @user.name %></td></tr>
+<tr><th>User Name</th><td><%=h @user.login %></td></tr>
+<tr><th>E-Mail</th><td><%=h @user.email %></td></tr>
+<tr><th>Time Zone</th><td><%=h @user.time_zone %></td></tr>
+<tr><th>Public Key</th><td><%= public_key_link @user %></td></tr>
+<% unless current_user.user_type == 'LdapUser' %>
+	<tr><th>Password</th><td><%= link_to '(change)', user_profile_password_settings_path(current_user) %></td></tr>
+<% end %>
+</table>

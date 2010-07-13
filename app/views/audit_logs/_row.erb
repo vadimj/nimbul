@@ -1,0 +1,48 @@
+<td class="small"><%= h(row.created_at) %></td>
+<% unless @parent == current_user %>
+    <td class="small">
+        <%= h(row.author_login) %>
+    </td>
+<% end %>
+<% unless @parent.is_a?(ProviderAccount) %>
+    <td class="small">
+        <% if row.provider_account_id.blank? %>
+            <%= h(row.provider_account_name) %>
+        <% else %>
+            <%= link_to h(row.provider_account_name), provider_account_path(row.provider_account_id) %>
+        <% end %>
+    </td>
+<% end %>
+<% unless @parent.is_a?(Cluster) %>
+    <td class="small">
+        <% if row.cluster_id.blank? %>
+            <%= h(row.cluster_name) %>
+        <% else %>
+            <%= link_to h(row.cluster_name), cluster_path(row.cluster_id) %>
+        <% end %>
+    </td>
+<% end %>
+<% unless @parent.is_a?(Server) %>
+    <td class="small">
+        <% if row.server_id.blank? %>
+            <%= h(row.server_name) %>
+        <% else %>
+            <%= link_to h(row.server_name), server_path(row.server_id) %>
+        <% end %>
+    </td>
+<% end %>
+<td class="small"><%= row.auditable_type.underscore.humanize.titleize.gsub('Provider ','').gsub('Cloud ','') %></td>
+<td class="small">
+    <% if row.auditable_id.blank? %>
+	    <%= h(row.auditable_name) %>
+    <% else %>
+	    <%= link_to h(row.auditable_name),
+            send("#{row.auditable_type.underscore}_path", row.auditable_id) %>
+    <% end %>
+</td>
+<td class="small"><%= h(row.summary) %></td>
+<td class="small">
+    <% unless row.changes.nil? -%><% row.changes.each do |name,values| -%>
+        <%= h(name) %>: '<%= h(values[0]) -%>'->'<%= h(values[1]) -%>'<br/>
+    <% end -%><% end -%>
+</td>

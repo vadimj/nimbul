@@ -1,0 +1,1 @@
+page["#{@parent_type}_#{@parent.id}_volumes_index"].replace_html :partial => "#{@parent_type}/volumes/index"

@@ -1,0 +1,50 @@
+table#dns, table#dns-leases {
+	width: 100%;
+	border: 1px solid gray;
+}
+
+table#dns thead, table#dns-leases thead {
+	border: 2px solid ray;
+}
+
+tr.dns_container_start {
+	border-top: 2px solid grey;
+	border-left: 2px solid gray;
+	border-right: 2px solid gray;
+}
+
+tr.dns_container_stop {
+	border-bottom: 2px solid gray;
+	border-left: 2px solid gray;
+	border-right: 2px solid gray;
+}
+
+tr.lease-active {
+	background-color: #BBFF93;
+}
+
+tr.lease-inactive {
+	background-color: #FBFDC1;
+}
+
+table#dns .dns-controls {
+	width: 10%;
+}
+
+table#dns .dns-hostname {
+	width: 50%;
+}
+
+table#dns .dns-servers {
+	width: 30%;
+}
+
+table#dns .dns-instances {
+	width: 10%;
+}
+
+
+tr.hostname_record_even,
+tr.hostname_leases_even {
+	background-color: #F2F6F3;
+}

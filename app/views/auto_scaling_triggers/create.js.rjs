@@ -1,0 +1,6 @@
+if @error_message.blank? and @trigger
+    page.insert_html :bottom, "auto_scaling_trigger_records_for_group_#{@auto_scaling_group.id}", :partial => 'auto_scaling_triggers/auto_scaling_trigger', :object => @trigger
+    page['large_redbox'].hide
+else
+    page['auto_scaling_trigger_message'].replace_html "<div class='error'>#{@error_message}</div><br />"
+end

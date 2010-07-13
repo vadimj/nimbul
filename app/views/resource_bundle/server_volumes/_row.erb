@@ -1,0 +1,55 @@
+<% if row.new_record? %>
+<td colspan="6" class="noborder">
+<% remote_form_for :server_resource,
+    :url => resource_bundle_server_volumes_path(@resource_bundle),
+    :html => { :method => :post } do |f| %>
+    <%= hidden_field_tag :anchor, "volumes" %>
+    <%= hidden_field_tag :update, "resource_bundle_#{@resource_bundle.id}_server_volumes" %>
+    <%= f.hidden_field :class_type, :value => 'ServerVolume' %>
+    <%= f.label :force_allocation, 'Force:' %>
+    <%= f.check_box :force_allocation, :title => 'If checked, this volume will be moved to a new server even if it is already associated with a running server' %>
+    <% if @mount_type.blank? %>
+        <%= f.collection_select :mount_type, SERVER_VOLUME_MOUNT_TYPES, :value, :label, { :include_blank => 'choose type' }, { :id => "resource_bundle_#{@resource_bundle.id}_mount_type" } %>
+        <%= observe_field "resource_bundle_"+@resource_bundle.id.to_s+"_mount_type",
+            :url => new_resource_bundle_server_volume_path(@resource_bundle),
+            :method => :get,
+            :with => "'class_type=ServerVolume#{ @resource_bundle.zone_id.nil? ? '' : "&zone_id="+@resource_bundle.zone_id.to_s }&mount_type='+$(this).getValue()"
+        %>
+    <% else %>
+        <%= f.hidden_field :mount_type, :value => @mount_type %>
+        <%= link_to_remote @mount_type.gsub('MountType','').titleize,
+            :url => new_resource_bundle_server_volume_path(@resource_bundle),
+            :method => :get,
+            :with => "'class_type=ServerVolume#{ @resource_bundle.zone_id.nil? ? '' : "&zone_id="+@resource_bundle.zone_id.to_s }&mount_type='",
+            :html => {
+                :title => 'Click to choose another type'
+            }
+        %>
+        <%= f.collection_select :cloud_resource_id, @volume_resources, :value, :label %>
+    <% end %>
+    <%= f.label :mount_point, 'Mount:' %>
+    <%= f.text_field :mount_point, :class => 'medium' %>
+    <%= f.submit "Add" %>
+    <%= cancel_add_server_resource_link "Cancel", @resource_bundle, 'ServerVolume' %>
+<% end %>
+</td>
+<% else %>
+<td class="noborder">
+    [<%= remove_server_volume_link 'X', resource_bundle, row %>]
+</td>
+<td class="noborder">
+    <%= server_volume_force_allocation_check_box resource_bundle, row %>
+</td>
+<td class="noborder">
+    <%= row.mount_type.constantize.name %>
+</td>
+<td class="noborder">
+    <%= edit_in_place(row.cloud_resource, :name, :class => "editable server-resource-editable server-resource-#{row.id}-editable") %>
+</td>
+<td class="noborder">
+    <%= row.cloud_resource.cloud_id_zone_state(' ') %>
+</td>
+<td class="noborder">
+    <%= edit_in_place([resource_bundle, row], :mount_point, :class => "editable server-resource-editable server-resource-#{row.id}-editable") %>
+</td>
+<% end %>

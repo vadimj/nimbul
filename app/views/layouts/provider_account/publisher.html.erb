@@ -1,0 +1,50 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"    
+ "http://www.w3.org/TR/html4/strict.dtd"> 
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+  <title><%= APP_CONFIG['settings']['name'] %>: <%= yield :subtitle %></title>
+  <%= stylesheet_link_tag 'reset' %>
+  <%= stylesheet_link_tag 'fonts' %>
+  <%= stylesheet_link_tag 'grids' %>
+  <%= stylesheet_link_tag 'base' %>
+  <%= stylesheet_link_tag 'main' %>
+  <%= stylesheet_link_tag 'servers' %>
+  <%= javascript_include_tag :all %>
+  <%= javascript_tag "window._token = '#{form_authenticity_token}'" %>
+  <%= javascript_tag "
+    document.observe('dom:loaded', function(event) {
+      Editable.setupAll();
+    });
+  " %>
+</head>
+<body onload="self.focus();">
+ <div id="main" class="yui-d2f"><!-- start YUI layout -->
+   <div id="hd"><!-- header -->
+     <div class="yui-gd"> <!-- the "special grid" --> 
+     </div> 
+    	<div class="yui-b"><!-- narrow content block -->
+        	<div id="logins"></div>
+        	<%= yield :side %>
+    	</div>
+	</div>
+
+	<div id="bd"><!-- body -->
+		<%= render :partial => "layouts/#{controller.nested_layout}" %>
+	</div>  
+
+	<div id="ft"><!-- footer -->
+	</div>  	
+  
+	</div><!-- end YUI layout -->
+  
+	<!-- debug -->
+	<% if Rails.env.development? %>
+	  <div id="footnotes_holder">
+	  </div>
+	  <%= render :partial => 'shared/debug' %>
+	<% end %>
+
+</body>
+</html>

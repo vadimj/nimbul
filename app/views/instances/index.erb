@@ -1,0 +1,21 @@
+<% subtitle 'All Instances' %>
+
+<h1><%= link_to 'Dashboard', '/dashboard' %> / All Instances</h1>
+
+<br/>
+
+<%= will_paginate_search_field "user_#{@user.id}_instance_search", nil, nil, :list %>
+
+<%= refresh_image 'Refresh', 'instances', nil, :list, nil %>
+
+<span class="vr">&nbsp;</span>
+
+<b>Total: <span id="user_<%= @user.id %>_instances_total"><%= @instances.total_entries %></span></b>
+
+<hr>
+
+<div id="user_<%= @user.id %>_instances">
+
+<%= render :partial => 'instances/list' %>
+
+</div>

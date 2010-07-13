@@ -1,0 +1,71 @@
+.tabselector, .tab-selector {
+    width: auto;
+/*    border-bottom: 1px solid #c0c0c0; */
+    padding: 10px 0 0 0px;
+    margin-bottom: 0px;
+}
+
+.tab-unselected {
+  display: inline;
+  padding: 2px 5px 0 5px;
+  background: #f0f0f0;
+  border: 1px solid #c0c0c0;
+  border-bottom: 0;
+  color: #c0c0c0;
+}
+
+.tab-selected {
+  display: inline;
+  padding: 3px 5px 1px 5px;
+  background: #ffffff;
+  border: 1px solid #c0c0c0;
+  border-bottom: 0;
+}
+
+.tab-unselected a {
+  padding: 6px;
+  text-decoration: none;
+  color: #777777;
+}
+
+.tab-unselected a:hover {
+    text-decoration: underline;
+}
+
+.tab-selected a {
+  padding: 6px;
+  text-decoration: none;
+  color: #777777;
+  font-weight: bold;
+}
+
+.panes, .pane-selector {
+  width: 97%;
+  padding-left: 0px;
+  margin: 10px;
+  min-height: 300px;
+  overflow: auto;
+}
+
+.panes-small, .pane-selector-small {
+  width: 97%;
+  padding-left: 0px;
+  overflow: auto;
+}
+
+.pane-selected {
+  list-style-type: none;
+  display: block;
+  padding: 10px;
+}
+
+.pane-unselected {
+  list-style-type: none;
+  display: none;
+}
+
+#pane-content {
+    border: 1px solid #c0c0c0;
+    overflow: auto;
+}
+

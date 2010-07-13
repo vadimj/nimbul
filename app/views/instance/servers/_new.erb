@@ -1,0 +1,15 @@
+<%
+    title = "Define a new server based on instance #{h(@instance.name)}"
+%>
+<% subtitle title %>
+
+<h1><%= pagetitle title %></h1>
+
+<br />
+
+<% form_for :server,
+    :url => instance_servers_path(@instance) do |f| %>
+    <%= render :partial => 'servers/fields', :locals => { :f => f } %>
+    <%= submit_tag 'Create Server', :disable_with => "Creating&hellip;" %>
+    <%= submit_tag 'Cancel', :name => 'cancel_button' %>
+<% end %>

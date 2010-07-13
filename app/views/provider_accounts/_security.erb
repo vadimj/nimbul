@@ -1,0 +1,79 @@
+<% form_for :provider_account,
+    :url => provider_account_path(@provider_account),
+    :html => { :method => 'put' } do |f| %>
+    <%= hidden_field_tag :anchor, :security %>
+    <%= f.error_messages %>
+    <h1>Default Security Group</h1>
+    If specified, this group will be added to each instance started under this account.<br />
+    This group is used to grant <%= APP_CONFIG['settings']['name'] %> access to the instances it manages.<br />
+    <br />
+    <b>Port 22 (SSH) needs to be open for this group for connections originating from the Group/IP <%= APP_CONFIG['settings']['name'] %> is running in.</b><br />
+    <br />
+    <%= f.label :default_security_group, 'Default Security Group:' %> <%= f.collection_select :default_security_group, @provider_account.security_groups, :name, :name, { :include_blank => 'Not Set' } %>
+    <br />
+    <br />
+    <br />
+    <h1>Default Main Key</h1>
+    If specified, this key will be used to start each instance under this account.<br />
+    <br />
+    <b>The corresponding Private Key needs be entered on the 'Edit Provider Account' screen, so <%= APP_CONFIG['settings']['name'] %> can access the instances it manages.</b><br />
+    <br />
+    <%= f.label :default_main_key, 'Default Main Key:' %> <%= f.collection_select :default_main_key, @provider_account.key_pairs, :name, :name, { :include_blank => 'Not Set' } %>
+    <br />
+    <br />
+    <br />
+    <h1>Auto-Lock Instances</h1>
+    Enable locking for each instance started under this account.<br />
+    <br />
+    This flag ensures that each instance under this account is started in a "Locked" state.<br />
+    A user will need to manually <strong>unlock</strong> the instance before it can be stopped.
+    <br />
+    <br />
+    <%= f.check_box :auto_lock_instances %> <%= f.label :auto_lock_instances, 'Enable Instances Auto-Lock' %>
+    <br />
+    <br />
+    <%= f.submit "Update", :disable_with => "Updating&hellip;"  %>
+<% end %>
+
+<br />
+<br />
+<br />
+
+<% remote_form_for :user,
+    :url => provider_account_users_path(@provider_account),
+    :html => { :method => 'post' } do |f| %>
+    <h1>Account Administrators</h1>
+    The following users have full access to the account.
+    <br />
+    <br />
+    <table>
+    <tbody id="users">
+        <%= render :partial => 'user', :collection => @provider_account.users, :locals => { :f => f } %>
+    </tbody>
+    <td colspan="2">
+    <%= text_field_with_auto_complete :user, :id,
+        {
+            :autocomplete => 'off',
+            :class => 'auto_complete',
+            :value => 'Add Another Admin',
+            :onfocus => "if ($(this).value == 'Add Another Admin') { $(this).value = ''; }"
+        },
+        {
+            :skip_style => true,
+            :indicator => 'indicator',
+            :min_chars => 3,
+            :select => 'user_id',
+            :after_update_element => "function(element,value) { element.hide(); element.form.onsubmit(); }",
+        }
+    %>
+    <%= image_tag('indicator.gif',
+              :align => "absmiddle",
+              :border => 0,
+              :id => 'indicator',
+              :style => 'display: none;' ) %>
+    <div id="status_message"></div>
+    </td>
+    </table>
+    <%#= submit_tag "Update", :disable_with => "Updating&hellip;"  %>
+<% end %>
+

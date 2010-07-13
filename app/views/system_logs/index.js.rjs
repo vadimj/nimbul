@@ -1,0 +1,1 @@
+page["system_logs_index"].replace_html :partial => "system_logs/index"

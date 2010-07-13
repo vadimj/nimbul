@@ -1,0 +1,4 @@
+<%- row_alt_name = cycle('even', 'odd') %>
+<span id="auto_scaling_trigger_<%= auto_scaling_trigger.id %>" class="selectable auto_scaling_trigger_record_<%=row_alt_name%>">
+    <%= render :partial => 'auto_scaling_triggers/auto_scaling_trigger_row', :locals => { :auto_scaling_trigger => auto_scaling_trigger } %>
+</span>

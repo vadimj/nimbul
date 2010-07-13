@@ -1,0 +1,29 @@
+<h1>Roles for <%=h @user.login %></h1>
+<br />
+
+<%= link_to "<< Back to Administer Users", admin_users_path %>
+
+<br />
+<br />
+
+<% form_for @user, :url => { :action => "update", :id => @user },
+									 :builder => Uberkit::Forms::Builder do |f| -%>
+
+<%= hidden_field_tag "user[created_at]", @user.created_at %>
+
+<ul> 
+	<% for role in @roles %>
+		<li><div class="field_row">
+				<%= check_box_tag "user[role_ids][]", role.id, @user.roles.include?(role) %> <%= role.name %>
+		</div></li>
+  <% end %>
+</ul> 
+
+  <p>
+    <%= f.submit "Update" %>
+  </p>
+<% end %>
+
+<br />
+
+<%= link_to "<< Back to Administer Users", admin_users_path %>

@@ -1,0 +1,58 @@
+<p>
+  <b>Image:</b>
+  <%=h @server_image.image_id %>
+</p>
+
+<p>
+  <b>Provider account:</b>
+  <%=h @server_image.provider_account_id %>
+</p>
+
+<p>
+  <b>Name:</b>
+  <%=h @server_image.name %>
+</p>
+
+<p>
+  <b>Type:</b>
+  <%=h @server_image.type %>
+</p>
+
+<p>
+  <b>Kernel:</b>
+  <%=h @server_image.kernel_id %>
+</p>
+
+<p>
+  <b>Ramdist:</b>
+  <%=h @server_image.ramdisk_id %>
+</p>
+
+<p>
+  <b>Owner:</b>
+  <%=h @server_image.owner_id %>
+</p>
+
+<p>
+  <b>Is public:</b>
+  <%=h @server_image.is_public %>
+</p>
+
+<p>
+  <b>State:</b>
+  <%=h @server_image.state %>
+</p>
+
+<p>
+  <b>Location:</b>
+  <%=h @server_image.location %>
+</p>
+
+<p>
+  <b>Architecture:</b>
+  <%=h @server_image.architecture %>
+</p>
+
+
+<%= link_to 'Edit', edit_server_image_path(@server_image) %> |
+<%= link_to 'Back', server_images_path %>

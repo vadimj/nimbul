@@ -1,0 +1,6 @@
+<% subtitle @cluster %>
+
+<h1><%= pagetitle @cluster, { :edit_in_place => true, :create_links => true } %></h1>
+[ <%= link_to 'edit', edit_cluster_path(@cluster) %> ]
+
+<%= render :partial => 'tabs' %>

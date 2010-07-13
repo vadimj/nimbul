@@ -1,0 +1,34 @@
+<td id="instance_is_locked_row" class="<%= h instance.is_locked %>">
+    <%= check_box_tag :instance_is_locked, 1, instance.is_locked?, 
+        :title => "If checked, this Instance cannot be stopped or rebooted. You'd need to 'Unlock' it first.",
+        :onclick => remote_function(
+            :url => instance_url(instance),
+            :with => "'instance[is_locked]='+( $('instance_is_locked').checked == true ? 1 : 0 )",
+            :method => :put)
+    %>
+</td>
+<td id="instance_is_ready_row" class="<%= instance.is_ready? ? 'ready' : 'false' %>">
+    <%= check_box_tag nil, '1', instance.is_ready, { :readonly => true, :disabled => true } %>
+</td>
+<td id="instance_dns_active_row" class="<%= h instance.dns_active %>">
+    <%= check_box_tag :instance_dns_active, 1, instance.dns_active?,
+        :title => "If checked, this Instance is allowed to have DNS hostname leases assigned to it. WARNING: Unchecking it will cause all leases to be dropped.",
+        :onclick =>	"
+            $('loading').appear();
+            #{ remote_function(
+                :url => instance_url(instance),
+                :with => "'instance[dns_active]='+( $('instance_dns_active').checked == true ? 1 : 0 )",
+                :method => :put,
+                :complete => "$('loading').appear();"
+                )
+            }
+            setTimeout(function() {  window.location.reload() }, 3000);
+        "
+    %>
+</td>
+<td class="<%= h instance.state %>"><%= h instance.state %></td>
+<td>
+    <%= reboot_instance_link 'Reboot', instance %>
+    <%= terminate_instance_link 'Terminate', instance %>
+    <%= instance_console_link 'Console Output', instance %>
+</td>

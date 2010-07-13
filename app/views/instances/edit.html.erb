@@ -1,0 +1,13 @@
+<% subtitle @instance %>
+
+<h1><%= pagetitle @instance, { :create_links => true } %></h1>
+
+<br />
+
+<% form_for :instance,
+    :url => instance_path(@instance),
+    :html => { :method => 'put' } do |f| %>
+    <%= render :partial => 'fields', :locals => { :f => f } %>
+    <%= submit_tag 'Update Instance', :disable_with => "Updating&hellip;"  %>
+<% end %>
+

@@ -1,0 +1,38 @@
+<h1>Messaging Service</h1>
+<p>
+  The following account will be used for sending event messages to running instances. The format for the URI is as follows:
+  <blockquote>
+    URI Schema: proto://user:pass@hostname:port/virtual
+    
+    <pre>
+
+    proto        Either 'amqp' or 'amqps' depending on if the connection should be Secure (ssl)
+    hostname     The fully qualified hostname of the server providing AMQP services
+    port         The port to use when connecting to the AMQP service
+    virtual      The virtual domain path to use when connecting to the AMQP service
+    </pre>
+    
+    Example: amqps://john:d03@amqp.example.com:1234/nimbul
+  </blockquote>
+</p>
+
+<% form_for :provider_account,
+    :url => provider_account_messaging_path(@provider_account),
+    :html => { :method => 'post' } do |f| %>
+    <%= hidden_field_tag :anchor, :communication %>
+    <%= f.error_messages %>
+    <table>
+    <tr>
+        <th>Messaging Server URI</th>
+        <td><%= f.text_field :messaging_uri, :class => :long %></td>
+    </tr>
+    <tr>
+        <td colspan="2">
+        <%= submit_tag "Update", :disable_with => "Updating&hellip;"  %>
+        </td>
+    </tr>
+    </table>
+<% end %>
+
+<br />
+<%= render :partial => 'publishers/list' %>

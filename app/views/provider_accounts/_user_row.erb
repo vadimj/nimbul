@@ -1,0 +1,8 @@
+<td><%= user_name_login_email_id(user) %></td>
+<td>
+	<% if user == current_user %>
+	    [ <span class="disabled">remove</span> ]
+	<% else %>
+		[ <%= remove_provider_account_user_link 'remove', @provider_account, user %> ]
+	<% end %>
+</td>

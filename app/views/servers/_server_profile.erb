@@ -1,0 +1,74 @@
+<%
+    @server_images = @provider_account.server_images.collect{|a| a if a.is_enabled?}.compact.sort{ |a,b| a.name.downcase <=> b.name.downcase }
+%>
+<h1>Server Profile: <%= edit_in_place @server_profile, :name %> [HEAD]</h1>
+
+Last Update: <%= time_ago_in_words @server_profile_revision.updated_at %>
+ by <%= @server_profile_revision.creator.login_and_name %>
+
+<br />
+<br />
+
+<% form_for :server_profile_revision,
+    :url => server_profile_revision_path(@server_profile_revision),
+    :html => { :method => 'put' } do |f| %>
+  
+    <%= hidden_field_tag :server_id, @server.id %>
+    
+    <%= f.error_messages %>
+
+    <h1><%= f.label :instance_type %>
+    <%= f.select :instance_type, EC2_INSTANCE_TYPES %></h1>
+
+<br />
+
+    <h1><%= f.label :image_id, 'Server Image' %>: 
+    <%= f.collection_select :image_id, @server_images, :image_id, :name, :prompt => "Choose One" %></h1>
+
+<br />
+
+    <h1>Server Variables</h1>
+    The following variables will be exposed as environment variables on every instance started under this Server.
+    <br />
+    <br />
+    <table>
+    <tr>
+      <th>&nbsp;</th>
+      <th>Password?</th>
+      <th>Name <small>required</small></th>
+      <th>Value <small>required</small></th>
+      <th>&nbsp;</th>
+    </tr>
+    <%= render :partial => 'provider_account_parameters/provider_account_parameter', :collection => @provider_account.provider_account_parameters %>
+    <%= render :partial => 'cluster_parameters/cluster_parameter', :collection => @cluster.cluster_parameters %>
+    <tbody id="server_profile_revision_parameters">
+        <%= render :partial => 'server_profile_revision_parameters/parameter', :collection => @server_profile_revision.server_profile_revision_parameters %>
+    </tbody>
+    <%= sortable_element("server_profile_revision_parameters", :url => sort_server_profile_revision_parameters_path, :tag => "tr", :handle => "handle" ) %>
+    <td colspan="5" align="right">
+    <%= add_server_profile_revision_parameter_link 'Add a Parameter' %>
+    <div id="status_message"></div>
+    </td>
+    </table>
+
+<br />
+
+    <h1>Server Startup Script <%= link_to_function 'show/hide', "$$('.startup_script').each(function(d) { Effect.toggle(d, 'appear') });" %></h1>
+    The following script will be executed once on every instance of this Server when the instance starts.<br/>
+    After the first run, <strong>restarting the instance WILL NOT cause this script to run again.</strong>
+    <br />
+    <br />
+    <%= f.text_area :startup_script, :size => '90x15', :class => :startup_script, :style => 'display:none' %>
+
+<br />
+
+    <h1><%= link_to 'Preview', show_server_server_user_data_path(@server),
+      :popup => [ "server_server_user_data_path_#{@server.id}", 'height=640,width=760' ] %> Full Startup Script</h1>
+    This script is a combination of the Account, Cluster and Server Profile scripts with corresponding Variables.
+
+<br />
+<br />
+    
+    <%= submit_tag "Update", :disable_with => "Updating&hellip;"  %>
+<% end %>
+

@@ -1,0 +1,70 @@
+<div class="centered">
+<br>
+<h1>Add a New Firewall Rule</h1>
+<br/>
+<% remote_form_for :firewall_rule,
+    :url => provider_account_firewall_rules_path(@provider_account),
+    :html => { :method => :post } do |f| %>
+    <table>
+	<tr>
+        <th>
+	    <%= f.label :name, 'Firewall Rule Name' %><br />
+	    <small>(e.g. Allow HTTP from the Office)</small>
+	    </th>
+	    <td><%= f.text_field :name %></td>
+	</tr>
+    <tr><td colspan="2" align="center">&nbsp;</td></tr>
+	<tr>
+	    <th>
+	    <%= f.label :ip_range, 'IP Range' %><br />
+	    <small>(e.g. 192.168.51.6/32)</small>
+	    </th>
+	    <td>
+		  <%= f.text_field :ip_range %><br/>
+	      Use <%= link_to_function("My Address", "$('firewall_rule_ip_range').value = '#{request.remote_ip}/32'") %>
+	    </td>
+	</tr>
+	<tr>
+	    <th><%= f.label :protocol %></th>
+	    <td>
+	    <%= protocol_select f,
+            :protocol, { :include_blank => 'Choose' },
+            { :onchange => "
+                if ($(this).value == 'icmp') {
+                    $('firewall_rule_from_port').value = '-1';
+                    $('firewall_rule_from_port').readOnly = true;
+                    $('firewall_rule_to_port').value = '-1';
+                    $('firewall_rule_to_port').readOnly = true;
+                } else {
+                    $('firewall_rule_from_port').readOnly = false;
+                    $('firewall_rule_to_port').readOnly = false;
+                }"
+            }
+        %>
+        </td>
+	</tr>
+	<tr>
+	    <th>Port Range</th>
+	    <td><%= f.label :from_port, 'from' %> <%= f.text_field :from_port, :class => :short %>
+		<%= f.label :to_port, 'to' %> <%= f.text_field :to_port, :class => :short %></td>
+	</tr>
+    <tr><td colspan="2" align="center"><b>OR</b></td></tr>
+	<tr>
+	    <th>
+	    <%= f.label :group_user_id, 'EC2 User ID' %><br />
+	    <small>(e.g. 155565490060)</small>
+	    </th>
+	    <td>
+		  <%= f.text_field :group_user_id %><br/>
+		  Use <%= link_to_function("My Account", "$('firewall_rule_group_user_id').value = '#{@provider_account.account_id}'") %>
+		</td>
+	</tr>
+	<tr>
+	    <th><%= f.label :group_name, 'Group Name' %></th>
+	    <td><%= f.text_field :group_name %></td>
+	</tr>
+    </table>
+	<%= f.submit "Create" %>
+	<%= f.submit "Cancel", :onclick => "$('large_redbox').hide(); return false;" %>
+<% end %>
+</div>

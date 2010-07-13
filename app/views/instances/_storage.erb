@@ -1,0 +1,46 @@
+<h1>Storage</h1>
+<hr>
+<table border=0>
+<tr>
+<td>
+    <table>
+    <tr>
+        <th><%= label_tag :volume_id, 'Volume' %></th>
+        <th>Mount Point</th>
+        <th>State</th>
+        <th>Force Allocation</th>
+        <th>Actions</th>
+    </tr>
+    <% if volume.nil? %>
+        <tbody id="instance_volumes">
+            <%= render :partial => 'instance/volume' %>
+        </tbody>
+        <%= drop_receiving_element('instance_volumes',
+            :accept => "volume",
+            :with   => "'volume_id=' + (element.id.split('_').last())",
+            :url    => attach_instance_volume_url(@instance)
+        )%>
+    <% else %>
+        <tr>
+            <td><%= volume.name %></td>
+            <td><%= volume.device %></td>
+            <td id="attached">attached</td>
+            <td>false</td>
+            <td>&nbsp;</td>
+        </tr>
+    <% end %>
+    </table>
+</td>
+<td>
+    <b>Volumes in <%= h @instance.zone %> Zone</b>
+    <ul>
+        <% @volumes.each do |v| %>
+        	<% content_tag_for :li, v, :class => 'draggable volume' do %>
+        		<%= h v.name %>, <span class="<%= h v.status %>"><%= h v.status %></span>
+        	<% end %>
+        	<%= draggable_element("volume_#{v.id}", :revert => true) %>
+        <% end %>
+    </ul>
+</td>
+</tr>
+</table>

@@ -1,0 +1,20 @@
+<div class="centered">
+<br>
+<h1>Allocate a New Elastic IP</h1>
+<br/>
+<% remote_form_for :address,
+    :url => provider_account_addresses_path(@provider_account),
+    :html => { :method => :post } do |f| %>
+    <table>
+	<tr>
+        <th>
+	    <%= f.label :name, 'Elastic IP Name' %><br />
+	    <small>(e.g. mytest.mydomain.com)</small>
+	    </th>
+	    <td><%= f.text_field :name %></td>
+	</tr>
+    </table>
+	<%= f.submit "Create" %>
+	<%= f.submit "Cancel", :onclick => "$('tiny_redbox').hide(); return false;" %>
+<% end %>
+</div>

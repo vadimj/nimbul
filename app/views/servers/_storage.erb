@@ -1,0 +1,68 @@
+<%= render :partial => "dynamic_volumes" %>
+<%= render :partial => "cloud_resources/polymorphic_select" %>
+<% form_for :server,
+    :url => server_path(@server),
+    :html => { :method => 'put' } do |f| %>
+    <%= hidden_field_tag :anchor, :storage %>
+    <%= f.error_messages %>
+    <h1><%= f.label :zone, 'Zone:' %></h1>
+    <%= f.collection_select :zone_id, @provider_account.zones, :id, :name, { :include_blank => 'Not Set' } %>
+
+    <br/>
+
+    The following Volume Types are supported:
+        <br />
+        <br />
+        <b>Volume</b> - specified Volume will be attached to the Instance upon startup<br />
+	    Attention:</b> Make sure to set Server's Zone same as the Volume's Zone
+
+        <br />
+        <br />
+        <b>Snapshot</b> - specified snapshot will be used to create a new Volume for each Instance<br />
+	    <small>(Useful for creating stock Instances, e.g. empty SVN Mirrors)</small>
+        
+        <br />
+        <br />
+        <b>AnotherServer</b> - the following operations will be performed:<br />
+	     <small>(Useful for creating Slaves of another Server, e.g. MySQL Slave)</small>
+        <br />
+        <br />
+                1. Locate the Volume attached to the Server specified<br />
+                2. Locate the latest Snapshot created from the Volume<br />
+                3. Create a new Volume based on the Snapshot<br />
+                <br />
+        <br />
+	
+
+	<table>
+		<tr>
+			<th>Type</th>
+			<th>Volume</th>
+			<th>Mount Point<br/>
+            <small>(/dev/sda through /dev/sdp, recommended: /sdh)</small>
+            </th>
+			<th>&nbsp;</th>
+		</tr>
+		<tr>
+		<tr>
+			<td>
+				<%= f.select :volume_class, VOLUME_CLASSES %>
+			</td>
+			<td>
+				<%= f.collection_select :volume_id, @dynamic_volumes, :value, :label, { :include_blank => 'Not Set' } %>
+			</td>
+			<td>
+                <% if @server.new_record? %>
+	                <%= f.text_field :device %>
+	            <% else %>
+	                <%= edit_in_place(@server, :device) %>
+	            <% end %>
+			</td>
+			<td>
+	            <%= f.check_box :force_volume_id_allocation %>&nbsp;<%= f.label :force_volume_id_allocation, 'Force Storage Re-Assignment', :title => 'If checked, this Storage will be moved to a new instance even if it is already attached to a running instance' %>
+			</td>
+        </tr>
+	</table>
+    <%= submit_tag "Update", :disable_with => "Updating&hellip;"  %>
+<% end %>
+

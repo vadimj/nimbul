@@ -1,0 +1,157 @@
+#!/bin/bash
+# No -e on purpose - otherwise things might break!!!
+
+# Account: <%= user_data.server.cluster.provider_account.name %> [<%= user_data.server.cluster.provider_account.id %>]
+# Cluster: <%= user_data.server.cluster.name %> [<%= user_data.server.cluster.id %>]
+# Server: <%= user_data.server.name %> [<%= user_data.server.id %>]
+
+# Make sure we deploy main key first
+if [ -x /etc/init.d/ec2-get-credentials ]; then
+    /etc/init.d/ec2-get-credentials
+fi
+
+# Deploy user public keys
+<%
+instance_users = {}
+
+root_users = user_data.server.cluster.provider_account.users + user_data.server.cluster.users
+root_users.each do |user|
+    instance_user = 'root'
+    instance_users[instance_user] = [] if instance_users[instance_user].nil?
+    instance_users[instance_user] << user unless user.public_key.blank?
+end
+
+user_data.server.server_user_accesses.each do |sua|
+    user = sua.user
+    instance_user = sua.server_user
+    instance_users[instance_user] = [] if instance_users[instance_user].nil?
+    instance_users[instance_user] << user unless user.public_key.blank?
+end
+
+instance_users.each do |instance_user, users|
+	chars = ('A'..'Z').to_a
+	reol = (0...10).collect { chars[Kernel.rand(chars.length)] }.join
+	if instance_user == 'root'
+		user_home = '/root'
+	else
+		user_home = '/home/' + instance_user
+	end
+-%>
+SSH_DIR="<%= user_home %>/.ssh"
+mkdir -p $SSH_DIR
+cat <<'<%= reol %>' >> $SSH_DIR/authorized_keys
+<%
+    users.each do |user|
+-%>
+<%= user.public_key.delete("\C-M").delete("\r").delete("\n") %>
+<%
+    end
+-%>
+<%= reol %>
+chmod 700 $SSH_DIR
+chmod 600 $SSH_DIR/authorized_keys
+chown -R <%= instance_user %> $SSH_DIR
+<%
+end
+-%>
+
+# Seed the /etc/hosts file
+<% account = user_data.server.cluster.provider_account -%>
+<% require 'dns_adapter' -%>
+cat <<'EOL' > /etc/hosts
+127.0.0.1		localhost
+<%= DNS_Adapter.get_host_entries(user_data.server.cluster.provider_account).join -%>
+EOL
+
+# put password-like values in /etc/cloudrc.private
+touch /etc/cloudrc.private
+chmod 600 /etc/cloudrc.private
+cat <<'EOL' > /etc/cloudrc.private
+<% user_data.parameters.collect{ |p| p if p.is_protected? }.compact.each do |p| -%>
+export <%= p.name %>='<%= p.value.delete("\n").delete("\C-M").sub("'","\'") %>'
+<% end -%>
+EOL
+
+# put public values in /etc/cloudrc
+if [ ! -e /etc/cloudrc ]; then
+	cat <<'ETC_CLOUDRC' > /etc/cloudrc
+# cloudmaster setup
+export AWS_HOME="/opt/cloudmaster"
+export RUBYLIB="${AWS_HOME}/lib"
+export PATH="${PATH}:${AWS_HOME}/tools"
+ETC_CLOUDRC
+
+fi
+
+chmod 644 /etc/cloudrc
+
+cat <<'EOL' >> /etc/cloudrc
+
+function INSTANCE_NAME {
+    instance_name="$(cat /etc/hosts | grep "${INSTANCE_ID}" | awk '{ print $2 }' | head -n 1)"
+    if [ -z "${instance_name}" ]; then
+        echo $(hostname | tr -d "\n")
+    else
+        echo "${instance_name}"
+    fi
+}
+
+export -f INSTANCE_NAME
+export ACCOUNT_ID="<%= user_data.server.cluster.provider_account.id -%>"
+export CLUSTER_ID="<%= user_data.server.cluster.id -%>"
+export SERVER_ID="<%= user_data.server.id -%>"
+export INSTANCE_ID="$(/usr/local/bin/ec2-metadata -i | awk '{ print $2 }')"
+
+export CLUSTER_NAME="<%= user_data.server.cluster.name.gsub(/[^\w\d]+/, '_').downcase -%>"
+export SERVER_NAME="<%= user_data.server.name.gsub(/[^\w\d]+/, '_').downcase -%>"
+
+PS1="\n-[\u@$(INSTANCE_NAME)]- -[\d - \A]-\n-[\w]-\n\$ "
+PS2="--- "
+
+# load in password information if user has read access
+if [ -r /etc/cloudrc.private ]; then
+	source /etc/cloudrc.private
+fi
+
+<% user_data.parameters.collect{ |p| p unless p.is_protected? }.compact.each do |p| -%>
+export <%= p.name %>='<%= p.value.delete("\n").delete("\C-M").sub("'","\'") %>'
+<% end -%>
+EOL
+
+# Set the environment
+source /etc/bashrc
+
+# Deploy extra keys if any
+if [ -x /etc/init.d/ec2-extra-keys ]; then
+        /etc/init.d/ec2-extra-keys
+fi
+
+# startup scripts
+<% user_data.startup_scripts.collect{ |s| s unless s.body.blank? }.compact.each do |s| -%>
+<%
+	chars = ('A'..'Z').to_a
+	reol = (0...10).collect { chars[Kernel.rand(chars.length)] }.join
+%>
+# <%= s.name %>
+FILE="/tmp/$(basename $0).$RANDOM"
+touch $FILE
+chmod 700 $FILE
+cat <<'<%= reol %>' > $FILE
+<%= s.body.delete("\C-M") %>
+<%= reol %>
+$FILE
+unlink $FILE
+<% end -%>
+
+emissary stop
+
+# configure emissary
+mkdir -p /etc/emissary
+cat << 'EOF' >> /etc/emissary/config.ini
+<%= emissary_config -%>
+EOF
+
+# restart emissary with the updated events configuration
+emissary start -d
+
+exit 0

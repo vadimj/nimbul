@@ -1,0 +1,138 @@
+9/05/08: Alpha release
+
+Full featured restful authentication starter app from http://railsforum.com/viewtopic.php?id=14216 combining role requirement, open id authentication, recaptcha, ui, debugging, and security plugins. This is a preliminary release and has not been tested or audited. Please feel free to fork and improve, or message me with any feature requests, suggestions, bugs, fixes for the known issues, resources, etc. 
+
+A more in depth tutorial is located at http://railsforum.com/viewtopic.php?id=14216. Details on the new version of the restful authentication plugin can be found at http://github.com/technoweenie/restful-authentication/wikis/home. 
+
+SET UP
+	- git clone git://github.com/activefx/restful_authentication_tutorial.git
+	- cd restful_authentication_tutorial
+	- git submodule init
+	- git submodule update
+	- Set up database.yml file
+	- Set up config.yml file (repeat as necessary for test and production environments)
+		- settings/domain - should be your domain name without www or http, ex. yourdomain.com
+		- settings/in_beta - should be true or false only
+		- set new_user_invite_limit to zero to prevent new users from sending invitations when in beta
+	- Change the login and password for the admin user in the _set_up_first_admin_user.rb migration
+	- Change contact_site method in application.rb to redirect to your site's contact form or info
+	- rake db:create:all or db:create
+	- rake db:migrate
+
+CURRENT FEATURES
+	- Login / Logout
+	- Restful, with the exception of the "activate" action
+	- Namespaced admin and user sections
+	- OpenID Authentication with support for incomplete OpenID profiles
+	- Roles and permissions
+	- Administrative user controller
+		- Set roles, activate, enable / disable users  
+	- Login, permission, and access denied redirection system
+	- Member list and public profiles for logged in users
+	- Activation, with option to resend activation code
+	- Beta invitation system 
+			- easy on/off functionality, add/remove invites, send emails to pending users
+	- Forgot Password / Reset Password
+	- Change Password 
+	- Failed login attempts database logging
+	- Recaptcha displayed for more than 5 failed logins
+	- Helper methods (link_to_user, if_admin?, etc.)
+	- Configuration file
+	- 404 handling and database logging
+	- Yahoo User Interface 3 CSS template
+	- Nested layouts
+	- Authentication Plugins 
+		- restful_authentication, open_id_authentication, role_requirement, recaptcha
+	- UI Plugins 
+		- custom-err-msg, permalink_fu, uberkit, will_paginate
+	- Debug Plugins 
+		- exception_logger, rails-footnotes, query_analyzer, query_stats, rows_logger
+	- Development and Performance Plugins
+		- auto_migrations, pseudo_cursors
+	- Testing 
+		- rspec, rspec_rails
+	- Gems
+		- ruby-openid-2.1.2
+	
+KNOWN ISSUES
+	- Not sure if the exception_logger is working properly, it does not appear to be recording exceptions. If someone can test and let me know if it works or what the problem is it would be greatly appreciated.
+
+TODO
+	- Full rSpec test suite
+	- Ongoing: refactoring, google authentication, facebook connect, oauth, api metering, seperate login for admins
+
+PLUGINS
+Auto_migrations by PJ Hyett is released under the MIT License
+	- http://github.com/pjhyett/auto_migrations/tree/master
+Custom-err-msg by David Easley is released under the MIT License
+	- http://rubyforge.org/projects/custom-err-msg/
+Exception_logger by Chris Wanstrath appears to be released under the MIT License
+	- http://github.com/defunkt/exception_logger/tree/master
+Rails-footnotes by Jose Valim and Duane Johnson is released under the MIT License
+	- http://github.com/drnic/rails-footnotes/tree/master
+Open_id_authentication by David Heinemeier Hansson is released under the MIT License
+	- http://github.com/rails/open_id_authentication/tree/master
+	- http://github.com/activefx/open_id_authentication/tree/master (modified for restful_authentication_tutorial)
+Permalink_fu by Rick Olson is released under the MIT License
+	- http://github.com/technoweenie/permalink_fu/tree/master
+Pseudo_cursors by Brian Durand is released under the MIT License
+	- http://github.com/sml/pseudo_cursors/tree/master
+Query_analyzer by Bob Silva is released under the MIT License
+	- http://svn.nfectio.us/plugins/query_analyzer
+Query_stats by Dan Manges is released under the MIT License
+	- http://github.com/dan-manges/query_stats/tree/master
+Recaptcha (plugin) by Jason L. Perry is released under the MIT License
+	- http://github.com/ambethia/recaptcha/tree/master
+Restful_authentication by Rick Olson is released under the MIT License 
+	- http://github.com/technoweenie/restful-authentication/tree/master
+Role_requirement by Timothy Curtis Harper and Jonathan Barket is released under the MIT License  
+	- http://github.com/timcharper/role_requirement/tree/master
+Rows_logger by Maiha does not list a license
+	- http://wota.jp/svn/rails/plugins/branches/stable/rows_logger/
+Rspec and Rspec_rails by The RSpec Development Team is released under the MIT License
+	- http://github.com/dchelimsky/rspec/tree/master
+	- http://github.com/dchelimsky/rspec-rails/tree/master
+Uberkit by Michael Bleigh and Intridea, Inc. is released under the MIT License 
+	- http://github.com/mbleigh/uberkit/tree/master
+	- http://github.com/activefx/uberkit/tree/master (modified for restful_authentication_tutorial)
+Will_paginate by PJ Hyett and Mislav Marohnic is released under the MIT License 
+	- http://github.com/mislav/will_paginate/tree/master
+Yahoo User Interface by Yahoo! Inc. is released under the BSD License
+	- http://developer.yahoo.com/yui/3/
+
+RESOURCES
+Recaptcha (sign up for keys):
+	- http://www.recaptcha.net
+Roles / Role Requirement:
+	- http://scottmotte.com/archives/106
+	- http://pastie.org/226807
+Flash Messages:
+	- http://rubypond.com/articles/2008/07/11/useful-flash-messages-in-rails/
+Exception Logger:
+	- http://railscasts.com/episodes/104
+Setting up your editor for the footnots plugin:
+	- http://josevalim.blogspot.com/2008/06/textmate-protocol-behavior-on-any.html
+	- http://www.beanlogic.co.uk/2008/7/12/gedit-on-rails
+Beta Invitations:
+	- http://railscasts.com/episodes/124-beta-invitations
+ar_mailer gem:
+	- http://www.ameravant.com/posts/sending-tons-of-emails-in-ruby-on-rails-with-ar_mailer
+Configuration File:
+	- http://railscasts.com/episodes/85-yaml-configuration-file
+	- https://peepcode.com/products/draft-rails-code-review-pdf
+404 Handling:
+	- Advanced Rails Recipes #7 (http://www.amazon.com/Advanced-Rails-Recipes-Mike-Clark/dp/0978739221)
+Yahoo User Interface 3 CSS:
+	- http://developer.yahoo.com/yui/3/cssreset/
+	- http://developer.yahoo.com/yui/3/cssfonts/
+	- http://developer.yahoo.com/yui/3/cssgrids/
+	- http://developer.yahoo.com/yui/3/cssbase/
+Rails Security:
+	- http://www.slideshare.net/heikowebers/advanced-ruby-on-rails-security/
+	- http://guides.rails.info/securing_rails_applications/security.html
+Additional Resources:
+	- http://delicious.com/activefx/restful_authentication
+	- http://delicious.com/activefx/openid
+
+
+Copyright (c) 2008 Matthew Solt, released under the MIT license

@@ -1,0 +1,44 @@
+<% form_for :server,
+    :url => server_server_parameters_path(@server),
+    :html => { :method => 'post' } do |f| %>
+    <h1>Server Startup Script <%= link_to_function 'show/hide', "$$('.startup_script').each(function(d) { Effect.toggle(d, 'appear') });" %></h1>
+    The following script will be executed once on every instance of this Server when the instance starts.<br/>
+    After the first run, <strong>restarting the instance WILL NOT cause this script to run again.</strong>
+    <br />
+    <br />
+    <%= f.error_messages %>
+    <%= f.text_area :startup_script, :size => '90x15', :class => :startup_script, :style => 'display:none' %>
+    <br />
+    <%= submit_tag "Update", :disable_with => "Updating&hellip;"  %>
+<% end %>
+
+<br />
+
+<% form_for :server_parameter,
+    :url => server_server_parameters_path(@server),
+    :html => { :method => 'post' } do |f| %>
+    <h1>Server Variables</h1>
+    The following variables will be exposed as environment variables on every instance started under this Server.
+    <br />
+    <br />
+    <%= f.error_messages %>
+    <table>
+    <tr>
+      <th>&nbsp;</th>
+      <th>Password?</th>
+      <th>Name <small>required</small></th>
+      <th>Value <small>required</small></th>
+      <th>&nbsp;</th>
+    </tr>
+    <tbody id="server_parameters">
+        <%= render :partial => 'server_parameters/server_parameter', :collection => @server.server_parameters %>
+    </tbody>
+    <%= sortable_element("server_parameters", :url => sort_server_parameters_path, :tag => "tr", :handle => "handle" ) %>
+    <td colspan="5" align="right">
+    <%= add_server_parameter_link 'Add a Parameter' %>
+    <div id="status_message"></div>
+    </td>
+    </table>
+    <%= submit_tag "Update", :disable_with => "Updating&hellip;"  %>
+<% end %>
+

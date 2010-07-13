@@ -1,0 +1,12 @@
+<% remote_form_for :auto_scaling_trigger,
+	:url => auto_scaling_group_triggers_path(@auto_scaling_group),
+	:html => { :method => :post } do |f| %>
+    Add a new trigger <%= f.label :name, 'named' %> <%= f.text_field :name %> that will:
+    <%= render :partial => 'auto_scaling_triggers/fields', :locals => { :f => f } %>
+    <%= f.submit 'Add' %>
+    <%= hidden_field_tag :cancel_button, '' %>
+    <%= submit_tag 'Cancel',
+        :name => 'cancel',
+        :onclick => "Form.getInputs(this.form, null, 'cancel_button')[0].value = 'cancel'"
+    %>
+<% end %>

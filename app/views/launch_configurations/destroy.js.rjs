@@ -1,0 +1,15 @@
+if @error_message.blank?
+    page["launch_configuration_#{@launch_configuration.id}"].remove
+else
+    page.visual_effect :highlight, "launch_configuration_#{@launch_configuration.id}", :duration => 2.0
+    page['launch_configuration_status_message'].hide
+    page['launch_configuration_status_message'].replace_html @error_message
+    page['launch_configuration_status_message'].appear
+    page.delay(10) do
+                page['launch_configuration_status_message'].fade()
+                page.delay(5) do
+                        page['launch_configuration_status_message'].replace_html ''
+                end
+    end
+
+end

@@ -1,0 +1,19 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  stat_record_id: 1
+  cluster_id: 1
+  cluster_name: MyString
+  server_id: 1
+  server_name: MyString
+  zone: MyString
+  type: MyString
+
+two:
+  stat_record_id: 1
+  cluster_id: 1
+  cluster_name: MyString
+  server_id: 1
+  server_name: MyString
+  zone: MyString
+  type: MyString

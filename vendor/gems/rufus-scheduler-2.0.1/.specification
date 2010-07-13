@@ -1,0 +1,71 @@
+--- !ruby/object:Gem::Specification 
+name: rufus-scheduler
+version: !ruby/object:Gem::Version 
+  version: 2.0.1
+platform: ruby
+authors: 
+- John Mettraux
+autorequire: 
+bindir: bin
+cert_chain: []
+
+date: 2009-05-06 00:00:00 -04:00
+default_executable: 
+dependencies: []
+
+description: 
+email: jmettraux@gmail.com
+executables: []
+
+extensions: []
+
+extra_rdoc_files: 
+- README.rdoc
+- CHANGELOG.txt
+- CREDITS.txt
+- LICENSE.txt
+files: 
+- lib/rufus/otime.rb
+- lib/rufus/sc/cronline.rb
+- lib/rufus/sc/jobqueues.rb
+- lib/rufus/sc/jobs.rb
+- lib/rufus/sc/rtime.rb
+- lib/rufus/sc/scheduler.rb
+- lib/rufus/scheduler.rb
+- lib/rufus-scheduler.rb
+- CHANGELOG.txt
+- CREDITS.txt
+- LICENSE.txt
+- TODO.txt
+- README.rdoc
+- spec/spec.rb
+has_rdoc: true
+homepage: http://rufus.rubyforge.org/
+licenses: []
+
+post_install_message: 
+rdoc_options: []
+
+require_paths: 
+- lib
+required_ruby_version: !ruby/object:Gem::Requirement 
+  requirements: 
+  - - ">="
+    - !ruby/object:Gem::Version 
+      version: "0"
+  version: 
+required_rubygems_version: !ruby/object:Gem::Requirement 
+  requirements: 
+  - - ">="
+    - !ruby/object:Gem::Version 
+      version: "0"
+  version: 
+requirements: []
+
+rubyforge_project: rufus
+rubygems_version: 1.3.5
+signing_key: 
+specification_version: 3
+summary: job scheduler for Ruby (at, cron, in and every jobs)
+test_files: 
+- spec/spec.rb

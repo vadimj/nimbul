@@ -1,0 +1,10 @@
+<% fields_for "publisher[#{publisher.id}][publisher_parameter_attributes][]", publisher_parameter do |f| %>
+<th><%= publisher_parameter.description.blank? ? publisher_parameter.name.titleize : publisher_parameter.description %></th>
+<td>
+<% if publisher_parameter.control_type == 'select' %>
+    <%= f.select :value, publisher.options(publisher_parameter.name), :index => nil %>
+<% else %>
+    <%= f.text_field :value %>
+<% end %>
+</td>
+<% end %>

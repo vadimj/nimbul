@@ -1,0 +1,2 @@
+page['wide_redbox'].replace_html :partial => 'server_images/new', :object => @server_image
+page['wide_redbox'].appear

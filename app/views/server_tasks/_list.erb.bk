@@ -1,0 +1,36 @@
+<%
+    operation_class_types = Dir.glob( File.join( RAILS_ROOT, 'app', 'models', 'operations', '*.rb') ).map{|path| path[/.+\/(.+).rb/,1] }
+    operation_class_types.collect!{ |ocp| ocp if ('Operations::'+ocp.camelize).constantize.is_schedulable? }.compact!
+    operation_options = operation_class_types.map{ |m| "<option value='#{m.camelize}'>#{('Operations::'+m.camelize).constantize.label}</option>" }
+%>
+<h1>Server Tasks</h1>
+The following Tasks have been configured for this server.<br />
+To add a new Task, select a type from the drop-down list. Then click the plus sign icon.
+<br />
+<br />
+
+<% form_for :server,
+    :url => new_server_server_task_path(@server),
+    :html => { :method => :get } do |f| %>
+    <%= select_tag :class_type, operation_options.join('') %>
+    <%= image_submit_tag("add.png", :class => 'control-icon', :alt => "Add", :title => "Add a New Task") %>
+<% end %>
+<br />
+<% form_for :server_task,
+    :url => server_server_tasks_url(@server) do |f| %>
+<table>
+    <tr>
+    <th>Name</th>
+    <th>Description</th>
+    <th>Operation</th>
+    <th>Schedule</th>
+    <th>Active?</th>
+    <th>Scheduled?</th>
+    <th>Last Run</th>
+    <th colspan="2">&nbsp;</th>
+    </tr>
+    <tbody id="server_tasks">
+        <%= render :partial => 'server_tasks/server_task', :collection => @server.server_tasks, :locals => { :f => f } %>
+    </tbody>
+</table>
+<% end %>

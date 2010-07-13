@@ -1,0 +1,38 @@
+#!/usr/bin/env ruby
+
+ENV['APP_ROOT'] ||= File.expand_path(File.join(File.dirname(__FILE__), '..'))
+APP_ROOT = ENV['APP_ROOT']
+script_file = File.join(APP_ROOT, 'lib', 'poller.rb')
+tmp_dir = File.join(APP_ROOT, 'tmp')
+
+require 'rubygems'
+require 'daemons'
+
+file_name = File.dirname(__FILE__) + "/../vendor/rails/activesupport/lib/active_support.rb"
+
+if(File.exists?(file_name))
+  require file_name
+else
+  rails_version = File.new(File.dirname(__FILE__)+ "/../config/environment.rb").read.scan(/^ *RAILS_GEM_VERSION.*=.*['|"](.*)['|"]/)[0].to_s
+  gem 'activesupport', rails_version
+  require 'active_support'
+end
+
+
+$: << File.join(File.expand_path(File.dirname(__FILE__) + '/..'), 'vendor', 'plugins', 'activemessaging', 'lib')
+
+require 'activemessaging'
+
+options = {
+  :app_name   => "poller",
+  :dir_mode   => :normal,
+  :dir        => tmp_dir,
+  :multiple   => true,
+  :ontop      => false,
+  :mode       => :load,
+  :backtrace  => true,
+  :monitor    => true,
+  :log_output => true
+}
+
+Daemons.run(script_file,options)

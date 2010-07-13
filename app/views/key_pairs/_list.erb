@@ -1,0 +1,34 @@
+<%= javascript_tag "Editable.setupAll();" %>
+<div id="key_pairs">
+
+
+Search: <%= will_paginate_search_field 'key_pair_search', 'key_pairs', nil, :list %>
+
+<%= refresh_link image_tag("refresh.png", :align => "absmiddle", :alt => "Refresh"), 'key_pairs', nil, :list %>
+
+<b>Total: <%= @key_pairs.total_entries %></b>
+
+<br />
+<br />
+
+<%= will_paginate_remote @key_pairs, 'key_pairs' %>
+
+<table>
+  <thead>
+  <tr>
+    <th <%= sort_td_class_helper "name" %>>
+      <%= key_pairs_sort_link "Name", "name" %>
+    </th>
+    <th>
+      Fingerprint
+    </th>
+  </tr>
+  </thead>
+  <tbody id="key_pair_records">
+    <%= render :partial => "key_pair", :collection => @key_pairs %>
+  </tbody>
+</table>
+
+<%= will_paginate_remote @key_pairs, 'key_pairs' %>
+
+</div>

@@ -1,0 +1,2 @@
+class IamUser < IamResource
+end

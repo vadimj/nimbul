@@ -1,0 +1,50 @@
+<script type="text/javascript">
+<% relations = {
+   :provider_account => [ :cluster ],
+   :cluster => [ :server ],
+   :server => [],
+}
+-%>
+
+var cluster_ar = new Array();
+var server_ar = new Array();
+
+<% for server in @servers -%>
+    server_ar.push(new Array("<%= server.cluster_id %>", "<%=h server.name %>", "<%= server.id %>"));
+<% end -%>
+
+<% for cluster in @clusters -%>
+    cluster_ar.push(new Array("<%= cluster.provider_account_id %>", "<%=h cluster.name %>", "<%= cluster.id %>"));
+<% end -%>
+
+<% for parent in relations.keys
+    class_field = "#{model.to_s}_#{parent.to_s}_id"
+-%>
+    function <%= class_field %>Selected() {
+        klass = $('<%= class_field %>').getValue();
+        klass_text = $('<%= class_field %>').options[$('<%= class_field %>').selectedIndex].text;
+        <% for child in relations[parent]
+            id_field = "#{model.to_s}_#{child.to_s}_id"
+            id_value = instance_variable_get("@#{model.to_s}").send("#{child.to_s}_id")
+        -%>
+            options = $('<%= id_field %>').options;
+            options.length = 1;
+            <%= child.to_s %>_ar.each(function(c) {
+                if (c[0] == klass) {
+                    options[options.length] = new Option(c[1], c[2], (c[2] == "<%= id_value %>"), (c[2] == "<%= id_value %>"));
+                }
+            });
+            <%= id_field %>Selected();
+        <% end -%>
+    }
+<% end -%>
+
+document.observe('dom:loaded', function() {
+    <% for parent in relations.keys
+        class_field = "#{model.to_s}_#{parent.to_s}_id"
+    -%>
+        <%= class_field %>Selected();
+        $('<%= class_field %>').observe('change', <%= class_field %>Selected);
+    <% end -%>
+});
+</script>

@@ -1,0 +1,32 @@
+  <p>
+    Account Name<br />
+    <%= f.text_field :name %>
+  </p>
+  <p>
+    <%= f.label :description %><br />
+    <%= f.text_field :description %>
+  </p>
+  <p>
+    AWS Account ID<br />
+    <%= f.text_field :external_id %>
+  </p>
+  <% unless @provider_account.new_record? %>
+  <p>
+    AWS Access Key<br />
+    <%= f.text_field :aws_access_key %>
+  </p>
+  <p>
+    AWS Secret Key<br />
+    <%= f.text_field :aws_secret_key %>
+  </p>
+  <p>
+    SSH Master Key<br />
+    <%= f.text_field :ssh_master_key %>
+  </p>
+  <p>
+    Last Refreshed<br />
+    <%=h @provider_account.refreshed_at %>
+  </p>
+  <% end %>
+  <br />
+  <br />

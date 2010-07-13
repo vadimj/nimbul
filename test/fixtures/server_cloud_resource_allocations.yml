@@ -1,0 +1,17 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  type: MyString
+  server_id: 1
+  cloud_resource_id: 1
+  binding_point: MyString
+  binding_params: MyText
+  force_allocation: false
+
+two:
+  type: MyString
+  server_id: 1
+  cloud_resource_id: 1
+  binding_point: MyString
+  binding_params: MyText
+  force_allocation: false

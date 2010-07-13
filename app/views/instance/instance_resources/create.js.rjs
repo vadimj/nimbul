@@ -1,0 +1,9 @@
+if @error_message.blank? and
+    page["new_#{@instance_resource.short_type}"].hide
+    page.insert_html :bottom, params[:update], :partial => "instance/#{@instance_resource.short_types}/#{@instance_resource.short_type}", :object => @instance_resource
+    page << "Editable.setupAll('.instance-resource-#{@instance_resource.id}-editable');"
+    page["add_#{@instance_resource.short_type}"].appear if @instance.can_use_more_of?(@instance_resource[:type])
+else
+    page['error_redbox'].replace_html :partial => 'shared/error_redbox'
+    page['error_redbox'].appear
+end

@@ -1,0 +1,15 @@
+<% semantic_form_for @service_type do |f| %>
+  <%= f.error_messages %>
+  <% f.inputs do %>
+    <%= f.input :name, :hint => 'Name the type, for example, SVN or Messaging' %>
+    <%= f.input :fqdn, :hint => 'Fully Qualified Domain Name for the service type, for example, svn.mydomain.com' %>
+    <%= f.input :description,
+      :input_html => { :class => 'autogrow', :warp => 'soft', :size => '40x2' },
+      :required => false
+    %>
+  <% end %>
+  <% f.buttons do %>
+    <%= f.submit %>
+    <%= submit_tag 'Cancel', :name => 'cancel_button' %>
+  <% end %>
+<% end %>

@@ -1,0 +1,11 @@
+<h1><%=h @security_group.name %>: Edit Security Group</h1>
+<br />
+<%=h @security_group.description %>
+
+<br />
+<br />
+<%= render :partial => 'fields' %>
+
+<%= link_to_remote '<< Back',
+    :url => provider_account_security_groups_path(@provider_account), :method => :get,
+    :update => :security_groups %>

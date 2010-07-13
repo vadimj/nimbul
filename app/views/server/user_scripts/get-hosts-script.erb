@@ -1,0 +1,53 @@
+#!/usr/bin/ruby
+
+#
+# Account: <%= user_script.account.name %> [<%= user_script.account.id %>]
+# Cluster: <%= user_script.cluster.name %> [<%= user_script.cluster.id %>]
+# Server: <%= user_script.server.name %> [<%= user_script.server.id %>]
+#
+
+$:.unshift File.join(File.dirname(__FILE__))
+require 'AWS/EC2'
+require 'basic_configuration'
+require 'aws_context'
+require 'optparse'
+require 'net/http'
+
+# Get's the hosts file for cluster: <%= user_script.cluster.name -%>
+
+Signal.trap("INT") do
+	exit 2
+end
+
+def output_help
+	puts "Usage: #{File.basename(__FILE__)} [-d]";
+	puts "\t -d    display to stdout only (otherwise just dumps the hosts file into ./hosts)"
+	puts
+	exit 1
+end
+
+display_only = false
+
+# Specify options
+opts = OptionParser.new
+opts.on('-h', '--help')         { output_help }
+opts.on('-d', '--display-only') { display_only = true }
+opts.parse!(ARGV) rescue output_help
+
+config = BasicConfiguration.new
+ec2 = AwsContext.instance.ec2(*config.keys)
+begin
+	hosts_url = '<%= user_script.cluster.get_cluster_parameter("HOSTS_FILE_URL") -%>'
+	hosts_data = Net::HTTP.get(URI.parse(hosts_url))
+		
+	if display_only
+		puts hosts_data
+	else 
+		puts "Retrieved hosts data for cluster '<%= user_script.cluster.name -%>' from '#{hosts_url}'"
+		File.open('./<%= user_script.cluster.name.gsub(/\s+/, "_").downcase -%>.hosts', 'w') { |f| f << hosts_data }
+	end
+	
+rescue
+	puts "Could not retrieve hosts data for cluster '<%= user_script.cluster.name -%>' from '#{hosts_url}' - #{$!}"
+	exit 1
+end

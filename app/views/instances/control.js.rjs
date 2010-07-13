@@ -1,0 +1,9 @@
+@instances ||= []
+if @error_message.blank?
+    @instances.each do |i|
+        page["instance_#{i.id}"].replace_html :partial => "instances/row", :locals => { :instance => i }
+    end
+else
+    page['error_redbox'].replace_html :partial => 'shared/error_redbox'
+    page['error_redbox'].appear
+end

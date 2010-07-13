@@ -1,0 +1,2 @@
+page['tiny_redbox'].replace_html :partial => 'security_groups/new', :object => SecurityGroup.new
+page['tiny_redbox'].appear

@@ -1,0 +1,9 @@
+if @error_messages.empty?
+	page["auto_scaling_trigger_#{@auto_scaling_trigger.id}"].replace_html(
+		:partial => "auto_scaling_triggers/auto_scaling_trigger_row",
+		:locals => { :auto_scaling_trigger => @auto_scaling_trigger }
+	)
+else
+    page['error_redbox'].replace_html :partial => 'shared/error_redbox'
+    page['error_redbox'].appear
+end

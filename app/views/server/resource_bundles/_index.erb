@@ -1,0 +1,26 @@
+<h1>Launch Configurations</h1>
+<br/>
+<strong>Default</strong> configuration will be used to start new instances if all other configurations are being used.
+<br/>
+<br/>
+<table>
+    <tr>
+        <th>&nbsp;</th>
+        <th>State</th>
+        <th>Actions</th>
+        <th>Zone</th>
+        <th>Resources</th>
+    </tr>
+    <tbody id="resource_bundles">
+        <%= render :partial => 'server/resource_bundles/resource_bundle', :collection => @server.resource_bundles %>
+    </tbody>
+    <%= sortable_element("resource_bundles", :url => sort_server_resource_bundles_path(@server), :tag => "tr", :handle => "handle" ) %>
+</table>
+<%= javascript_tag "Editable.setupAll('.server-resource-editable');" %>
+<br/>
+
+<h1>Add a Launch Configurations</h1>
+<br/>
+<div id="new_server_<%= @server.id %>_resource_bundle">
+    <%= render :partial => 'server/resource_bundles/new' %>
+</div>

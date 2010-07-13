@@ -1,0 +1,32 @@
+<%= javascript_tag "$('launch_configurations_total').innerHTML = '#{@launch_configurations.total_entries}';" %>
+<div id="launch_configurations_data">
+
+<table id="launch_configuration_table">
+  <thead>
+  <tr>
+    <th class="controls">Controls</th>
+    <th <%= sort_td_class_helper "name", "name" %>>
+      <%= launch_configurations_sort_link "Name", "name" %>
+    </th>
+    <th <%= sort_td_class_helper "server_id", "server_id" %>>
+      <%= launch_configurations_sort_link "Server", "server_id" %>
+    </th>
+    <th <%= sort_td_class_helper "state", "state" %>>
+      <%= launch_configurations_sort_link "State", "state" %>
+    </th>
+    <th <%= sort_td_class_helper "image_id", "image_id" %>>
+      <%= launch_configurations_sort_link "Image", "image_id" %>
+    </th>
+    <th <%= sort_td_class_helper "instance_type", "instance_type" %>>
+      <%= launch_configurations_sort_link "Instance Type", "instance_type" %>
+    </th>
+    <th <%= sort_td_class_helper "created_time", "created_time" %>>
+      <%= launch_configurations_sort_link "Created", "created_time" %>
+    </th>
+  </tr>
+  </thead>
+  <tbody id="launch_configuration_records">
+    <%= render :partial => "launch_configurations/launch_configuration", :collection => @launch_configurations %>
+  </tbody>
+</table>
+</div>

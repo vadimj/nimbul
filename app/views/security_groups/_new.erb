@@ -1,0 +1,30 @@
+<div class="centered">
+	<h1>Add new Security Group</h1>
+	<div id="security_group_message"></div>
+<% remote_form_for :security_group,
+    :url => provider_account_security_groups_path(@provider_account),
+    :html => { :method => :post } do |f| %>
+    <table>
+	<tr>
+        <th>
+	    <%= f.label :name, 'Security Group Name' %><br />
+	    <small>(required, e.g. uc-be)</small>
+	    </th>
+	    <td><%= f.text_field :name %></td>
+	</tr>
+	<tr>
+	    <th>
+	    <%= f.label :description %><br />
+	    <small>(required)</small>
+	    </th>
+	    <td><%= f.text_field :description %></td>
+	</tr>
+	<tr>
+	    <td colspan="2" align="center">
+		<%= f.submit "Create" %>
+		<%= f.submit "Cancel", :onclick => "$('tiny_redbox').hide(); return false;" %>
+	    </td>
+	</tr>
+    </table>
+<% end %>
+</div>

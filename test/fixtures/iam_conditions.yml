@@ -1,0 +1,13 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  iam_statement_id: 1
+  type: MyString
+  name: MyString
+  value: MyString
+
+two:
+  iam_statement_id: 1
+  type: MyString
+  name: MyString
+  value: MyString

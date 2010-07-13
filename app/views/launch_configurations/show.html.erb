@@ -1,0 +1,97 @@
+<% subtitle @launch_configuration %>
+
+<p>
+<h1><%= pagetitle @launch_configuration, { :create_links => true } %>, Created: <%= time_ago(@launch_configuration.created_time) %></h1>
+</p>
+
+<%- if @launch_configuration.disabled? %>
+<p>
+	<%= link_to "Edit This Launch Configuration", { :action => :edit } %>
+</p>
+<%- end %>
+
+<p>
+<table width="335px">
+	<thead>
+		<tr>
+			<th>Name</th>
+			<td><%= @launch_configuration.name %></td>
+		</tr>
+	
+		<tr>
+			<th>Internal Name</th>
+			<td><%= h( (@launch_configuration.launch_configuration_name || 'Not Yet Generated') ) %></td>
+		</tr>
+		
+		<tr>
+			<th>Based On:</th>
+			<td>
+				<%- if @launch_configuration.try :server %>
+					Existing Record
+				<%- else %>
+					Manual Configuration
+				<%- end %>
+			</td>
+		</tr>
+		<tr><td colspan="2" align="center">&nbsp;</td></tr>
+	</thead>
+
+	<%- if @launch_configuration.try :server %>
+	<tbody id="existing_configuration">
+		<tr>
+			<th>Cluster</th>
+			<td><%= @launch_configuration.server.cluster.name %></td>
+		</tr>
+		<tr>
+			<th>Server</th>
+			<td><%= @launch_configuration.server.name %></td>
+		</tr>
+		<tr>
+			<th>Revision</th>
+			<td><%= @launch_configuration.server.server_profile_revision.revision %></td>
+		</tr>
+	</tbody>
+
+	<%- else %>
+
+	<tbody id="manual_configuration" >
+		<tr>
+			<th>Image</th>
+			<td>
+				<% if @launch_configuration.server_image_id.blank? %>
+					<%= h(@launch_configuration.image_id) %>
+				<% else %>
+					<%= h(@launch_configuration.server_image.name) %>
+				<% end %>
+			</td>
+		</tr>
+		<tr>
+			<th>Instance Type</th>
+			<td><%= @launch_configuration.instance_type %></td>
+		</tr>
+		<tr>
+			<th>Key Name</th>
+			<td><%= @launch_configuration.key_name %></td>
+		</tr>
+		<tr>
+			<th>RAM Disk</th>
+			<td><%= @launch_configuration.ramdisk_id %></td>
+		</tr>
+		<tr>
+			<th>Kernel</th>
+			<td><%= @launch_configuration.kernel_id %></td>
+		</tr>
+		<tr>
+			<th>User Data</th>
+			<td>
+			  <%= link_to_function 'show/hide', "$$('.startup_script').each(function(d) { Effect.toggle(d, 'appear') });" %>
+			  <br />
+			  <textarea rows="15" cols="90" readonly="readonly" class="startup_script"
+						style="display:none;"><%= @launch_configuration.user_data %></textarea>
+			</td>
+		</tr>
+	</tbody>
+	<%- end %>
+</table>
+<%= button_to 'Back', :back, :method => :get, :anchor => :auto_scaling %>
+</p>

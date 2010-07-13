@@ -1,0 +1,13 @@
+#!/bin/bash
+# make sure there is no new line at the end
+export TMPDIR=`mktemp -d /tmp/selfextract.XXXXXX`
+ARCHIVE=`awk '/^__ARCHIVE_BELOW__/ {print NR + 1; exit 0; }' $0`
+tail -n+$ARCHIVE $0 | gunzip > $TMPDIR/payload
+chmod +x $TMPDIR/payload
+CDIR=`pwd`
+cd $TMPDIR
+if [ "$1" == "--show" ]; then cat ./payload; else ./payload; fi
+cd $CDIR
+rm -rf $TMPDIR
+exit 0
+__ARCHIVE_BELOW__

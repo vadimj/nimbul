@@ -1,0 +1,2 @@
+class InstanceAddress < InstanceResource
+end

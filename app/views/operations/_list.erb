@@ -1,0 +1,43 @@
+<div id="operations">
+
+<%= will_paginate_remote @operations, nil %>
+
+<table>
+  <thead>
+  <tr>
+    <th <%= sort_td_class_helper 'type' %>>
+      <%= operations_sort_link "Operation", 'type' %>
+    </th>
+    <th>
+      Task
+    </th>
+    <th <%= sort_td_class_helper 'instance_id' %>>
+      <%= operations_sort_link "Instance", 'instance_id' %>
+    </th>
+    <th <%= sort_td_class_helper 'state' %>>
+      <%= operations_sort_link "State", 'state' %>
+    </th>
+    <th <%= sort_td_class_helper 'attempts' %>>
+      <%= operations_sort_link "Attempts", 'attempts' %>
+    </th>
+    <th <%= sort_td_class_helper 'result_code' %>>
+      <%= operations_sort_link "Code", 'result_code' %>
+    </th>
+    <th <%= sort_td_class_helper 'result_message' %>>
+      <%= operations_sort_link "Last Message", 'result_message' %>
+    </th>
+    <th <%= sort_td_class_helper 'created_at' %>>
+      <%= operations_sort_link "Created", 'created_at' %>
+    </th>
+    <th <%= sort_td_class_helper 'timeout_at' %>>
+      <%= operations_sort_link "Time Out At", 'timeout_at' %>
+    </th>
+  </thead>
+  <tbody id="operation_records">
+    <%= render :partial => "operations/operation", :collection => @operations %>
+  </tbody>
+</table>
+
+<%= will_paginate_remote @operations, nil %>
+
+</div>

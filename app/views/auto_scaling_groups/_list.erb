@@ -1,0 +1,44 @@
+<%= javascript_tag "$('auto_scaling_groups_total').innerHTML = '#{@auto_scaling_groups.total_entries}';" %>
+<div id="auto_scaling_groups_data">
+
+<table id="auto_scaling_group_table">
+		<thead>
+			<tr>
+				<th class="controls">Controls</th>
+				<th <%= sort_td_class_helper "name", "name" %>>
+					<%= auto_scaling_groups_sort_link "Group Name", "group_name" %>
+				</th>
+				<th <%= sort_td_class_helper "launch_configuration", "launch_configuration" %>>
+					<%= auto_scaling_groups_sort_link "Configuration", "launch_configuration" %>
+				</th>
+				<th <%= sort_td_class_helper 'state', 'state'%>>
+					<%= auto_scaling_groups_sort_link "State", "state" %>
+				</th>
+			
+				<th class="zones">Availability Zones</th>
+			
+				<th <%= sort_td_class_helper "min_size", "min_size" %>>
+					<%= auto_scaling_groups_sort_link "Minimum Size", "min_size" %>
+				</th>
+				<th <%= sort_td_class_helper "max_size", "max_size" %>>
+					<%= auto_scaling_groups_sort_link "Maximum Size", "max_size" %>
+				</th>
+				<th <%= sort_td_class_helper "desired_capacity", "desired_capacity" %>>
+					<%= auto_scaling_groups_sort_link "Desired Capacity", "desired_capacity" %>
+				</th>
+			
+				<th class="current_size">Current Size</th>
+			
+				<th <%= sort_td_class_helper "cooldown", "cooldown" %>>
+					<%= auto_scaling_groups_sort_link "Cooldown Time", "cooldown" %>
+				</th>
+			</tr>
+		</thead>
+		<tbody id="auto_scaling_group_records">
+		  <tr id="auto_scaling_group_status_message" style="display:none;"></td>
+		  <%= render :partial => "auto_scaling_groups/auto_scaling_group", :collection => @auto_scaling_groups %>
+		</tbody>
+		<tfoot>
+		</tfoot>
+	</table>
+</div>

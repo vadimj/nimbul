@@ -1,0 +1,15 @@
+<% remote_form_for :operations,
+    :url => control_server_operations_path(@server) do |f| %>
+        
+<%= will_paginate_search_field "server_#{@server.id}_operation_search", nil, nil, :list %>
+
+<%= refresh_image 'Refresh', 'operations', nil, :list, nil %>
+
+<span class="vr">&nbsp;</span>
+
+<b>Total: <span id="server_<%= @server.id %>_operations_total"><%= @operations.total_entries %></span></b>
+
+<hr>
+
+<%= render :partial => 'server/operations/list' %>
+<% end %>

@@ -1,0 +1,15 @@
+if @error_message.blank?
+    page["auto_scaling_trigger_#{@auto_scaling_trigger.id}"].remove
+    page["auto_scaling_group_#{@auto_scaling_group.id}_add_trigger"].appear
+else
+    page.visual_effect :highlight, "auto_scaling_trigger_#{@auto_scaling_trigger.id}", :duration => 2.0
+    page['auto_scaling_trigger_status_message'].hide
+    page['auto_scaling_trigger_status_message'].replace_html @error_message
+    page['auto_scaling_trigger_status_message'].appear
+    page.delay(10) do
+        page['auto_scaling_trigger_status_message'].fade()
+        page.delay(5) do
+            page['auto_scaling_trigger_status_message'].replace_html ''
+        end
+    end
+end

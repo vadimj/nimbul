@@ -1,0 +1,37 @@
+<%= javascript_tag "Editable.setupAll();" %>
+<div id="messages">
+
+<%= will_paginate_remote @messages, 'messages' %>
+
+<table>
+    <tr>
+    <th <%= sort_td_class_helper "received_at" %>>
+        <%= messages_sort_link 'Received At', 'received_at' %>
+    </th>
+    <th <%= sort_td_class_helper "message_id" %>>
+        <%= messages_sort_link 'Message ID', 'message_id' %>
+    </th>
+    <th <%= sort_td_class_helper "provider_account_id" %>>
+        <%= messages_sort_link 'Account', 'provider_account_id' %>
+    </th>
+    <th <%= sort_td_class_helper "recipient" %>>
+        <%= messages_sort_link 'Recipient', 'recipient' %>
+    </th>
+    <th <%= sort_td_class_helper "sender" %>>
+        <%= messages_sort_link 'Sender', 'sender' %>
+    </th>
+    <th <%= sort_td_class_helper "handler" %>>
+        <%= messages_sort_link 'Handler', 'handler' %>
+    </th>
+    <th <%= sort_td_class_helper "state" %>>
+        <%= messages_sort_link 'State', 'state' %>
+    </th>
+    </tr>
+    <tbody id="message_records">
+        <%= render :partial => "message", :collection => @messages %>
+    </tbody>
+</table>
+
+<%= will_paginate_remote @messages, 'messages' %>
+
+</div>

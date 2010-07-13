@@ -1,0 +1,43 @@
+<% form_for :cluster,
+    :url => cluster_cluster_parameters_path(@cluster),
+    :html => { :method => 'post' } do |f| %>
+    <h1>Cluster Variables</h1>
+    The following variables will be exposed as environment variables on every instance started under this Cluster.
+    <br />
+    <br />
+    <%= f.error_messages %>
+    <table>
+    <tr>
+      <th>&nbsp;</th>
+      <th>Password?</th>
+      <th>Name <small>required</small></th>
+      <th>Value <small>required</small></th>
+      <th>&nbsp;</th>
+    </tr>
+    <%= render :partial => 'provider_account_parameters/provider_account_parameter', :collection => @provider_account.provider_account_parameters %>
+    <tbody id="cluster_parameters">
+        <%= render :partial => 'cluster_parameters/cluster_parameter', :collection => @cluster.cluster_parameters, :locals => { :showonly => false } %>
+    </tbody>
+    <%= sortable_element("cluster_parameters", :url => sort_cluster_parameters_path, :tag => "tr", :handle => "handle" ) %>
+    <td colspan="5" align="right">
+    <%= add_cluster_parameter_link 'Add a Parameter' %>
+    <div id="status_message"></div>
+    </td>
+    </table>
+
+<br />
+
+    <h1>Cluster Startup Script <%= link_to_function 'show/hide', "$$('.startup_script').each(function(d) { Effect.toggle(d, 'appear') });" %></h1>
+    The following script will be executed once on every instance started under this Cluster.<br/>
+    The first line should always start with <strong>#!</strong>, otherwise it won't be recognized as a script.
+    <br />
+    <br />
+    <%= f.error_messages %>
+    <%= f.text_area :startup_script, :size => '90x15', :class => :startup_script, :style => 'display:none' %>
+
+<br />
+<br />
+
+    <%= submit_tag "Update", :disable_with => "Updating&hellip;"  %>
+<% end %>
+

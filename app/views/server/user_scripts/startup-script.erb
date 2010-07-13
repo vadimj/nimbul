@@ -1,0 +1,75 @@
+#!/usr/bin/ruby
+
+#
+# Account: <%= user_script.account.name %> [<%= user_script.account.id %>]
+# Cluster: <%= user_script.cluster.name %> [<%= user_script.cluster.id %>]
+# Server: <%= user_script.server.name %> [<%= user_script.server.id %>]
+#
+
+#### Server Instance Details ####
+
+#
+# AMI: <%= user_script.server.image_id %> - <%= ServerImage.find_by_image_id(user_script.server.image_id).location -%>
+# Default Key: <%= user_script.server.key_name %>
+# Instance Type: <%= user_script.server.type %>
+# Security Groups: <%= user_script.security_groups.join(", ") %>
+#
+
+$:.unshift File.join(File.dirname(__FILE__))
+require 'AWS/EC2'
+require 'basic_configuration'
+require 'aws_context'
+require 'optparse'
+require 'pp'
+
+# Starts an instance of <%= user_script.server.name -%>
+
+Signal.trap("INT") do
+	exit 2
+end
+
+USER_DATA = DATA.read
+
+def output_help
+	puts "Usage: #{File.basename(__FILE__)} <instances to start> [--dump-data <file>]";
+	puts "\t --dump-data <FILE>  -- Dump User Data Script to FILE (will not start an instance when this option is used)"
+	puts
+	exit 1
+end
+
+# Specify options
+opts = OptionParser.new
+opts.on('-h', '--help')		{ output_help }
+opts.on('--dump-data FILE') do  |dump_file| File.open(dump_file, 'w') { |f| f << USER_DATA }; exit 0; end
+opts.parse!(ARGV) rescue output_help
+
+# we should start at /least/ one instance
+count = ARGV[0].to_i rescue 1
+count = 1 unless count > 0
+
+config = BasicConfiguration.new
+ec2 = AwsContext.instance.ec2(*config.keys)
+begin
+	name = '<%= user_script.server.image_id -%>'
+	
+	groups = %w{ <%= user_script.security_groups.join(" ") -%> }
+	groups << 'default' if groups.empty? 
+	
+	params = {
+		:instance_type => '<%= user_script.server.type -%>',
+		:security_groups => groups,
+		:key_name => '<%= user_script.server.key_name -%>',
+		:user_data => USER_DATA
+	}
+	
+	instances = ec2.run_instances(name, 1, count, params)
+	unless instances.nil? 
+		instances[:instances].each {|o| puts "#{o[:id]}"}
+	end
+rescue
+	puts "Could not start server '<%= user_script.server.name -%>' - #{$!}"
+	exit 1
+end
+
+__END__
+<%= user_script.data %>

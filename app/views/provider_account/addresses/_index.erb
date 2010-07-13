@@ -1,0 +1,21 @@
+<% remote_form_for :addresses,
+    :url => control_provider_account_addresses_path(@provider_account) do |f| %>
+        
+Search: <%= will_paginate_search_field "provider_account_#{@provider_account.id}_address_search", nil, nil, :list %>
+
+<%= refresh_image 'Refresh', 'addresses', nil, :list, nil %>
+
+<span class="vr">&nbsp;</span>
+
+<%= allocate_address_link 'Allocate' %>
+<%= release_addresses_submit 'Release' %>
+<%= hidden_field_tag :command, '', :class => :command %>
+
+<span class="vr">&nbsp;</span>
+
+<b>Total: <span id="provider_account_<%= @provider_account.id %>_addresses_total"><%= @addresses.total_entries %></span></b>
+
+<hr>
+
+<%= render :partial => 'provider_account/addresses/list' %>
+<% end %>

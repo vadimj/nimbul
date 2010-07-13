@@ -1,0 +1,14 @@
+<h1>Editing Account</h1>
+
+<br />
+
+<% form_for(@provider_account) do |f| %>
+  <%= f.error_messages %>
+  <%= render :partial => 'fields', :locals => { :f => f } %>
+  <p><%= f.submit "Update" %></p>
+<% end %>
+
+<br />
+
+<%= link_to 'Show', @provider_account %> |
+<%= link_to 'Back', provider_accounts_path %>

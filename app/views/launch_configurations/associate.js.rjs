@@ -1,0 +1,4 @@
+page["launch_configuration_#{@launch_configuration.id}"].replace_html(
+	:partial => "launch_configurations/launch_configuration_row",
+	:locals => { :launch_configuration => @launch_configuration }
+)

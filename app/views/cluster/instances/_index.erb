@@ -1,0 +1,21 @@
+<% remote_form_for :instances,
+    :url => control_cluster_instances_path(@cluster) do |f| %>
+
+<%= will_paginate_search_field "cluster_#{@cluster.id}_instance_search", nil, nil, :list %>
+
+<%= refresh_image 'Refresh', nil, nil, :list %>
+
+<span class="vr">&nbsp;</span>
+
+<%= reboot_instance_image_submit 'Reboot', "#{@parent_type}-#{@parent.id}-instance" %>
+<%= terminate_instance_image_submit 'Terminate', "#{@parent_type}-#{@parent.id}-instance" %>
+<%= hidden_field_tag :instance_command, '', :class => :instance_command %>
+
+<span class="vr">&nbsp;</span>
+
+<b>Total: <span id="cluster_<%= @cluster.id %>_instances_total"><%= @instances.total_entries %></span></b>
+
+<hr>
+
+<%= render :partial => 'cluster/instances/list' %>
+<% end %>

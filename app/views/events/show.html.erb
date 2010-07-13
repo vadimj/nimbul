@@ -1,0 +1,43 @@
+<p>
+  <b>Provider account:</b>
+  <%=h @event.provider_account_id %>
+</p>
+
+<p>
+  <b>Security group:</b>
+  <%=h @event.security_group_id %>
+</p>
+
+<p>
+  <b>Server:</b>
+  <%=h @event.server_id %>
+</p>
+
+<p>
+  <b>User:</b>
+  <%=h @event.user_id %>
+</p>
+
+<p>
+  <b>Subject:</b>
+  <%=h @event.subject %>
+</p>
+
+<p>
+  <b>Action:</b>
+  <%=h @event.action %>
+</p>
+
+<p>
+  <b>Object:</b>
+  <%=h @event.object %>
+</p>
+
+<p>
+  <b>Description:</b>
+  <%=h @event.description %>
+</p>
+
+
+<%= link_to 'Edit', edit_event_path(@event) %> |
+<%= link_to 'Back', events_path %>

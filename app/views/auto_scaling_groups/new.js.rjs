@@ -1,0 +1,2 @@
+page['large_redbox'].replace_html :partial => 'auto_scaling_groups/fields', :object => AutoScalingGroup.new
+page['large_redbox'].appear

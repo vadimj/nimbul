@@ -1,0 +1,9 @@
+if @error_messages.empty?
+    page["auto_scaling_group_#{@auto_scaling_group.id}"].replace_html(
+    	:partial => "auto_scaling_groups/auto_scaling_group_row",
+    	:locals => { :auto_scaling_group => @auto_scaling_group }
+    )
+else
+    page['error_redbox'].replace_html :partial => 'shared/error_redbox'
+    page['error_redbox'].appear
+end

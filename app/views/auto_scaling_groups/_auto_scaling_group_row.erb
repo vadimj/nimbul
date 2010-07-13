@@ -1,0 +1,50 @@
+<%-
+	asg = auto_scaling_group
+-%>
+
+<td class="controls">
+<%= delete_auto_scaling_group_image_link(asg) -%>
+<%= enable_disable_auto_scaling_group_image_link(asg) -%>
+<%= show_hide_auto_scaling_group_instances_link(asg) -%>
+<%= show_hide_auto_scaling_group_triggers_link(asg) -%>
+</td>
+<td class="name">
+	<% if asg.disabled? -%>
+		<%= editable(asg, :name ) %>
+	<% else -%>
+		<%= h(asg.name) %>
+	<% end -%>
+	<%- if (asg.status_message || '').length > 0 %><%= link_to_function(image_tag(
+				'important.png', :width => 16, :height => 16, :align => 'absmiddle',
+				:alt => 'Important Information', :title => 'Important Information: click to read'
+			), 
+			"$('asg_#{asg.id}_status_message').toggle()"
+		)%>
+        <div id="asg_<%= asg.id %>_status_message" style="display:none; postion:fixed;">
+	<%= asg.status_message %>
+	</div>
+	<%- end %>
+</td>
+<td class="launch_configuration small">
+	<%= link_to(asg.launch_configuration.name, edit_launch_configuration_path(asg.launch_configuration)) %>
+</td>
+<td class="<%= asg.state %> state">
+	<%= asg.state %>
+</td>
+<td class="small zones">
+	<%- if asg.zones.empty? %>
+		not specified
+	<%- else %>
+		<% asg.zones.each do |zone| %>
+			<% content_tag_for :span, zone do %>
+				<%= h zone.name %>
+				<br />
+			<% end %>
+		<% end %>
+	<%- end %>
+</td>
+<td class="min_size"><%= auto_scaling_group_min_size(asg) %></td>
+<td class="max_size"><%= auto_scaling_group_max_size(asg) %></td>
+<td class="desired_capacity"><%= auto_scaling_group_desired_capacity(asg) %></td>
+<td class="current_size"><%= asg.instances.size %></td>
+<td class="cooldown"><%= auto_scaling_group_cooldown(asg) %></td>

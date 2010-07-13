@@ -1,0 +1,56 @@
+<h1>Editing server_image</h1>
+
+<% form_for(@server_image) do |f| %>
+  <%= f.error_messages %>
+
+  <p>
+    <%= f.label :image_id %><br />
+    <%= f.text_field :image_id %>
+  </p>
+  <p>
+    <%= f.label :provider_account_id %><br />
+    <%= f.text_field :provider_account_id %>
+  </p>
+  <p>
+    <%= f.label :name %><br />
+    <%= f.text_field :name %>
+  </p>
+  <p>
+    <%= f.label :type %><br />
+    <%= f.text_field :type %>
+  </p>
+  <p>
+    <%= f.label :kernel_id %><br />
+    <%= f.text_field :kernel_id %>
+  </p>
+  <p>
+    <%= f.label :ramdisk_id %><br />
+    <%= f.text_field :ramdisk_id %>
+  </p>
+  <p>
+    <%= f.label :owner_id %><br />
+    <%= f.text_field :owner_id %>
+  </p>
+  <p>
+    <%= f.label :is_public %><br />
+    <%= f.check_box :is_public %>
+  </p>
+  <p>
+    <%= f.label :state %><br />
+    <%= f.text_field :state %>
+  </p>
+  <p>
+    <%= f.label :location %><br />
+    <%= f.text_field :location %>
+  </p>
+  <p>
+    <%= f.label :architecture %><br />
+    <%= f.text_field :architecture %>
+  </p>
+  <p>
+    <%= f.submit "Update" %>
+  </p>
+<% end %>
+
+<%= link_to 'Show', @server_image %> |
+<%= link_to 'Back', server_images_path %>

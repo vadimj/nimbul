@@ -1,0 +1,13 @@
+@firewall_rules ||= []
+if @error_message.blank?
+    @firewall_rules.each do |i|
+        page["firewall_rule_#{i.id}"].replace_html :partial => "firewall_rules/row", :locals => { :firewall_rule => i }
+        page["firewall_rule_#{i.id}"].visual_effect :highlight
+    end
+    @removed_firewall_rules.each do |i|
+        page["firewall_rule_#{i.id}"].remove
+    end
+else
+    page['error_redbox'].replace_html :partial => 'shared/error_redbox'
+    page['error_redbox'].appear
+end

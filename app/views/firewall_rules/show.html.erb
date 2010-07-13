@@ -1,0 +1,33 @@
+<p>
+  <b>Provider account:</b>
+  <%=h @firewall_rule.provider_account_id %>
+</p>
+
+<p>
+  <b>Type:</b>
+  <%=h @firewall_rule.type %>
+</p>
+
+<p>
+  <b>Protocol:</b>
+  <%=h @firewall_rule.protocol %>
+</p>
+
+<p>
+  <b>From port:</b>
+  <%=h @firewall_rule.from_port %>
+</p>
+
+<p>
+  <b>To port:</b>
+  <%=h @firewall_rule.to_port %>
+</p>
+
+<p>
+  <b>Ip range:</b>
+  <%=h @firewall_rule.ip_range %>
+</p>
+
+
+<%= link_to 'Edit', edit_firewall_rule_path(@firewall_rule) %> |
+<%= link_to 'Back', firewall_rules_path %>

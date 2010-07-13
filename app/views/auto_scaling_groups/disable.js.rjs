@@ -1,0 +1,14 @@
+lc = @auto_scaling_group.launch_configuration(true)
+#if lc.unlocked?
+	page << "if ( $('launch_configuration_#{lc.id}') ) {"
+		page["launch_configuration_#{lc.id}"].replace_html(
+			:partial => "launch_configurations/launch_configuration_row",
+			:locals => { :launch_configuration => lc }
+		)
+	page << '}'
+#end
+
+page["auto_scaling_group_#{@auto_scaling_group.id}"].replace_html(
+	:partial => "auto_scaling_groups/auto_scaling_group_row",
+	:locals => { :auto_scaling_group => @auto_scaling_group }
+)

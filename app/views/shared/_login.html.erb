@@ -1,0 +1,27 @@
+<br />
+<% form_tag session_path do %>
+<table border="0" bgcolor="#FFFFFF">
+  <tr>
+    <th>&nbsp;</th>
+    <td>
+      <%= check_box_tag 'using_ldap', '1' %> <%= label_tag 'using_ldap', 'Use LDAP' %><br />
+    </td>
+  <tr>
+    <th><%= label_tag 'login' %></th>
+    <td><%= text_field_tag 'login', @login %></td>
+  </tr>
+  <tr>
+    <th><%= label_tag 'password' %></th>
+    <td><%= password_field_tag 'password', nil %></td>
+  </tr>
+  <tr>
+    <th>&nbsp;</th>
+    <td>
+		<%= check_box_tag 'remember_me', '1', @remember_me %> <%= label_tag 'remember_me', 'Remember Me' %><br />
+		<%= submit_tag 'Log in', :disable_with => "Signing in&hellip;" %>
+		<%= link_to 'Forgot Password?', forgot_password_path %>
+    </td>
+  </tr>
+</table>
+<% end %>
+

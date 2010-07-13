@@ -1,0 +1,46 @@
+<%= javascript_tag "Editable.setupAll('.firewall-rule-editable'); $('firewall_rules_total').innerHTML = '#{@firewall_rules.total_entries}';" %>
+<div id="firewall_rules">
+
+<%= will_paginate_remote @firewall_rules, 'firewall_rules' %>
+
+<table>
+  <thead>
+  <tr>
+    <th><% if @firewall_rules.total_entries > 0 %><%= better_select_all_check_box :select_all_firewall_rules, :firewall_rule %><% end %></th>
+    <th <%= sort_td_class_helper "name" %>>
+      <%= firewall_rules_sort_link "Name", "name" %>
+    </th>
+    <th>
+        Groups 
+    </th>
+    <th <%= sort_td_class_helper "ip_range" %>>
+      <%= firewall_rules_sort_link "IP Range", "ip_range" %>
+    </th>
+    <th <%= sort_td_class_helper "protocol" %>>
+      <%= firewall_rules_sort_link "Protocol", "protocol" %>
+    </th>
+    <th <%= sort_td_class_helper "from_port" %>>
+      <%= firewall_rules_sort_link "From Port", "from_port" %>
+    </th>
+    <th <%= sort_td_class_helper "to_port" %>>
+      <%= firewall_rules_sort_link "To Port", "to_port" %>
+    </th>
+    <th <%= sort_td_class_helper "group_user_id" %>>
+      <%= firewall_rules_sort_link "Source Account ID", "group_user_id" %>
+    </th>
+    <th <%= sort_td_class_helper "group_name" %>>
+      <%= firewall_rules_sort_link "Source Group", "group_name" %>
+    </th>
+	<th <%= sort_td_class_helper "is_enabled" %>>
+      <%= firewall_rules_sort_link "Enabled", "is_enabled" %>
+    </th>
+  </tr>
+  </thead>
+  <tbody id="firewall_rule_records">
+    <%= render :partial => "firewall_rules/firewall_rule", :collection => @firewall_rules %>
+  </tbody>
+</table>
+
+<%= will_paginate_remote @firewall_rules, 'firewall_rules' %>
+
+</div>

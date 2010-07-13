@@ -1,0 +1,123 @@
+<%
+    @server_images = @provider_account.server_images.collect{|a| a if a.is_enabled?}.compact.sort{ |a,b| a.name.downcase <=> b.name.downcase }
+    @key_pairs = @provider_account.key_pairs.sort{ |a,b| a.name.downcase <=> b.name.downcase }
+    @volumes = @provider_account.volumes.collect{|a| a if a.is_enabled?}.compact.sort{ |a,b| a.name.downcase <=> b.name.downcase }
+    @addresses = @provider_account.addresses.collect{|a| a if a.is_enabled?}.compact.sort{ |a,b| a.name.downcase <=> b.name.downcase }
+    @security_groups = @provider_account.security_groups.sort{ |a,b| a.name.downcase <=> b.name.downcase }
+    @users = User.find(:all, :order => :login)
+%>
+<ul class="tabselector" id="tabcontrol1">
+    <li class="tab-selected" id="instances_tab">
+        <%= link_to_function(
+			'Instances',
+			"tabselect($('instances_tab'));
+			paneselect($('instances_pane'));
+			return true;",
+			:href => '#instances'
+		) %>
+    </li>
+    <li class="tab-unselected" id="server_profile_tab">
+        <%= link_to_function(
+			'Server Profile',
+			"tabselect($('server_profile_tab')); paneselect($('server_profile_pane')); return true;",
+			:href => '#server_profile'
+		) %>
+    </li>
+    <li class="tab-unselected" id="launch_configurations_tab">
+        <%= link_to_function(
+			'Launch Configurations',
+			"loadDiv($('server_#{ @server.id }_resource_bundles_index'), '" + server_resource_bundles_url(@server) + "'); tabselect($('launch_configurations_tab')); paneselect($('launch_configurations_pane')); return true;",
+			:href => '#launch_configurations'
+		)%>
+    </li>
+    <li class="tab-unselected" id="network_tab">
+        <%= link_to_function(
+			'Networking',
+			"tabselect($('network_tab')); paneselect($('network_pane')); return true;",
+			:href => '#network'
+		) %>
+    </li>
+	<li class="tab-unselected" id="dns_tab">
+        <%= link_to_function(
+			'DNS',
+			"loadPane($('dns_pane'), '" + server_dns_hostnames_url(@server) + "'); tabselect($('dns_tab')); paneselect($('dns_pane')); return true;",
+			:href => '#dns'
+		) %>
+	</li>
+    <li class="tab-unselected" id="operations_tab">
+        <%= link_to_function('Operations',
+			"loadDiv($('server_#{@server.id}_operations_index'), '" + server_operations_url(@server) + "');
+			tabselect($('operations_tab'));
+			paneselect($('operations_pane'));
+			return true;",
+			:href => '#operations'
+		) %>
+    </li>
+    <li class="tab-unselected" id="server_tasks_tab">
+        <%= link_to_function('Tasks',
+			"loadDiv($('server_#{@server.id}_server_tasks_index'), '" + server_server_tasks_url(@server) + "');
+			tabselect($('server_tasks_tab'));
+			paneselect($('server_tasks_pane'));
+			return true;",
+			:href => '#server_tasks'
+		) %>
+    </li>
+    <li class="tab-unselected" id="security_tab">
+        <%= link_to_function(
+			'Security',
+			"tabselect($('security_tab')); paneselect($('security_pane')); return true;",
+			:href => '#security'
+		) %>
+    </li>
+</ul>
+<div id="pane-content">
+<ul class="panes" id="panecontrol1">
+    <li id="instances_pane" class="pane-selected">
+		<div id="server_<%= @server.id %>_instances_index"></div>
+	</li>
+    <li id="server_profile_pane" class="pane-unselected">
+        <%= render :partial => 'server_profile' %>
+    </li>
+    <li id="launch_configurations_pane" class="pane-unselected">
+		<div id="server_<%= @server.id %>_resource_bundles_index"></div>
+	</li>
+    <li id="network_pane" class="pane-unselected">
+        <%= render :partial => 'network' %>
+    </li>
+	<li id="dns_pane" class="pane-unselected"></li>
+    <li id="operations_pane" class="pane-unselected">
+		<h1>Operations</h1><br/>
+		<div id="server_<%= @server.id %>_operations_index"></div>
+	</li>
+    <li id="server_tasks_pane" class="pane-unselected">
+		<h1>Server Tasks</h1><br/>
+		<div id="server_<%= @server.id %>_server_tasks_index"></div>
+	</li>
+    <li id="security_pane" class="pane-unselected">
+        <%= render :partial => 'security' %>
+    </li>
+</ul>
+</div>
+<%= javascript_tag "
+    var anchor = '';
+    if (location.hash != '') {
+        anchor = location.hash.substring(1, location.hash.length);
+        if (anchor == 'launch_configurations') {
+			loadDiv($('server_#{ @server.id }_resource_bundles_index'), '" + server_resource_bundles_url(@server) + "');
+        }
+		if (anchor == 'dns') {
+			loadPane($(anchor+'_pane'), '#{server_dns_hostnames_url(@server)}');
+		}
+        if (anchor == 'operations') {
+			loadDiv($('server_#{@server.id}_operations_index'), '" + server_operations_url(@server) + "');
+        }
+        if (anchor == 'server_tasks') {
+			loadDiv($('server_#{@server.id}_server_tasks_index'), '" + server_server_tasks_url(@server) + "');
+        }
+        if ($(anchor+'_pane') != null) {
+            tabselect($(anchor+'_tab'));
+            paneselect($(anchor+'_pane'));
+        }
+    }
+" %>
+<%= javascript_tag(remote_function(:url => server_instances_url(@server), :method => :get) ) %>

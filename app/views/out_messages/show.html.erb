@@ -1,0 +1,38 @@
+<p>
+  <b>Provider account:</b>
+  <%=h @out_message.provider_account_id %>
+</p>
+
+<p>
+  <b>Message ID:</b>
+  <%=h @out_message.message_id %>
+</p>
+
+<p>
+  <b>Message:</b>
+  <%=h @out_message.message %>
+</p>
+
+<p>
+  <b>Recepient:</b>
+  <%=h @out_message.recipient %>
+</p>
+
+<p>
+  <b>Handler:</b>
+  <%=h @out_message.handler %>
+</p>
+
+<p>
+  <b>Data:</b>
+  <%=h @out_message.data %>
+</p>
+
+<p>
+  <b>Sent at:</b>
+  <%=h @out_message.sent_at %>
+</p>
+
+
+<%= link_to 'Edit', edit_out_message_path(@out_message) %> |
+<%= link_to 'Back', out_messages_path %>

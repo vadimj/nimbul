@@ -1,0 +1,2 @@
+class GroupFirewallRule < FirewallRule
+end

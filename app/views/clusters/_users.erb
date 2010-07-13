@@ -1,0 +1,41 @@
+<% remote_form_for :user,
+    :url => cluster_users_path(@cluster),
+    :html => { :method => 'post' } do |f| %>
+    <h1>Cluster Administrators</h1>
+    The following users have full access to the cluster.
+    <br />
+    <br />
+    <table>
+    <tbody id="users">
+        <%= render :partial => 'user', :collection => @cluster.provider_account.users, :locals => { :f => f } %>
+        <%= render :partial => 'user', :collection => @cluster.users, :locals => { :f => f } %>
+    </tbody>
+    <tr>
+    <td colspan="2">
+    <%= text_field_with_auto_complete :user, :id,
+        {
+            :autocomplete => 'off',
+            :class => 'auto_complete',
+            :value => 'Add Another Admin',
+            :onfocus => "if ($(this).value == 'Add Another Admin') { $(this).value = ''; }"
+        },
+        {
+            :skip_style => true,
+            :indicator => 'indicator',
+            :min_chars => 3,
+            :select => 'user_id',
+            :after_update_element => "function(element,value) { element.hide(); element.form.onsubmit(); }",
+        }
+    %>
+    <%= image_tag('indicator.gif',
+              :align => "absmiddle",
+              :border => 0,
+              :id => 'indicator',
+              :style => 'display: none;' ) %>
+    <div id="status_message"></div>
+    </td>
+    </tr>
+    </table>
+    <%#= submit_tag "Update", :disable_with => "Updating&hellip;"  %>
+<% end %>
+

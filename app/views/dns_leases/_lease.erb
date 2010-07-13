@@ -1,0 +1,3 @@
+<tr id="lease_<%= lease.id %>" class="selectable hostname_lease_record <%= lease.active? ? 'lease-active' : 'lease-inactive' %>">
+    <%= render :partial => 'dns_leases/lease_row', :locals => { :lease => lease } %>
+</tr>

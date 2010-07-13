@@ -1,0 +1,16 @@
+#!/bin/bash
+
+echo "Starting Flock and daemons, please wait..."
+
+# source /etc/cloudrc if it exists
+if [ -f /etc/cloudrc ]; then
+    source /etc/cloudrc
+fi
+
+cd /var/nyt/www/console
+script/server -d
+script/daemons start
+
+echo "Done"
+
+exit 0

@@ -1,0 +1,52 @@
+<h1>Editing in_message</h1>
+
+<% form_for(@in_message) do |f| %>
+  <%= f.error_messages %>
+
+  <p>
+    <%= f.label :provider_account_id %><br />
+    <%= f.text_field :provider_account_id %>
+  </p>
+  <p>
+    <%= f.label :type %><br />
+    <%= f.text_field :type %>
+  </p>
+  <p>
+    <%= f.label :message_id, 'Message ID' %><br />
+    <%= f.text_field :message_id %>
+  </p>
+  <p>
+    <%= f.label :message %><br />
+    <%= f.text_field :message %>
+  </p>
+  <p>
+    <%= f.label :recipient %><br />
+    <%= f.text_field :recipient %>
+  </p>
+  <p>
+    <%= f.label :sender %><br />
+    <%= f.text_field :sender %>
+  </p>
+  <p>
+    <%= f.label :handler %><br />
+    <%= f.text_field :handler %>
+  </p>
+  <p>
+    <%= f.label :data %><br />
+    <%= f.text_area :data %>
+  </p>
+  <p>
+    <%= f.label :state %><br />
+    <%= f.text_field :state %>
+  </p>
+  <p>
+    <%= f.label :received_at %><br />
+    <%= f.datetime_select :received_at %>
+  </p>
+  <p>
+    <%= f.submit "Update" %>
+  </p>
+<% end %>
+
+<%= link_to 'Show', @in_message %> |
+<%= link_to 'Back', in_messages_path %>

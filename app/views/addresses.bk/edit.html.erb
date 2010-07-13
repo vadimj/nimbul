@@ -1,0 +1,28 @@
+<h1>Editing address</h1>
+
+<% form_for(@address) do |f| %>
+  <%= f.error_messages %>
+
+  <p>
+    <%= f.label :provider_account_id %><br />
+    <%= f.text_field :provider_account_id %>
+  </p>
+  <p>
+    <%= f.label :name %><br />
+    <%= f.text_field :name %>
+  </p>
+  <p>
+    <%= f.label :public_ip %><br />
+    <%= f.text_field :public_ip %>
+  </p>
+  <p>
+    <%= f.label :instance_id %><br />
+    <%= f.text_field :instance_id %>
+  </p>
+  <p>
+    <%= f.submit "Update" %>
+  </p>
+<% end %>
+
+<%= link_to 'Show', @address %> |
+<%= link_to 'Back', addresses_path %>

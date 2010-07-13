@@ -1,0 +1,33 @@
+<%- readonly = provider_account_parameter.is_readonly? %>
+<%- protected = provider_account_parameter.is_protected? %>
+<%- showonly = ( showonly.nil? ? !provider_account_parameter.new_record? : showonly ) %>
+<% fields_for "provider_account[provider_account_parameter_attributes][]", provider_account_parameter do |f| %>
+<% content_tag_for :tr, provider_account_parameter, :readonly => (readonly || showonly), :class => (readonly || showonly) ? 'disabled' : '' do %>
+    <% if provider_account_parameter.new_record? or showonly %>
+    	<td>&nbsp;</td>
+    <% else %>
+        <%= f.hidden_field :id, :index => nil %>
+    	<td class="handle">[drag]</td>
+    <% end %>
+	<td>
+		<%= check_box_tag nil, '', protected, :disabled => (readonly || showonly), :onclick => "$(this).next('.is_protected').value = ($(this).checked ? '1' : '0');" %>
+        <%= f.hidden_field :is_protected, :index => nil, :class => 'is_protected' %>
+	</td>
+    <td><%= f.text_field :name, :readonly => (readonly || showonly), :index => nil %></td>
+    <% if protected and showonly %>
+    	<td><%= text_field_tag :value, '[sensitive]', :readonly => (readonly || showonly), :class => 'value' %></td>
+    <% else %>
+    	<td><%= f.text_field :value, :readonly => (readonly || showonly), :index => nil, :class => 'value' %></td>
+    <% end %>
+    <td>
+    <% if (readonly || showonly) %>
+		<span class="disabled">readonly</span>
+    <% elsif provider_account_parameter.new_record? %>
+        <%= link_to_function 'remove', "$(this).up('.provider_account_parameter').remove()"%>
+	<% else %>
+        <%= link_to_function 'remove', "mark_for_destroy(this, $(this).up('.provider_account_parameter'))"%>
+        <%= f.hidden_field :should_destroy, :index => nil, :class => 'should_destroy' %>
+    <% end %>
+    </td>
+<% end %>
+<% end %>

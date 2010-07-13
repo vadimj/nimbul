@@ -1,0 +1,124 @@
+<%
+	@cluster_groups = @provider_account.clusters.sort{|a,b| a.name.downcase <=> b.name.downcase }.inject([]) do |h,c|
+		cluster = { :id => c.id, :name => c.name }
+		
+		cluster[:servers] = c.servers.inject([]) do |sh,s|
+			id = s.id
+			server = { :id => id, :name => s.name }
+		
+			server[:revisions] = ServerProfileRevision.find_all_by_server_profile_id(id).inject([]) do |sprh,spr|
+				sprh << { :id => spr.id, :name => spr.commit_message, :revision => spr.revision }
+			end.sort { |a,b| a[:revision] <=> b[:revision] }
+		
+			sh << server
+		
+		end.sort { |a,b| a[:name].downcase <=> b[:name].downcase }
+		
+		h << cluster
+	end.sort { |a,b| a[:name].downcase <=> b[:name].downcase }.to_json
+%>
+<script type="text/javascript">
+	var g_clusters = eval("(<%= escape_javascript(@cluster_groups) -%>)");
+	
+	var g_cluster_id = <%= @cluster.id rescue 0 %>;
+	var g_server_id  = <%= @launch_configuration.server_id || 0 %>;
+	var g_revision_id = <%= @launch_configuration.server_profile_revision_id || 0 %>;
+	
+	function getClusterBySelectValue() {
+		return g_clusters.find(function(c) { return (c.id == $('server_cluster_id').getValue()) });
+	}
+	
+	function getServerBySelectValue() {
+		if (cluster = getClusterBySelectValue()) {
+			return cluster.servers.find( function(s) { return s.id == $('launch_configuration_server_id').getValue() });
+		}
+	}
+	
+	function getIndex(select_element, value) {
+		options = $A(select_element.getElementsByTagName('option'))
+		return options.find(function(o) {
+			return (o.value == value); 
+		})
+	}
+	
+	function setSelectValue(element, value) {
+		element.selectedIndex = getIndex(element, value);
+		element.value = value;
+	}
+	
+	function BasedOnChanged() {
+		based_on = $('lc_based_on').getValue();
+		if (based_on == 'existing') {
+			$('existing_configuration').show();
+			$('new_configuration').hide();
+		} else {
+			$('existing_configuration').hide();
+			$('new_configuration').show();
+		}
+	}
+	
+	function ClusterSelected() {
+		cluster = getClusterBySelectValue();
+
+		if (cluster) {
+			server_options = $('launch_configuration_server_id').options;
+			server_options.length = 1;
+			$('launch_configuration_server_id').selectedIndex = 0;
+			
+			found_selected = false;
+			cluster.servers.each(function(server) {
+				default_selected = is_selected = (server.id == "<%= @launch_configuration.server_id %>");
+				if (default_selected == true) {
+					found_selected = true;
+				}
+				server_options[server_options.length] = new Option(server.name, server.id, default_selected, is_selected);
+			});
+			
+			$('launch_configuration_server_profile_revision_id').options.length = 1;
+			$('launch_configuration_server_profile_revision_id').selectedIndex = 0;
+			
+			if (found_selected) {
+				ServerSelected();
+			}
+		} else {
+			$('launch_configuration_server_id').options.length = 1;
+			$('launch_configuration_server_id').selectedIndex = 0;
+			$('launch_configuration_server_profile_revision_id').options.length = 1;
+			$('launch_configuration_server_profile_revision_id').selectedIndex = 0;
+		}
+	}
+	
+	function ServerSelected() {
+		server = getServerBySelectValue();
+
+		if (server) {
+			revision_options = $('launch_configuration_server_profile_revision_id').options;
+			revision_options.length = 1;
+			$('launch_configuration_server_profile_revision_id').selectedIndex = 0;
+			
+			server.revisions.each(
+				function(revision) {
+					default_selected = is_selected = (revision.id == "<%= @launch_configuration.server_profile_revision_id %>");
+					revision_options[revision_options.length] = new Option(revision.revision + ': ' + revision.name, revision.id, default_selected, is_selected);
+				}
+			)
+		}
+	}
+
+	document.observe('dom:loaded', function() {
+		BasedOnChanged();
+		
+		if ($('lc_based_on').getValue() == 'existing') {
+			setSelectValue($('server_cluster_id'), g_cluster_id);
+			ClusterSelected();
+
+			setSelectValue($('launch_configuration_server_id'), g_server_id);
+			ServerSelected();
+
+			setSelectValue($('launch_configuration_server_profile_revision_id'), g_revision_id);
+		}
+		$('lc_based_on').observe('change', BasedOnChanged);
+		$('server_cluster_id').observe('change', ClusterSelected);
+		$('launch_configuration_server_id').observe('change', ServerSelected);
+	});
+</script>

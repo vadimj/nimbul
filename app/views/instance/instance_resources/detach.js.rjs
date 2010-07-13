@@ -1,0 +1,7 @@
+if @error_message.blank? and
+    page["instance_#{@instance.id}_#{@instance_resource.short_type}_#{@instance_resource.id}"].replace_html :partial => "instance/#{@instance_resource.short_types}/row", :object => @instance_resource
+    page << "Editable.setupAll('.instance-resource-#{@instance_resource.id}-editable');"
+else
+    page['error_redbox'].replace_html :partial => 'shared/error_redbox'
+    page['error_redbox'].appear
+end

@@ -1,0 +1,22 @@
+<% fields_for 'provider_account[security_group_attributes][]', security_group do |f| %>
+    <% if security_group.new_record? %>
+        <td><%= f.text_field :name, :index => nil %></td>
+        <td colspan="3"><%= f.text_field :description, :class => :long, :index => nil %></td>
+        <td>
+            <%= submit_tag "Add", :name => 'add', :disable_with => 'Please wait&hellip;' %>
+            <%= link_to_function "cancel", "$(this).up('.security_group_record').remove()" %>
+        </td>
+    <% else %>
+        <%= f.hidden_field :id, :index => nil %>
+        <td>
+            <%= link_to h(security_group.name), edit_security_group_path(security_group) %>
+            <%=h security_group.status_message %>
+        </td>
+		<td><%=h security_group.description %></td>
+        <td><%= link_to security_group.instances.count, security_group_instances_path(security_group) %></td>
+        <td><%= link_to security_group.servers.count, security_group_servers_path(security_group) %></td>
+        <% if @controls_enabled %>
+			<td><%= destroy_security_group_link 'Delete', security_group %></td>
+		<% end %>
+    <% end %>
+<% end %>

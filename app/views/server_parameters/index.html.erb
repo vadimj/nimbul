@@ -1,0 +1,24 @@
+<h1>Listing server_params</h1>
+
+<table>
+  <tr>
+    <th>Server</th>
+    <th>Name</th>
+    <th>Value</th>
+  </tr>
+
+<% for server_param in @server_params %>
+  <tr>
+    <td><%=h server_param.server_id %></td>
+    <td><%=h server_param.name %></td>
+    <td><%=h server_param.value %></td>
+    <td><%= link_to 'Show', server_param %></td>
+    <td><%= link_to 'Edit', edit_server_param_path(server_param) %></td>
+    <td><%= link_to 'Destroy', server_param, :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New server_param', new_server_param_path %>

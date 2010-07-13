@@ -1,0 +1,3 @@
+page['servers'].hide
+page['servers'].replace_html :partial => "servers/list", :object => @cluster
+page['servers'].appear

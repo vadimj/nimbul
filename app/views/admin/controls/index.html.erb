@@ -1,0 +1,20 @@
+<h1>Control Panel</h1>
+<ul>
+    <li><%= link_to "Users (#{@users})", admin_users_path %></li>
+    <li>
+        Services
+        <ul>
+        <li><%= link_to "Types (#{@service_types})", service_types_path %></li>
+        <li><%= link_to "Providers (#{@service_providers})", service_providers_path %></li>
+        <li><%= link_to "Overrides (#{@service_overrides})", service_overrides_path %></li>
+        </ul>
+    </li>
+    <% if_in_beta? do -%>
+        <li><%= link_to 'Beta Invitations', admin_invites_path %></li>
+    <% end -%>
+    <li><%= link_to "Daemons (#{@daemons})", daemons_path %></li>
+    <li><%= link_to "Incoming Messages (#{@in_messages})", in_messages_path %></li>
+    <li><%= link_to "Outgoing Messages (#{@out_messages})", out_messages_path %></li>
+    <!--li><%= link_to "Cloud Providers", providers_path %></li-->
+    <li><%= link_to "Logged Exceptions (#{@exceptions})", logged_exceptions_path %></li>
+</ul>

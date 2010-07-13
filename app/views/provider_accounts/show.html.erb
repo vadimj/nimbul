@@ -1,0 +1,10 @@
+<% subtitle @provider_account %>
+
+<h1>
+Provider Account: <%= pagetitle @provider_account, { :edit_in_place => true } %>,
+Last Refreshed: <%= time_ago(@provider_account.refreshed_at) %>
+</h1>
+
+[ <%= link_to 'edit', edit_provider_account_path(@provider_account) %> ]
+
+<%= render :partial => 'tabs' %>

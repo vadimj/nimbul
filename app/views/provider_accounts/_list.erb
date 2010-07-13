@@ -1,0 +1,31 @@
+<%= javascript_tag "$('provider_accounts_total').innerHTML = '#{@provider_accounts.total_entries}';" %>
+<div id="provider_accounts">
+
+<%= will_paginate_remote @provider_accounts, 'provider_accounts' %>
+
+<table>
+  <thead>
+  <tr>
+    <th><% if @provider_accounts.total_entries > 0 %><%= select_all_check_box 'select_all' %><% end %></th>
+    <th <%= sort_td_class_helper "name" %>>
+      <%= provider_accounts_sort_link "Name", "name" %>
+    </th>
+    <th <%= sort_td_class_helper "description" %>>
+      <%= provider_accounts_sort_link "Description", "description" %>
+    </th>
+    <th>
+      Instances
+    </th>
+    <th <%= sort_td_class_helper "refreshed_at" %>>
+      <%= provider_accounts_sort_link "Last Refreshed", "refreshed_at" %>
+    </th>
+  </tr>
+  </thead>
+  <tbody id="provider_account_records">
+    <%= render :partial => "provider_account", :collection => @provider_accounts %>
+  </tbody>
+</table>
+
+<%= will_paginate_remote @provider_accounts, 'provider_accounts' %>
+
+</div>

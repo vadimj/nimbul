@@ -1,0 +1,9 @@
+<% subtitle h(@provider_account.name)+': Key Pairs' %>
+
+<h1><%= h(@provider_account.name)+': Key Pairs' %></h1>
+
+<br />
+
+<% form_for @provider_account do |f| %>
+  <%= render :partial => "list", :object => @provider_account, :locals => { :f => f }  %>
+<% end %>

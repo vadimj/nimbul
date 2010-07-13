@@ -1,0 +1,59 @@
+<%= javascript_tag "Editable.setupAll('.server-editable');" %>
+<div id="servers">
+
+<%= will_paginate_remote @servers, nil %>
+
+<table>
+  <thead>
+  <tr>
+    <% unless @parent.is_a?(User) %>
+    <th>
+        <% if @servers.total_entries > 0 -%>
+            <%= better_select_all_check_box :select_all_servers, "#{@parent_type}-#{@parent.id}-server" -%>
+        <% end -%>
+    </th>
+    <% end %>
+    <th <%= sort_td_class_helper "name" %>>
+        <%= servers_sort_link "Name", "name" %>
+    </th>
+    <% if @parent.is_a?(User) %>
+        <th <%= sort_td_class_helper "cluster_id" %>>
+            <%= servers_sort_link "Cluster", "cluster_id" %>
+        </th>
+    <% end %>
+    <th>
+        Instances
+    </th>
+    <th <%= sort_td_class_helper "server_profile_revision_id" %>>
+        <%= servers_sort_link "Profile", "server_profile_revision_id" %>
+    </th>
+    <th>
+        Groups 
+    </th>
+    <th <%= sort_td_class_helper "key_name" %>>
+        <%= servers_sort_link "Key", "key_name" %>
+    </th>
+    <th>
+        Zones
+    </th>
+    <th>
+        Addresses
+    </th>
+    <th>
+        Storage
+    </th>
+    <% if @cluster %>
+        <th>
+            Actions
+        </th>
+    <% end %>
+  </tr>
+  </thead>
+  <tbody id="server_records">
+    <%= render :partial => "servers/server", :collection => @servers %>
+  </tbody>
+</table>
+
+<%= will_paginate_remote @servers, nil %>
+
+</div>

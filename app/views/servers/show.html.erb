@@ -1,0 +1,6 @@
+<% subtitle @server %>
+
+<h1><%= pagetitle @server, { :edit_in_place => true, :create_links => true } %></h1>
+[ <%= link_to 'edit', edit_server_path(@server) %> ]
+
+<%= render :partial => 'tabs' %>

@@ -1,0 +1,91 @@
+<%
+    @server_images = @provider_account.server_images.collect{|a| a if a.is_enabled?}.compact.sort{ |a,b| a.name.downcase <=> b.name.downcase }
+    @key_pairs = @provider_account.key_pairs.sort{ |a,b| a.name.downcase <=> b.name.downcase }
+    @volumes = @provider_account.volumes.collect{|a| a if a.is_enabled?}.compact.sort{ |a,b| a.name.downcase <=> b.name.downcase }
+	@clusters = @provider_account.clusters.sort { |a,b| a.name.downcase <=> b.name.downcase }
+	is_new = @launch_configuration.new_record?
+	have_existing_config = (@launch_configuration.server_id && @launch_configuration.server_profile_revision_id)
+%>
+
+<%= render :partial => "launch_configurations/dynamic_server_profiles" %>
+
+<%= f.error_messages %>
+<table width="335px">
+	<thead>
+		<tr>
+			<th><%= f.label :name, 'Name' %></th>
+			<td><%= f.text_field :name %></td>
+		</tr>
+	
+		<%- if not is_new %>
+		<tr>
+			<th><%= f.label :launch_configuration_name, 'Internal Name' %></th>
+			<td><%= h @launch_configuration.name %></td>
+		</tr>
+		<%- end %>
+		
+		<tr>
+			<th>Based On:</th>
+			<td>
+				<select id="lc_based_on" name="lc_based_on">
+					<%- if @launch_configuration.new_record? or have_existing_config %>
+						<option value="existing" selected="selected">Existing Server Profile</option>
+						<option value="manual">Manual Profile Configuration</option>
+					<%- else %>
+						<option value="existing">Existing Server Profile</option>
+						<option value="manual" selected="selected">Manual Profile Configuration</option>
+					<%- end %>
+				</select>
+			</td>
+		</tr>
+		<tr><td colspan="2" align="center">&nbsp;</td></tr>
+	</thead>
+
+
+	<tbody id="existing_configuration" style="display:none;">
+		<tr>
+			<th><%= label :server, :cluster_id %></th>
+			<td><%= collection_select :server, :cluster_id, @clusters, :id, :name, :include_blank => 'Choose Cluster', :index => (@cluster.nil? ? '0' : @cluster.id) %></td>
+		</tr>
+		<tr>
+			<th><%= f.label :server_id %></th>
+			<td><%= f.collection_select :server_id, [], :id, :name, :include_blank => "Choose Server" %></td>
+		</tr>
+		<tr>
+			<th><%= f.label :revision_id %></th>
+			<td><%= f.collection_select :server_profile_revision_id, [], :id, :name, :include_blank => "Choose Revision" %></td>
+		</tr>
+	
+	</tbody>
+
+	<tfoot id="new_configuration" style="display:none;">
+		<tr>
+			<th><%= f.label :image_id %></th>
+			<td><%= f.collection_select :image_id, @server_images, :image_id, :name, :include_blank => "Choose Image" %></td>
+		</tr>
+		<tr>
+			<th><%= f.label :instance_type %></th>
+			<td><%= f.select :instance_type, EC2_INSTANCE_TYPES %></td>
+		</tr>
+		<tr>
+			<th><%= f.label :key_name %> (optional, but strongly recommended)</th>
+			<td><%= f.collection_select :key_name, @key_pairs, :name, :name %></td>
+		</tr>
+		<tr>
+			<th><%= f.label :ramdisk_id %> (optional)</th>
+			<td><%= f.text_field :ramdisk_id %></td>
+		</tr>
+		<tr>
+			<th><%= f.label :kernel_id %> (optional)</th>
+			<td><%= f.text_field :kernel_id %></td>
+		</tr>
+		<tr>
+			<th><%= f.label :user_data %> (optional)</th>
+			<td>
+			  <%= link_to_function 'show/hide', "$$('.startup_script').each(function(d) { Effect.toggle(d, 'appear') });" %>
+			  <br />
+			  <%= f.text_area :user_data, :size => '90x15', :class => 'startup_script', :style => "display:none" %>
+			</td>
+		</tr>
+	</tfoot>
+</table>

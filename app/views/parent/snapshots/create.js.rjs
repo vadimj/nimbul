@@ -1,0 +1,7 @@
+if @error_message.blank? and @snapshot
+    page.insert_html :bottom, 'snapshot_records', :partial => 'cloud_snapshots/snapshot', :object => @snapshot
+    page['small_redbox'].hide
+else
+    page['error_redbox'].replace_html :partial => 'shared/error_redbox'
+    page['error_redbox'].appear
+end

@@ -1,0 +1,18 @@
+<% subtitle h(@provider_account.nil? ? '' : @provider_account.name + ': ') + 'Elastic IPs' %>
+
+<h1><%= pagetitle h(@provider_account.nil? ? '' : @provider_account.name + ': ') + 'Elastic IPs' %></h1>
+
+<br />
+
+<% @provider_accounts.each do |provider_account| %>
+<span <% if provider_account.id == @provider_account.id %>class='selected'<% else %>class='selectable'<% end %>>
+<%= selectable_filter_link provider_account.name, provider_account_addresses_path(provider_account), 'addresses' %></span>&nbsp;
+<% end %>
+
+<br />
+<br />
+
+<% form_for @provider_account,
+    :url => update_provider_account_addresses_path(@provider_account) do |f| %>
+  <%= render :partial => "addresses/list", :object => @provider_account, :locals => { :f => f }  %>
+<% end %>

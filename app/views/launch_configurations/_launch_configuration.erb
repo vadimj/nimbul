@@ -1,0 +1,4 @@
+<%- row_alt_name = cycle('even', 'odd') %>
+<tr id="launch_configuration_<%= launch_configuration.id %>" class="selectable launch_configuration_record_<%=row_alt_name%>">
+	<%= render :partial => 'launch_configurations/launch_configuration_row', :locals => { :launch_configuration => launch_configuration } %>
+</tr>

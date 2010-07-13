@@ -1,0 +1,25 @@
+<% subtitle h(@provider_account.name + ': Exported Instance List') %>
+
+<h1><%= pagetitle h(@provider_account.name + ': Exported Instance List') %></h1>
+
+<p>
+  <%= link_to_function 'Close', "window.close();" %>
+</p>
+
+<br />
+
+<p>
+  <b>Account:</b> <%=h @provider_account.name %> [<%=h @provider_account.id %>]
+</p>
+
+<br />
+
+<%= text_area_tag :instance_list, @instance_list, :size=>'95x30', :wrap => :off, :readonly => true %>
+
+<br />
+<br />
+
+<p>
+  <%= link_to_function 'Close', "window.close();" %>
+</p>
+

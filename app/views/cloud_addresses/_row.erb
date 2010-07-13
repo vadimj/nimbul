@@ -1,0 +1,28 @@
+<% if @parent.is_a?(ProviderAccount) %>
+    <td class="select-handle"><%= better_check_box_tag "address_ids[]", row.id, false, :selectable_address %></td>
+<% end %>
+<td><%= edit_in_place(row, :name, :class => 'address-editable') %></td>
+<% if @parent.is_a?(User) -%>
+    <td>
+        <%= link_to row.provider_account.name, provider_account_path(row.provider_account_id) -%>
+    </td>
+<% end -%>
+<td><%=h row.cloud_id %></td>
+<td class="<%=h row.state %>"><%=h row.state %></td>
+<td>
+	<% if row.instance_id.blank? %>
+	    <%= h row.cloud_instance_id %>
+	<% else %>
+	    <%= link_to row.cloud_instance_id, instance_path(row.instance_id) %>
+	<% end %>
+</td>
+<% unless @parent.is_a?(Cluster) %>
+<td>
+      <%- row.clusters.each do |cluster| -%>
+            <span id="cloud_resource_<%= row.id %>_cluster_<%= cluster.id %>" class="cluster">
+                  <%= link_to h(cluster.name), cluster_path(cluster) %> [<%= remove_cloud_resource_cluster_link 'X', row, cluster %>]<br/>
+            </span>
+      <%- end -%>
+      <%= add_cloud_resource_cluster_link('Add', row) %>
+</td>
+<% end %>

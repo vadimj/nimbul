@@ -1,0 +1,84 @@
+#launch_configuration_table,
+#auto_scaling_group_table {
+	width: 100%;
+	background-color: #FFF;
+}
+
+#auto_scaling_group_table th.state,
+#launch_configuration_table th.state { width: 6.5em; }
+
+#auto_scaling_group_table th.zones,
+#auto_scaling_group_table th.max_size,
+#auto_scaling_group_table th.min_size,
+#auto_scaling_group_table th.desired_capacity,
+#auto_scaling_group_table th.cooldown {
+	
+}
+
+#auto_scaling_group_table th.name,
+#auto_scaling_group_table th.launch_configuration { }
+
+.auto_scaling_trigger_table,
+.asg_group_instances {
+	width: 100%;
+	background-color: #FFF;
+}
+
+table#auto_scaling_group_table .controls {
+	width: 104px !important;
+}
+
+table#launch_configuration_table .controls,
+table#auto_scaling_trigger_table .controls {
+	width: 56px;
+}
+
+.controls a { height: 24px; width: 24px; }
+
+/*
+ .controls img,
+.state img {
+	margin:0px;
+	padding:0px;
+	height: 24px;
+	width: 24px;
+}
+*/
+
+.asg_instances,
+.asg_triggers {
+	min-height: 100%;
+	display: table-cell;
+	vertical-align: middle;
+}
+
+.launch_configuration_record_odd,
+.auto_scaling_group_record_odd,
+.auto_scaling_group_triggers_odd,
+.auto_scaling_group_instances_odd {
+	background-color: #FFF;
+}
+
+.launch_configuration_record_even,
+.auto_scaling_group_record_even,
+.auto_scaling_group_instances_even,
+.auto_scaling_group_triggers_even {
+	background-color: #F2F6F3;
+}
+
+.asg_triggers > table,
+.asg_instances > table {
+	width: 100%;
+	border:0;
+	margin-bottom:0;
+}
+
+.asg-sub-title {
+	width: 6em;
+	text-align: center;
+	font-weight: bold;
+}
+
+input.auto_scaling_instance_dns {
+	width: 23em !important;
+}

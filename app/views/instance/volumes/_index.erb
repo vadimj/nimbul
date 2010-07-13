@@ -1,0 +1,32 @@
+<table>
+    <tr><th>Actions</th><th>Name</th><th>Storage</th><th>State</th><th>Details</th><th>Mount Point</th><th>Force Allocation</th></tr>
+    <tbody id="instance_volumes">
+        <%= render :partial => 'instance/volumes/list', :locals => { :volumes => @instance_volumes } %>
+    </tbody>
+    <tbody id="add_volume" <% unless @instance.can_use_more_of?('InstanceVolume') %>style="display:none;"<% end %>>
+        <tr><td align="right" colspan="7">
+            [ <%= add_instance_volume_link 'add', @instance %> ]
+        </td></tr>
+    </tbody>
+    <tbody id="new_volume" style="display:none;">
+        <tr>
+            <td colspan="7">
+            <% remote_form_for :instance_resource,
+                :url => instance_instance_resources_path(@instance),
+                :html => { :method => :post } do |f| %>
+                <%= hidden_field_tag :anchor, 'volumes' %>
+                <%= hidden_field_tag :update, 'instance_volumes' %>
+                <%= f.hidden_field :state, :value => 'pending' %>
+                <%= f.hidden_field :class_type, :value => 'InstanceVolume' %>
+                <%= f.hidden_field :mount_type, :value => CloudVolume.default_mount_type %>
+                <%#= polymorphic_cloud_resource_select(f, :cloud_resource_type, nil, :cloud_resource_id, nil, [@volumes, @snapshots]) %>
+                <%= f.collection_select :cloud_resource_id, @volumes, :id, :name_zone_state %>
+                <%= f.text_field :mount_point %>
+                <%= f.check_box :force_allocation, :title => 'If checked, this volume will be moved to a new instance even if it is already associated with a running instance' %>
+                <%= f.submit 'Add' %>
+                <%= cancel_add_instance_volume_button 'Cancel', @instance %>
+            <% end %>
+            </td>
+        </tr>
+    </tbody>
+</table>

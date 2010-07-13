@@ -1,0 +1,7 @@
+@addresses.each do |i|
+    page["address_#{i.id}"].replace_html :partial => "addresses/row", :locals => { :address => i }
+    page["address_#{i.id}"].visual_effect :highlight
+end
+page["recent-events"].replace_html "<div class='notice'>#{@message}</div>" if @message
+page["recent-events"].replace_html "<div class='error'>#{@error_message}</div>" if @error_message
+page << "reset_selectable_elements();"

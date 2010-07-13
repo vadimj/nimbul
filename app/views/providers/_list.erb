@@ -1,0 +1,16 @@
+<%= javascript_tag "Editable.setupAll();" %>
+<div id="providers">
+<table>
+    <tr>
+        <th><%= select_all_check_box 'select_all' %></th>
+        <th>Name</th>
+        <th>State</th>
+        <th>PID</th>
+        <th>Last Log Entry</th>
+        <th>Runtime</th>
+    </tr>
+    <tbody id="provider_records">
+        <%= render :partial => "provider", :collection => @providers %>
+    </tbody>
+</table>
+</div>

@@ -1,0 +1,17 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  provider_account_id: 1
+  type: MyString
+  user_name: MyString
+  email: MyString
+  s3_user_id: MyString
+  is_enabled: false
+
+two:
+  provider_account_id: 1
+  type: MyString
+  user_name: MyString
+  email: MyString
+  s3_user_id: MyString
+  is_enabled: false

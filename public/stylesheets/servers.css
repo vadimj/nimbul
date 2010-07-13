@@ -1,0 +1,32 @@
+.owner_amazon {
+    background-color: #FFFF99;
+}
+
+.small {
+    font-size: 11px;
+    line-height: 11px;
+}
+
+tr.server_container_start {
+	border-top: 2px solid grey;
+	border-left: 2px solid gray;
+	border-right: 2px solid gray;
+}
+
+tr.server_container_stop {
+	border-bottom: 2px solid gray;
+	border-left: 2px solid gray;
+	border-right: 2px solid gray;
+}
+
+a.bare-link,
+a.bare-link:hover,
+a.bare-link:link,
+a.bare-link:active,
+a.bare-link:focus,
+a.bare-link:visited {
+	text-decoration: none;
+	border: 0px !important;
+	
+}
+

@@ -1,0 +1,26 @@
+<% subtitle h(@provider_account.nil? ? '' : @provider_account.name + ': ') + 'Recent Events' %>
+
+<h1><%= pagetitle h(@provider_account.nil? ? '' : @provider_account.name + ': ') + 'Recent Events' %></h1>
+
+<br />
+
+<span <% if @provider_account %>class='selectable'<% else %>class='selected'<% end %>>
+	<%= link_to 'All Accounts', events_path %>
+</span>
+
+<br />
+<br />
+
+<% @provider_accounts.each do |provider_account| %>
+<span <% if @provider_account && (provider_account == @provider_account) %>class='selected'<% else %>class='selectable'<% end %>>
+<%= selectable_filter_link provider_account.name, provider_account_events_path(provider_account), 'events' %></span>&nbsp;
+<% end %>
+
+<br />
+<br />
+
+<%= refresh_periodically 'Refresh', 'events', nil, :list, 10 %>
+
+<% form_for :provider_account do |f| %>
+  <%= render :partial => "events/list", :object => @provider_account, :locals => { :f => f }  %>
+<% end %>

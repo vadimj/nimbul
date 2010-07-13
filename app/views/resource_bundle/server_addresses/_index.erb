@@ -1,0 +1,6 @@
+<tbody id="resource_bundle_<%= resource_bundle.id %>_server_addresses">    
+    <%= render :partial => 'resource_bundle/server_addresses/server_address', :collection => resource_bundle.addresses, :locals => { :resource_bundle => resource_bundle } %>
+</tbody>
+<tr id="add_resource_bundle_<%= resource_bundle.id %>_server_address" <% unless resource_bundle.can_use_more_of?('ServerAddress') %>style="display:none;"<% end %>>
+    <%= render :partial => 'resource_bundle/server_addresses/add', :locals => { :resource_bundle => resource_bundle } %>
+</tr>

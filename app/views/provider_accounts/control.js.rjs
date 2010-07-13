@@ -1,0 +1,15 @@
+@provider_accounts ||= []
+if @error_message.blank?
+    @provider_accounts.each do |i|
+        if i.destroyed
+            page["provider_account_#{i.id}"].remove
+        else
+            page["provider_account_#{i.id}"].replace_html :partial => "provider_accounts/row", :locals => { :provider_account => i }
+            page["provider_account_#{i.id}"].visual_effect :highlight
+        end
+    end
+else
+    page['error_redbox'].replace_html :partial => 'shared/error_redbox'
+    page['error_redbox'].appear
+end
+

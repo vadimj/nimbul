@@ -1,0 +1,53 @@
+#!/usr/bin/ruby
+
+#
+# Account: <%= user_script.account.name %> [<%= user_script.account.id %>]
+# Cluster: <%= user_script.cluster.name %> [<%= user_script.cluster.id %>]
+# Server: <%= user_script.server.name %> [<%= user_script.server.id %>]
+#
+
+#### Server Instance Details ####
+
+#
+# AMI: <%= user_script.server.image_id %> - <%= ServerImage.find_by_image_id(user_script.server.image_id).location -%>
+# Default Key: <%= user_script.server.key_name %>
+# Instance Type: <%= user_script.server.type %>
+# Security Groups: <%= user_script.security_groups.join(", ") %>
+#
+
+$:.unshift File.join(File.dirname(__FILE__))
+require 'AWS/EC2'
+require 'basic_configuration'
+require 'aws_context'
+require 'optparse'
+require 'pp'
+
+# Display information about all our '<%= user_script.server.name -%>' instances.
+
+def output_help
+	puts "Reboot an instance by instance id"
+	puts "Usage: #{File.basename(__FILE__)} <instance id>";
+	puts
+	exit 1
+end
+
+# Specify options
+opts = OptionParser.new
+opts.on('-h', '--help')		{ output_help }
+opts.parse!(ARGV) rescue output_help
+
+Signal.trap("INT") do
+	exit 2
+end
+
+name = ARGV[0]
+
+config = BasicConfiguration.new
+ec2 = AwsContext.instance.ec2(*config.keys)
+begin
+	ec2.reboot_instances([name])
+rescue
+	puts "not stopped #{name}"
+	exit 1
+end
+

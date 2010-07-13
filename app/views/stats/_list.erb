@@ -1,0 +1,95 @@
+<% @reserved_instances ||= [] %>
+<h1>Reserved Instances</h1>
+
+<% if @reserved_instances.empty? %>
+    <br/>
+    No instances have been reserved for this account.
+    <br/>
+<% else %>
+<br/>
+<table>
+    <tr>
+        <th>Zone</th>
+        <th>Type</th>
+        <th>Total</th>
+        <th>Reserved</th>
+        <th>Expires</th>
+        <th>Duration (months)</th>
+        <th>Usage Price</th>
+        <th>Fixed Price</th>
+        <th>State</th>
+        <th>Description</th>
+    </tr>
+<% @reserved_instances.sort{|i,j| i.start <=> j.start}.each do |i| %>
+    <tr class="<%= cycle("even", "odd") %>">
+        <td><%= i.zone %></td>
+        <td><%= i.instance_type %></td>
+        <td><%= i.count %></td>
+        <td><%= i.start.strftime("%Y-%m-%d") %></td>
+        <td><%= (i.start + i.duration).strftime("%Y-%m-%d") %></td>
+        <td><%= i.duration.to_i / (60*60*24*30) %></td>
+        <td><%= i.usage_price %></td>
+        <td><%= i.fixed_price %></td>
+        <td class="<%= i.state %>"><%= i.state %></td>
+        <td><%= i.description %></td>
+    </tr>
+<% end %>
+</table>
+<% end %>
+
+<hr style="margin: 1.5em 0;">
+
+<h1>Stats</h1>
+
+<% if @latest_stat_record.nil? %>
+<br/>
+The Stats are collected every 5 minutes. No stats have been collected for this Account yet.<br/>
+<br/>
+Come back later.
+<% else %>
+<br/>
+Instance Allocation as of <%= time_and_time_ago @latest_stat_record.taken_at %>
+<br/>
+<br/>
+<table>
+    <tr>
+        <th>Zone</th>
+        <th>Type</th>
+        <th>Reserved</th>
+        <th>Total</th>
+        <% @cluster_names.each do |cluster_name| %>
+            <th><%= cluster_name.blank? ? 'Undefined' : cluster_name %></th>
+        <% end %>
+    </tr>
+<%
+@zones.each do |zone_o|
+    zone = zone_o.id
+    next if @zone_type_stats.nil? or @zone_type_stats[zone].empty? 
+    @zone_type_stats.fetch(zone).keys.sort.each do |instance_type|
+        sum = 0
+        @reserved_instances.collect{ |i| i if i.zone == zone and i.instance_type == instance_type }.compact.each do |i|
+            sum += i.count
+        end
+        c = @zone_type_stats[zone][instance_type]['Total']
+        c_state = 'too-high'
+        if c == sum
+            c_state = 'ok'
+        elsif c < sum
+            c_state = 'too-low'
+        end
+%>
+    <tr class="<%= cycle("even", "odd") %>">
+        <td><%= zone_o.name %></td>
+        <td><%= instance_type %></td>
+        <td><strong><%= sum %></strong></td>
+        <td class="<%= c_state %>"><%= c %></td>
+        <% @cluster_names.each do |cluster_name| %>
+            <td>&nbsp;<%= @zone_type_stats[zone][instance_type][cluster_name] %></td>
+        <% end %>
+    </tr>
+<%
+    end
+end
+%>
+</table>
+<% end %>

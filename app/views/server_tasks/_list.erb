@@ -1,0 +1,21 @@
+<div id="server_tasks">
+
+<%= will_paginate_remote @server_tasks, nil %>
+
+<table>
+    <tr>
+    <th>Name</th>
+    <th>Description</th>
+    <th>Operation</th>
+    <th>Schedule</th>
+    <th>Active?</th>
+    <th>Scheduled?</th>
+    <th>Last Run</th>
+    <th>Actions</th>
+    </tr>
+    <tbody id="server_tasks">
+        <%= render :partial => 'server_tasks/server_task', :collection => @server_tasks %>
+    </tbody>
+</table>
+
+<%= will_paginate_remote @server_tasks, nil %>

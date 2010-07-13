@@ -1,0 +1,18 @@
+<tr class="user">
+    <td>
+    <% if user.new_record? %>
+		<%= select_tag 'security_group[user_ids][]', options_from_collection_for_select(@users, :id, :login_and_name) %>
+	<% else %>
+        <%= hidden_field_tag "security_group[user_ids][]", user.id %>
+    	<%= h user.login %>
+	<% end %>
+    </td>
+	<td><%= h user.name %></td>
+    <td>
+	<% if user == current_user %>
+		<span class="disabled">remove</span>
+	<% else %>
+	    <%= link_to_function 'remove', "$(this).up('.user').remove()"%>
+	<% end %>
+    </td>
+</tr>

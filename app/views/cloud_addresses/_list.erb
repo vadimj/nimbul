@@ -1,0 +1,45 @@
+<%= javascript_tag "Editable.setupAll('.address-editable');" %>
+<div id="addresses">
+
+<%= show_all_link 'Show all' %>
+<%= filter_by_state_link 'Available', 'available' %>
+<%= filter_by_state_link 'In Use', 'in-use' %>
+<br/><br/>
+<%= will_paginate_remote @addresses, 'addresses' %>
+
+<table>
+  <thead>
+  <tr>
+    <% if @parent.is_a?(ProviderAccount) %>
+		<th><% if @addresses.total_entries > 0 %><%= better_select_all_check_box :select_all_addresses, :selectable_address %><% end %></th>
+	<% end %>
+    <th <%= sort_td_class_helper "name" %>>
+      <%= addresses_sort_link "Name", "name" %>
+    </th>
+    <% if @parent.is_a?(User) -%>
+        <th <%= sort_td_class_helper "provider_account_id" %>>
+          <%= server_images_sort_link "Account", "provider_account_id" %>
+        </th>
+    <% end -%>
+    <th <%= sort_td_class_helper "cloud_id" %>>
+      <%= addresses_sort_link "Public IP", "cloud_id" %>
+    </th>
+    <th <%= sort_td_class_helper "state" %>>
+      <%= addresses_sort_link "State", "state" %>
+    </th>
+    <th <%= sort_td_class_helper "cloud_instance_id" %>>
+      <%= addresses_sort_link "Instance", "cloud_instance_id" %>
+    </th>
+    <% unless @parent.is_a?(Cluster) %>
+		<th>Cluster Access</th>
+	<% end %>
+  </tr>
+  </thead>
+  <tbody id="address_records">
+    <%= render :partial => "cloud_addresses/address", :collection => @addresses %>
+  </tbody>
+</table>
+
+<%= will_paginate_remote @addresses, 'addresses' %>
+
+</div>

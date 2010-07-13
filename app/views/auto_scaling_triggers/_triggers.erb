@@ -1,0 +1,16 @@
+<td colspan="10" class="asg_triggers">
+	<table>
+		<tr>
+			<th class="asg-sub-title">Triggers</th>
+			<td>
+				<%= render :partial => 'auto_scaling_triggers/list' %>
+				<span id="auto_scaling_group_<%=@auto_scaling_group.id%>_new_trigger"></span>
+				<span
+					id="auto_scaling_group_<%=@auto_scaling_group.id%>_add_trigger"
+					<% unless @auto_scaling_group.can_use_more_auto_scaling_triggers? %>style="display: none;"<% end %>>
+					<%= add_auto_scaling_trigger_button 'Add Trigger', @auto_scaling_group %>
+				</span>
+			</td>
+		</tr>
+	</table>
+</td>

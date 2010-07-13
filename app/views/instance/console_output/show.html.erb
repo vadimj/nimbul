@@ -1,0 +1,22 @@
+<% subtitle h(@instance.instance_id + ': Console Output') %>
+
+<center>
+<table width="100%">
+<tr>
+<td>
+
+<%= link_to_function 'Close', "window.close();" %>
+
+<br />
+<br />
+
+<%= refresh_periodically 'Refresh', 'output', nil, :show, 10 %>
+<br />
+<br />
+<%= render :partial => 'output' %>
+
+<%= link_to_function 'Close', "window.close();" %>
+
+</td></tr>
+</table>
+</center>

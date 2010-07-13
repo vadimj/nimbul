@@ -1,0 +1,7 @@
+if @error_message.blank? and
+    page["resource_bundle_#{@resource_bundle.id}_#{@server_resource[:type].underscore}_#{@server_resource.id}"].remove
+    page["add_resource_bundle_#{@resource_bundle.id}_#{@server_resource[:type].underscore}"].appear if @resource_bundle.can_use_more_of?(@server_resource[:type])
+else
+    page['error_redbox'].replace_html :partial => 'shared/error_redbox'
+    page['error_redbox'].appear
+end

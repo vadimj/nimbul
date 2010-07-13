@@ -1,0 +1,80 @@
+    <ol>
+        <li>
+            <%= f.label :statistic, 'Calculate' %> <%= f.select :statistic, AS_TRIGGER_STATISTICS %>
+            of <%= f.select :measure_name, AS_TRIGGER_MEASURE_NAMES.keys.sort{|a,b| a <=> b} %>
+            in <%= f.select :unit, AS_TRIGGER_MEASURE_NAMES.collect{|measure,units| units}.flatten.uniq %>
+            over the period of <%= f.text_field :period_value, :class => 'tiny' %> <%= f.select :period_units, AS_TRIGGER_PERIOD_UNITS %>
+            for all instances in the Group 
+        </li>
+        <li>
+            If for <%= f.text_field :breach_duration_value, :class => 'tiny' %> <%= f.select :breach_duration_units, AS_TRIGGER_BREACH_DURATION_UNITS %>
+            the calculated value remains:
+            <ul>
+            <li>
+                <strong>below</strong> <%= f.text_field :lower_threshold, :class => 'tiny' %>
+                <span class='auto_scaling_trigger_unit'><%= h(@auto_scaling_trigger.unit) %></span>, then
+                <%= f.select :lower_breach_scale_increment_action, AS_TRIGGER_THRESHOLD_ACTIONS.sort{ |a,b| a <=> b } %> the number of instances by
+                <%= f.text_field :lower_breach_scale_increment_value, :class => 'tiny' %>
+                <%= f.select :lower_breach_scale_increment_units, AS_TRIGGER_BREACH_SCALE_INCREMENT_UNITS %>
+            </li>
+            <li>
+                <strong>above</strong> <%= f.text_field :upper_threshold, :class => 'tiny' %>
+                <span class='auto_scaling_trigger_unit'><%= h(@auto_scaling_trigger.unit) %></span>, then
+                <%= f.select :upper_breach_scale_increment_action, AS_TRIGGER_THRESHOLD_ACTIONS %> the number of instances by
+                <%= f.text_field :upper_breach_scale_increment_value, :class => 'tiny' %>
+                <%= f.select :upper_breach_scale_increment_units, AS_TRIGGER_BREACH_SCALE_INCREMENT_UNITS %>
+                </li>
+            </ul>
+        </li>
+    </ol>
+<script type="text/javascript">
+    var units = new Array();
+
+    <%
+    AS_TRIGGER_MEASURE_NAMES.keys.each do |measure|
+        units = AS_TRIGGER_MEASURE_NAMES[measure]
+        units.each do |unit|
+    -%>
+        units.push(new Array("<%= measure %>", "<%= h(unit) %>", "<%= h(unit) %>"));
+    <%
+        end
+    end
+    -%>
+
+    <%
+    class_field = 'auto_scaling_trigger_measure_name'
+    id_field = 'auto_scaling_trigger_unit'
+    id_value = @auto_scaling_trigger.unit
+    -%>
+
+    function <%= class_field.to_s %>Selected() {
+        klass = $('<%= class_field.to_s %>').getValue();
+        klass_text = $('<%= class_field.to_s %>').options[$('<%= class_field.to_s %>').selectedIndex].text;
+        options = $('<%= id_field.to_s %>').options;
+        options.length = 0;
+        units.each(function(unit) {
+            if (unit[0] == klass) {
+                options[options.length] = new Option(unit[1], unit[2], (unit[2] == "<%= id_value %>"), (unit[2] == "<%= id_value %>"));
+            }
+        });
+        <%= id_field.to_s %>Selected();
+    }
+
+    function <%= id_field.to_s %>Selected() {
+        unit = $('<%= id_field.to_s %>').getValue();
+        unit_text = $('<%= id_field.to_s %>').options[$('<%= id_field.to_s %>').selectedIndex].text;
+        $$('<%= "."+id_field.to_s %>').each(function (el) { el.innerHTML = unit_text; });
+    }
+
+    function <%= class_field.to_s %>_<%= id_field.to_s %>_Setup() {
+        <%= class_field.to_s %>Selected();
+        $('<%= class_field.to_s %>').observe('change', <%= class_field.to_s %>Selected);
+        $('<%= id_field.to_s %>').observe('change', <%= id_field.to_s %>Selected);
+    }
+
+//    document.observe('dom:loaded', function() {
+        <%= class_field.to_s %>_<%= id_field.to_s %>_Setup();
+//    });
+
+</script>
+

@@ -1,0 +1,53 @@
+<p>
+  <b>Provider account:</b>
+  <%=h @in_message.provider_account_id %>
+</p>
+
+<p>
+  <b>Type:</b>
+  <%=h @in_message.type %>
+</p>
+
+<p>
+  <b>Message ID:</b>
+  <%=h @in_message.message_id %>
+</p>
+
+<p>
+  <b>Message:</b>
+  <%=h @in_message.message %>
+</p>
+
+<p>
+  <b>Recipient:</b>
+  <%=h @in_message.recipient %>
+</p>
+
+<p>
+  <b>Sender:</b>
+  <%=h @in_message.sender %>
+</p>
+
+<p>
+  <b>Handler:</b>
+  <%=h @in_message.handler %>
+</p>
+
+<p>
+  <b>Data:</b>
+  <%=h @in_message.data %>
+</p>
+
+<p>
+  <b>State:</b>
+  <%=h @in_message.state %>
+</p>
+
+<p>
+  <b>Received at:</b>
+  <%=h @in_message.received_at %>
+</p>
+
+
+<%= link_to 'Edit', edit_in_message_path(@in_message) %> |
+<%= link_to 'Back', in_messages_path %>

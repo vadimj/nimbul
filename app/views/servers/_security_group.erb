@@ -1,0 +1,13 @@
+<% content_tag_for :tr, security_group do %>
+    <td>
+    <% if security_group.new_record? %>
+		<%= select_tag 'server[security_group_ids][]', options_from_collection_for_select(@security_groups, :id, :name) %>
+	<% else %>
+        <%= hidden_field_tag "server[security_group_ids][]", security_group.id %>
+    	<%= h security_group.name %>
+	<% end %>
+    </td>
+    <td>
+    [ <%= link_to_function 'remove', "$(this).up('.security_group').remove()"%> ]
+    </td>
+<% end %>

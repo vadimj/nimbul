@@ -1,0 +1,26 @@
+<% subtitle @provider_account %>
+
+<h1>Provider Account: <%= pagetitle @provider_account %></h1>
+
+<ul class="tabselector" id="tabcontrol1">
+    <li class="tab-selected" id="general_settings_tab">
+        <%= link_to_function('General Settings', "tabselect($('general_settings_tab')); paneselect($('general_settings_pane'))") %>
+    </li>
+</ul>
+<div id="pane-content">
+<ul class="panes" id="panecontrol1">
+    <li id="general_settings_pane" class="pane-selected">
+        <%= render :partial => 'general_settings' %>
+    </li>
+</ul>
+</div>
+<%= javascript_tag "
+    var anchor = '';
+    if (location.hash != '') {
+        anchor = location.hash.substring(1, location.hash.length);
+        if ($(anchor+'_pane') != null) {
+            tabselect($(anchor+'_tab'));
+            paneselect($(anchor+'_pane'));
+        }
+    }
+" %>

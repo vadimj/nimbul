@@ -1,0 +1,17 @@
+<%
+    title = 'Cluster '
+    title += h(@cluster.name)
+    title += ': New Server'
+%>
+<% subtitle title %>
+
+<h1><%= pagetitle title %></h1>
+
+<br />
+
+<% form_for :server,
+    :url => cluster_servers_path do |f| %>
+    <%= render :partial => 'servers/fields', :locals => { :f => f } %>
+    <%= submit_tag 'Create Server', :disable_with => "Creating&hellip;" %>
+    <%= submit_tag 'Cancel', :name => 'cancel_button' %>
+<% end %>

@@ -1,0 +1,34 @@
+<% subtitle 'Service Types' %>
+
+<h1><%= link_to 'Admin Controls', admin_controls_path %> / Service Types</h1>
+
+<br/>
+
+A Service Type (e.g. 'Source Control', 'AMQP', etc.) allows you to classify external or internal Service Providers.<br/>
+For communication to function you need to add at least one Service Type (EVENTS) and configure a Service Provider for this type.
+
+<br/>
+<br/>
+
+To add a new Service Type, click here: 
+<%= link_to image_tag('add.png', { :alt => "Add", :class => 'control-icon', :title => 'Add New Service Type' }), new_service_type_path %>
+
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Fqdn</th>
+    <th>Description</th>
+    <th>Actions</th>
+  </tr>
+  <% for service_type in @service_types %>
+    <tr>
+      <td><%=h service_type.name %></td>
+      <td><%=h service_type.fqdn %></td>
+      <td><%=h service_type.description %></td>
+      <td>
+        <%= link_to image_tag('verify.png', { :alt => "Edit", :class => 'control-icon' }), edit_service_type_path(service_type) -%>
+        <%= link_to image_tag('trash.png', { :alt => "Delete", :class => 'control-icon' }), service_type, :confirm => 'Are you sure?', :method => :delete -%>
+      </td>
+    </tr>
+  <% end %>
+</table>

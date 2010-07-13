@@ -1,0 +1,1 @@
+page['security_groups'].replace_html :partial => 'security_groups/edit'

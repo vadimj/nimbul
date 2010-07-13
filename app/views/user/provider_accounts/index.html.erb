@@ -1,0 +1,9 @@
+<% subtitle 'Provider Accounts' %>
+
+<h1>Provider Accounts</h1>
+
+<br />
+
+<% form_for :user, :url => update_user_provider_accounts_path do |f| %>
+  <%= render :partial => "provider_accounts/list", :locals => { :f => f }  %>
+<% end %>

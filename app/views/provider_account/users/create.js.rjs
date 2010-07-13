@@ -1,0 +1,14 @@
+if @included
+    page << "$('user_id').value = '#{@user.login} is Already an Admin'; $('user_id').appear(); $('user_id').focus(); $('user_id').select();"
+    page.visual_effect :highlight, "user_#{@user.id}"
+elsif !@error.blank?
+    page['status_message'].hide
+    page['status_message'].replace_html @error
+    page['status_message'].appear
+else
+    page.insert_html :bottom, 'users', :partial => "provider_accounts/user", :locals => { :user => @user }
+    page.visual_effect :highlight, "user_#{@user.id}"
+end
+page.delay(3) do
+    page << "$('user_id').value = 'Add Another Admin'; $('user_id').appear(); $('user_id').focus(); $('user_id').select();"
+end

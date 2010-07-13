@@ -1,0 +1,6 @@
+	<td class="select-handle"><%= selectable_check_box_tag "daemon_ids[]", daemon.id, false %></td>
+    <td><%=h daemon.name.titleize %></td>
+    <td class="<%= daemon.state %>"><%=h daemon.state %></td>
+    <td><%=h daemon.pid %></td>
+    <td><%= time_ago daemon.last_ran_at %></td>
+    <td><%= daemon.started_at.nil? ? '' : time_ago_in_words(daemon.started_at) %></td>

@@ -1,0 +1,15 @@
+@server_tasks ||= []
+@operations ||= []
+if @error_message.blank?
+    @server_tasks.each do |v|
+        page.insert_html :bottom, 'server_task_records', :partial => 'server_tasks/server_task', :object => v
+        page["server_task_#{v.id}"].visual_effect :highlight
+    end
+    @operations.each do |s|
+        page["operation_#{s.id}"].replace_html :partial => "operations/row", :object => s
+        page["operation_#{s.id}"].visual_effect :highlight
+    end
+else
+    page['error_redbox'].replace_html :partial => 'shared/error_redbox'
+    page['error_redbox'].appear
+end

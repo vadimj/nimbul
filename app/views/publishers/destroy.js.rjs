@@ -1,0 +1,1 @@
+page["publisher_#{@publisher.id}"].remove

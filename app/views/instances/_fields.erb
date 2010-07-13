@@ -1,0 +1,144 @@
+<%
+    @server_images = @provider_account.server_images.collect{|a| a if a.is_enabled?}.compact.sort{ |a,b| a.name.downcase <=> b.name.downcase }
+    @key_pairs = @provider_account.key_pairs.sort{ |a,b| a.name.downcase <=> b.name.downcase }
+    @volumes = @provider_account.volumes.collect{|a| a if (a.is_enabled? and (a.zone_id == @instance.zone_id))}.compact.sort{ |a,b| a.name.downcase <=> b.name.downcase }
+    @addresses = @provider_account.addresses.collect{|a| a if a.is_enabled?}.compact.sort{ |a,b| a.name.downcase <=> b.name.downcase }
+    server_image = @server_images.detect{ |i| i.image_id == @instance.image_id }
+    volume = @volumes.detect{ |a| a.instance_id == @instance.instance_id }
+    address = @addresses.detect{ |a| a.public_ip == @instance.public_ip } unless @instance.public_ip.blank?
+	@leases = DnsLease.find_all_by_instance_id(@instance.id)
+%>
+<%= f.error_messages %>
+<table>
+<tr>
+<td valign="top">
+    <table>
+    <caption>General Information</caption>
+    <tr id="instance_is_locked_row">
+        <%= render :partial => 'instance_is_locked_row', :locals => { :f => f } %>
+    </tr>
+    <tr id="instance_is_ready_row">
+        <%= render :partial => 'instance_is_ready_row', :locals => { :f => f } %>
+    </tr>
+    <tr id="instance_dns_active_row">
+        <%= render :partial => 'instance_dns_active_row', :locals => { :f => f } %>
+    </tr>
+	<tr>
+		<th><%= f.label :state, 'State' %></th>
+        <td class="<%= h @instance.state %>"><%= h @instance.state %></td>
+	</tr>
+	<tr>
+		<th><%= f.label :launch_time, 'Launch Time' %></th>
+        <td><%= h @instance.launch_time %> - <%= time_ago_in_words(@instance.launch_time) %> ago</td>
+    </tr>
+	<tr>
+		<th><%= f.label :image_id, 'Server Image' %></th>
+        <td><% if server_image %><%= server_image.name %><% else %><%= h @instance.image_id %><% end %></td>
+	</tr>
+	<tr>
+		<th><%= f.label :type, 'Type' %></th>
+        <td><%= h @instance.type %></td>
+    </tr>
+    <tr>
+        <th><%= f.label :zone, 'Zone' %></th>
+        <td><%= h @instance.zone %></td>
+    </tr>
+    <tr>
+        <th><%= f.label :public_dns, 'Public DNS' %></th>
+        <td><%= text_field_tag nil, @instance.public_dns, { :readonly => 'readonly', :length => '20', :onclick => '$(this).focus();$(this).select()' } %></td>
+    </tr>
+    <tr>
+        <th><%= f.label :private_dns, 'Private DNS' %></th>
+        <td><%= text_field_tag nil, @instance.private_dns, { :readonly => 'readonly', :length => '20', :onclick => '$(this).focus();$(this).select()' } %></td></td>
+    </tr>
+    <tr>
+        <th><%= f.label :volume_id, 'Storage' %></th>
+        <td>
+        <% unless volume.nil? %><%= volume.name %><% end %>
+        <b>Device:</b>
+            <% if volume.nil? %>
+                <%= f.text_field :device %>
+            <% else %>
+                <%= volume.device %>
+            <% end %>
+        </td>
+    </tr>
+    <tr>
+        <th>Public Address</th>
+        <td><% if address %><%= address.name %><% else %><%= h @instance.public_ip %><% end %></td>
+    </tr>
+    </table>
+
+	<%= render :partial => 'instance/dns_leases/assigned_leases' %>
+	<%= render :partial => 'instance/dns_hostnames/unassigned_hostnames' %>
+</td>
+</td>
+<td valign="top">
+	<table>
+	<caption>Security Groups</caption>
+	<tr><th>Group Name</th></tr>
+	<tbody id="security_groups">
+	<%= render :partial => 'security_group', :collection => @instance.security_groups %>
+	</tbody>
+    </table>
+</td>
+<td valign="top">
+	<table>
+	<caption>Pending Disk Allocation (Volumes)</caption>
+    <tr>
+        <th>Disk (Volume)</th>
+        <th>Force Allocation</th>
+    </tr>
+    <tbody id="instance_volumes">
+        <%= render :partial => 'instance/volume', :locals => { :f => f } %>
+    </tr>
+    <%= drop_receiving_element('instance_volumes',
+        :accept => "volume",
+        :with   => "'volume_id=' + (element.id.split('_').last())",
+        :url    => attach_instance_volume_url(@instance)
+    )%>
+    </tbody>
+    </table>
+    <br />
+	<table>
+	<caption>Pending Public IP Allocation (EIP)</caption>
+    <tr>
+        <th>Address (EIP)</th>
+        <th>Force Allocation</th>
+    </tr>
+    <tr>
+        <td><%= f.text_field :pending_public_ip, { :onclick => '$(this).focus();$(this).select()' } %></td>
+		<%= drop_receiving_element('instance_pending_public_ip',
+			:accept	=> "address",
+			:with 	=> "'address_id=' + (element.id.split('_').last())",
+			:url	=> associate_instance_address_url(@instance)
+		)%>
+        <td><%= f.check_box :force_public_ip_allocation %></td>
+    </tr>
+    </table>
+</td>
+<td valign="top">
+	<b>Disks (EBS Volumes) Available in <%= h @instance.zone %> Zone</b>
+	<ul>
+	<% @volumes.each do |v| %>
+		<% content_tag_for :li, v, :class => 'draggable volume' do %>
+			<%= h v.name %>, <span class="<%= h v.status %>"><%= h v.status %></span>
+		<% end %>
+		<%= draggable_element("volume_#{v.id}", :revert => true) %>
+	<% end %>
+	</ul>
+    <br />
+    <br />
+	<b>IP Addresses (Elastic IPs) Available</b>
+	<ul>
+	<% @addresses.each do |a| %>
+		<% content_tag_for :li, a, :class => 'draggable address' do %>
+			<%= h a.name %>, <span class="<%= h a.state %>"><%= h a.state %></span>
+		<% end %>
+		<%= draggable_element("address_#{a.id}", :revert => true) %>
+	<% end %>
+	</ul>
+</td>
+</tr>
+</table>
+

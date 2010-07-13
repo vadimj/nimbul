@@ -1,0 +1,80 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"    
+ "http://www.w3.org/TR/html4/strict.dtd"> 
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+    <title><%= APP_CONFIG['settings']['name'] %><%= yield :subtitle %></title>
+    <%= stylesheet_link_tag 'reset' %>
+    <%= stylesheet_link_tag 'fonts' %>
+    <%= stylesheet_link_tag 'grids' %>
+    <%= stylesheet_link_tag 'menu' %>
+    <%= stylesheet_link_tag 'base' %>
+    <%= stylesheet_link_tag 'main' %>
+    <%= stylesheet_link_tag 'notices' %>
+    <%= stylesheet_link_tag 'servers' %>
+    <%= stylesheet_link_tag 'state' %>
+    <%= stylesheet_link_tag 'redbox' %>
+    <%= stylesheet_link_tag 'tabs' %>
+    <%= stylesheet_link_tag 'dns' %>
+    <%= stylesheet_link_tag 'auto_complete' %>
+    <%= stylesheet_link_tag 'buttons' %>
+    <%= stylesheet_link_tag 'formtastic', 'formtastic_changes', :cache => 'formtastic-base' %>
+    <%= javascript_include_tag :all %>
+    <%= javascript_tag "window._token = '#{form_authenticity_token}'" %>
+    <%= javascript_tag "
+        document.observe('dom:loaded', function(event) {
+            Editable.setupAll();
+            Loading.setup();
+            setup_tooltip_titles();
+        });
+    " %>
+</head>
+<body>
+
+<div id="loading" style="display:none;">Loading...</div>
+<div id="error_redbox" class="error" style="display:none;"></div>
+<div id="notice_redbox" class="notice" style="display:none;"></div>
+<div id="tiny_redbox" style="display:none;"></div>
+<div id="small_redbox" style="display:none;"></div>
+<div id="wide_redbox" style="display:none;"></div>
+<div id="large_redbox" style="display:none;"></div>
+<div id="xlarge_redbox" style="display:none;"></div>
+<div id="xxlarge_redbox" style="display:none;"></div>
+
+<div id="page"><!-- beginning of page div -->
+
+<!--
+<div id="header">
+</div>
+-->
+
+<div id="main">
+    <%= render :partial => "layouts/#{controller.nested_layout}" %>
+</div>
+
+<div id="sidebar">
+    <br />
+    <%= render :partial => 'shared/menu',
+        :locals => { :provider_account => @provider_account, :provider_accounts => @provider_accounts }
+    %>
+    <div id="logins"></div>
+    <%= yield :side %>
+    <%= flash_messages -%>
+    <div id="recent-events"></div>
+    <!-- debug -->
+    <% if Rails.env.development? %>
+        <div id="footnotes_holder"><%= render :partial => 'shared/debug' %></div>
+    <% end %>
+    <!-- debug -->
+</div>
+
+<!--
+<div id="nav"></div>
+<div id="footer"></div>
+-->
+  
+</div><!-- end of page div -->
+
+</body>
+</html>

@@ -1,0 +1,10 @@
+if !params[:cancel_button].blank?
+    page["auto_scaling_group_#{@auto_scaling_group.id}_new_trigger"].replace_html ''
+    page["auto_scaling_group_#{@auto_scaling_group.id}_add_trigger"].appear
+elsif @error_messages.empty?
+    page.insert_html :bottom, "auto_scaling_group_#{@auto_scaling_group.id}_trigger_records", :partial => 'auto_scaling_triggers/auto_scaling_trigger', :object => @auto_scaling_trigger
+    page["auto_scaling_group_#{@auto_scaling_group.id}_new_trigger"].replace_html ''
+else
+    page['error_redbox'].replace_html :partial => 'shared/error_redbox'
+    page['error_redbox'].appear
+end

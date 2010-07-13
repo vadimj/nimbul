@@ -1,0 +1,42 @@
+<% form_for :provider_account_parameter,
+    :url => provider_account_provider_account_parameters_path(@provider_account),
+    :html => { :method => 'post' } do |f| %>
+    <h1>Account Variables</h1>
+    The following variables will be exposed as environment variables on every instance started under this Account.
+    <br />
+    <br />
+    <table>
+    <tr>
+      <th>&nbsp;</th>
+      <th>Password?</th>
+      <th>Name</th>
+      <th>Value</th>
+      <th>&nbsp;</th>
+    </tr>
+    <tbody id="provider_account_parameters">
+        <%= render :partial => 'provider_account_parameters/provider_account_parameter', :collection => @provider_account.provider_account_parameters, :locals => { :showonly => false } %>
+    </tbody>
+    <%= sortable_element("provider_account_parameters", :url => sort_provider_account_parameters_path, :tag => "tr", :handle => "handle" ) %>
+    <td colspan="5" align="right">
+    <%= add_provider_account_parameter_link 'Add a Parameter' %>
+    <div id="status_message"></div>
+    </td>
+    </table>
+    <%= submit_tag "Update", :disable_with => "Updating&hellip;"  %>
+<% end %>
+
+<br />
+
+<% form_for :provider_account,
+    :url => provider_account_path(@provider_account),
+    :html => { :method => 'put' } do |f| %>
+    <%= hidden_field_tag :anchor, :variables %>
+    <h1>Account Startup Script <%= link_to_function 'show/hide', "$$('.startup_script').each(function(d) { Effect.toggle(d, 'appear') });" %></h1>
+    The following script will be executed once on every instance started under this Account.<br/>
+    The first line should always start with <strong>#!</strong>, otherwise it won't be recognized as a script.
+    <br />
+    <br />
+    <%= f.text_area :startup_script, :size => '90x15', :class => :startup_script, :style => 'display:none' %>
+    <br />
+    <%= submit_tag "Update", :disable_with => "Updating&hellip;"  %>
+<% end %>

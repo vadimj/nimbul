@@ -1,0 +1,11 @@
+if @error_message.blank?
+    page.insert_html :bottom, 'dns_hostname_entries', :partial => "dns_hostnames/hostname", :locals => { :hostname => @hostname }
+    page.visual_effect :highlight, "hostname_#{@hostname.id}"
+else
+    page['error_redbox'].replace_html :partial => 'shared/error_redbox'
+    page['error_redbox'].appear
+end
+page.delay(2) do
+    page << "$('dns_hostname_id').value = 'Add Hostname'; $('dns_hostname_id').appear(); $('dns_hostname_id').focus(); $('dns_hostname_id').select();"
+end
+

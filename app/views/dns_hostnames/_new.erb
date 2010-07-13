@@ -1,0 +1,36 @@
+<% 	remote_form_for :dns_hostnames,
+		:url => provider_account_dns_hostnames_url(@provider_account),
+		:html => { :method => 'post' } do |f|
+%>
+	<table>
+		<tbody id="dns_hostname_entries">
+			<%= render :partial => 'hostname', :collection => @hostnames, :locals => { :f => f } %>
+		</tbody>
+		<tr>
+			<td colspan="2">
+				<%= text_field_with_auto_complete :dns_hostname, :id,
+					{
+						:autocomplete => 'off',
+						:class => 'auto_complete',
+						:value => 'Add Hostname',
+						:onfocus => "if ($(this).value == 'Add Hostname') { $(this).value = ''; }",
+					},
+					{
+						:skip_style => true,
+						:indicator => 'indicator',
+						:min_chars => 3,
+						:select => 'dns_hostname_id',
+						:after_update_element => "function(element,value) { element.hide(); element.form.onsubmit(); }",
+						:with => "'dns_hostname_search='+  encodeURIComponent($('dns_hostname_id').value) +'&provider_account_id=' + encodeURIComponent('#{@provider_account.id}')",
+					}
+				%>
+				<%= image_tag('indicator.gif',
+					  :align => "absmiddle",
+					  :border => 0,
+					  :id => 'indicator',
+					  :style => 'display: none;' ) %>
+				<div id="status_message"></div>
+			</td>
+		</tr>
+	</table>
+<% end %>

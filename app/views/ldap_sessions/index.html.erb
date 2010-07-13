@@ -1,0 +1,29 @@
+<h1>Sign Up with LDAP</h1>
+
+<br />
+
+<% form_tag ldap_session_path do %>
+<%= hidden_field_tag 'using_ldap', '1' %>
+<table>
+	<tr>
+		<th><%= f.label :login, 'LDAP User Name' %></th>
+		<td><%= text_field_tag :login, @login %></td>
+	</th>
+	<tr>
+		<th><%= f.label :password, 'LDAP Password' %></th>
+		<td><%= password_field_tag :password %></td>
+	</th>
+	<% if_recaptcha? do %>
+		<tr>
+			<th colspan="2"><label for="recaptcha">Please enter the following words below.</label></th>
+		</th>
+		<tr>
+			<td colspan="2"><%= recaptcha_tags %></td>
+		</th>
+	<% end %>
+	<tr>
+		<th>&nbsp;</th>
+		<td><%= submit_tag 'Sign Up', :disable_with => "Signing up&hellip;" %></td>
+	</th>
+</table>
+<% end %>

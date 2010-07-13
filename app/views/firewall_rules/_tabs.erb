@@ -1,0 +1,29 @@
+<h1>Create New Firewall Rule</h1>
+<ul class="tabselector" id="tabcontrol3">
+    <li class="tab-selected" id="ip_range_tab">
+        <%= link_to_function('IP Range Based', "tabselect($('ip_range_tab'), 'tabcontrol3'); paneselect($('ip_range_pane', 'panecontrol3'))") %>
+    </li>
+    <li class="tab-unselected" id="group_tab">
+        <%= link_to_function('Group Based', "tabselect($('group_tab'), 'tabcontrol3'); paneselect($('group_pane', 'panecontrol3'))") %>
+    </li>
+</ul>
+<div id="pane-content">
+<ul class="panes-small" id="panecontrol3">
+    <li id="ip_range_pane" class="pane-selected">
+        <%= render :partial => 'firewall_rules/ip_range' %>
+    </li>
+    <li id="group_pane" class="pane-unselected">
+        <%= render :partial => 'firewall_rules/group' %>
+    </li>
+</ul>
+</div>
+<%= javascript_tag "
+    var anchor = '';
+    if (location.hash != '') {
+        anchor = location.hash.substring(1, location.hash.length);
+        if ($(anchor+'_pane') != null) {
+            tabselect($(anchor+'_tab'), 'tabcontrol3');
+            paneselect($(anchor+'_pane'), 'panecontrol3');
+        }
+    }
+" %>

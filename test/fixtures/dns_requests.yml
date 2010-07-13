@@ -1,0 +1,13 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  id: 1
+  request_type: MyString
+  dns_hostname_assignment_id: 
+  instance_id: 
+
+two:
+  id: 1
+  request_type: MyString
+  dns_hostname_assignment_id: 
+  instance_id: 

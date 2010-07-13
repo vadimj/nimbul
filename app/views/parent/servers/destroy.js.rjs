@@ -1,0 +1,6 @@
+if @error_message.blank? and @server
+    page["server_#{@server.id}"].remove
+else
+    page['error_redbox'].replace_html :partial => 'shared/error_redbox'
+    page['error_redbox'].appear
+end

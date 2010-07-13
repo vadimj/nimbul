@@ -1,0 +1,25 @@
+<%-
+so = @service_override
+targets = []
+Provider.all.each do |p|
+  targets << ["#{p.name}", "#{p.class.to_s}:#{p.id}"]
+  p.while_walking_service_children(2) do |child,depth|
+    targets << [child.service_lineage_text, "#{child.class.to_s}:#{child.id}"]
+  end
+end
+
+-%>
+
+<% semantic_form_for so do |f| %>
+  <%= f.error_messages %>
+  <% f.inputs do %>
+    <%= f.input :service_provider, :as => :select %>
+    <%= f.input :target, :as => :select, :label => 'Where', :collection => targets, :selected => "#{so.target_type}:#{so.target_id}" %>
+    <%= f.input :overridable, :as => :radio, :default => :true %>
+  <% end %>
+  <% f.buttons do %>
+    <%= f.submit %>
+    <%= submit_tag 'Cancel', :name => 'cancel_button' %>
+  <% end %>
+<% end %>
+

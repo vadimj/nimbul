@@ -1,0 +1,14 @@
+<% fields_for 'provider_account[address_attributes][]', address do |f| %>
+      <% if address.new_record? %>
+        <td><%= link_to_function "del", "$(this).up('.address_record').remove()" %></td>
+        <td><%= f.text_field :name, :index => nil %></td>
+      <% else %>
+        <%= f.hidden_field :id, :index => nil %>
+        <td class="select-handle"><%= better_check_box_tag "address_ids[]", address.id, false, :address %></td>
+                <td><%= edit_in_place(address, :name, :class => 'address-editable') %></td>
+      <% end %>
+      <td><%=h address.public_ip %></td>
+      <td><%=h address.instance_id %></td>
+          <td class="<%=h address.state %>"><%=h address.state %></td>
+          <td class="<%=h address.is_enabled %>"><%=h address.is_enabled %></td>
+<% end %>

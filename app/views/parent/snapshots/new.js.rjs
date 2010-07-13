@@ -1,0 +1,2 @@
+page['small_redbox'].replace_html :partial => 'cloud_snapshots/fields', :object => Volume.new
+page['small_redbox'].appear

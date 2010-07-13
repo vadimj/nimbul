@@ -1,0 +1,3 @@
+<% content_tag_for :tr, server_image, :class => 'selectable server_image_record '+(server_image.state == 'unavailable' ? server_image.state : '') do %>
+    <%= render :partial => 'server_images/row', :locals => { :server_image => server_image } %>
+<% end %>

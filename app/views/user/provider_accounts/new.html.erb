@@ -1,0 +1,13 @@
+<h1>Add an Account</h1>
+
+<br />
+
+<% form_for(@provider_account) do |f| %>
+  <%= f.error_messages %>
+  <%= render :partial => 'fields', :locals => { :f => f } %>
+  <p><%= f.submit "Create" %></p>
+<% end %>
+
+<br />
+
+<%= link_to 'All Accounts', provider_accounts_path %>
