@@ -1,5 +1,7 @@
 #!/bin/bash
 
+NIMBUL_HOME=$(dirname $(readlink -f $0))
+
 echo "Starting Flock and daemons, please wait..."
 
 # source /etc/cloudrc if it exists
@@ -7,7 +9,7 @@ if [ -f /etc/cloudrc ]; then
     source /etc/cloudrc
 fi
 
-cd /var/nyt/www/console
+cd "${NIMBUL_HOME}"
 script/server -d
 script/daemons start
 

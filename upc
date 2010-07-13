@@ -2,15 +2,17 @@
 
 echo "Non-generic ugly script to update Flock from SVN..."
 
-cd /var/nyt/www/console
+NIMBUL_HOME=$(dirname $(readlink -f $0))
+
+cd "${NIMBUL_HOME}"
 ./stop
 
-cd /root/roles/console
-role.sh unlink console
+cd /root/roles/nimbul
+role.sh unlink nimbul
 svn up --password $SVNPASS
-role.sh relink console
+role.sh relink nimbul
 
-cd /var/nyt/www/console
+cd "${NIMBUL_HOME}"
 rake db:migrate
 ./start
 
