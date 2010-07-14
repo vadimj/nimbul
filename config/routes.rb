@@ -297,8 +297,8 @@ ActionController::Routing::Routes.draw do |map|
 
 	# system-wide resources
 	map.resources :events, :collection => { :list => :any }, :only => [ :index ]
-	map.resources :in_messages, :controller => 'in_messages', :collection => { :list => :any }, :only => [ :index, :list ]
-	map.resources :out_messages, :controller => 'out_messages', :collection => { :list => :any }, :only => [ :index, :list ]
+	map.resources :in_messages, :controller => 'in_messages', :collection => { :list => :any }, :only => [ :index, :list, :new, :create ]
+	map.resources :out_messages, :controller => 'out_messages', :collection => { :list => :any }, :only => [ :index, :list, :new, :create ]
 	map.resources :daemons,
 		:collection => { :list => :any, :control => :any },
 		:only => [ :index ]
