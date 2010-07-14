@@ -5,7 +5,7 @@
 <%= filter_by_state_link 'Available', 'available' %>
 <%= filter_by_state_link 'In Use', 'in-use' %>
 <br/><br/>
-<%= will_paginate_remote @addresses, 'addresses' %>
+<%= will_paginate_remote @addresses, nil %>
 
 <table>
   <thead>
@@ -40,6 +40,6 @@
   </tbody>
 </table>
 
-<%= will_paginate_remote @addresses, 'addresses' %>
+<%= will_paginate_remote @addresses, nil %>
 
 </div>
