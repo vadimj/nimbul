@@ -670,28 +670,28 @@ class Ec2Adapter
         provider_account = cluster.provider_account
 
         # find zones with reserved instances of this instance type
-        zone_names = []
+        zone_ids = []
         unless provider_account.reserved_instances.nil?
-            zone_names = provider_account.reserved_instances.collect{|i| i.zone if i.instance_type == server.type and i.state == 'active'}.compact.uniq
+            zone_ids = provider_account.reserved_instances.collect{|i| i.zone_id if i.instance_type == server.type and i.state == 'active'}.compact.uniq
         end
 
         # amongst zones find zones with unused reserved instances
-        free_zone_names = []
-        zone_names.each do |zone_name|
-            reserved = ReservedInstance.sum(:count, :conditions => ['provider_account_id=? AND zone=? AND instance_type=? AND state=?', provider_account.id, zone_name, server.type, 'active'])
-            running = Instance.count(:all, :conditions => ['provider_account_id=? AND zone=? AND type=? AND (state=? OR state=?)', provider_account.id, zone_name, server.type, 'running', 'pending'])
-            free_zone_names << zone_name if reserved > running
+        free_zone_ids = []
+        zone_ids.each do |zone_id|
+            reserved = ReservedInstance.sum(:count, :conditions => ['provider_account_id=? AND zone_id=? AND instance_type=? AND state=?', provider_account.id, zone_id, server.type, 'active'])
+            running = Instance.count(:all, :conditions => ['provider_account_id=? AND zone_id=? AND type=? AND (state=? OR state=?)', provider_account.id, zone_id, server.type, 'running', 'pending'])
+            free_zone_ids << zone_id if reserved > running
         end
         
         # use free zones if they are available
-        zone_names = free_zone_names if free_zone_names.size > 0
+        zone_ids = free_zone_ids if free_zone_ids.size > 0
 
 		# couldn't suggest a zone
-		return nil if zone_names.empty?
+		return nil if zone_ids.empty?
 
         # choose a random zone if zones are not empty
-		zone_name = zone_names.sort_by{ rand }[0]
-		return provider_account.zones.find_by_name(zone_name)
+		zone_id = zone_ids.sort_by{ rand }[0]
+		return Zone.find(zone_id)
     end
 
 	# also used by AsAdapter to process info about AS Group's instances
