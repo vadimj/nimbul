@@ -73,7 +73,7 @@ module Behaviors::Service
     
     def service_dns_records=(v); end
     def service_dns_records
-      services.values.collect { |s| s.hostline rescue nil }.select{ |line| !line.nil? }.join "\n"
+      services.values.select{|v| !v.nil?}.collect { |s| s.hostline }.join "\n"
     end
     
     
