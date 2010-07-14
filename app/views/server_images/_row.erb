@@ -19,7 +19,7 @@
 <td class="<%=h server_image.state %>"><%=h server_image.state %></td>
 <td>
     <%=h server_image.owner_id %>
-  	    <% if server_image.owner_id == server_image.provider_account.account_id -%>
+  	    <% if server_image.provider_account and server_image.owner_id == server_image.provider_account.account_id -%>
   	        - me
   	    <% end -%>
 </td>
