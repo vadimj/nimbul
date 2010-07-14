@@ -1,7 +1,7 @@
 <%= javascript_tag "Editable.setupAll('.server-image-editable');" %>
 <div id="server_images">
 
-<%= will_paginate_remote @server_images, 'server_images' %>
+<%= will_paginate_remote @server_images, nil %>
 
 <table>
   <thead>
@@ -49,6 +49,6 @@
   </tbody>
 </table>
 
-<%= will_paginate_remote @server_images, 'server_images' %>
+<%= will_paginate_remote @server_images, nil %>
 
 </div>
