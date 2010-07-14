@@ -6,7 +6,11 @@
 <td><%= edit_in_place(server_image, :name, :class => 'server-image-editable') %></td>
 <% if @parent.is_a?(User) -%>
     <td>
-        <%= link_to server_image.provider_account.name, provider_account_path(server_image.provider_account_id) -%>
+        <% if server_image.provider_account -%>
+            <%= link_to server_image.provider_account.name, provider_account_path(server_image.provider_account_id) -%>
+        <% else -%>
+            N/A
+        <% end -%>
     </td>
 <% end -%>
 <td><%=h server_image.image_id %></td>
