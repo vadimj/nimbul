@@ -1,8 +1,8 @@
 #!/bin/bash
 
-NIMBUL_HOME=$(dirname $(readlink -f $0))
+NIMBUL_HOME=$(dirname $0)
 
-echo "Starting Flock and daemons, please wait..."
+echo "Starting Nimbul and daemons, please wait..."
 
 # source /etc/cloudrc if it exists
 if [ -f /etc/cloudrc ]; then

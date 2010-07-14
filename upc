@@ -1,8 +1,8 @@
 #!/bin/bash
 
-echo "Non-generic ugly script to update Flock from SVN..."
+echo "Non-generic ugly script to update Nimbul from SVN..."
 
-NIMBUL_HOME=$(dirname $(readlink -f $0))
+NIMBUL_HOME=$(dirname $0)
 
 cd "${NIMBUL_HOME}"
 ./stop

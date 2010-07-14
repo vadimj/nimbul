@@ -1,10 +1,14 @@
 #!/bin/bash
 
-NIMBUL_HOME=$(dirname $(readlink -f $0))
+NIMBUL_HOME=$(dirname $0)
 
 cd "${NIMBUL_HOME}"
 ./stop
+
 sleep 30
+
+/etc/init.d/mysql restart
+
 ./start
 
 exit 0
