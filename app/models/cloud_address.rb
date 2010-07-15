@@ -53,7 +53,7 @@ class CloudAddress < CloudResource
     def self.create_from(address)
 		a = build({
 			:provider_account_id => address.provider_account_id,
-			:cloud_id => address.public_id,
+			:cloud_id => address.public_ip,
 			:name => address.name,
 			:state => address.state,
 			:is_enabled => address.is_enabled,
