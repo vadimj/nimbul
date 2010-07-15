@@ -1,7 +1,7 @@
 class StatsAdapter
     def self.refresh_account(provider_account)
         # collect this 5 minutes stats (if they haven't been collected already)
-	now = Time.now
+		now = Time.now
         this_period = Time.at((now.to_f / 5.minutes).floor * 5.minutes)
         stat_record = StatRecord.find(:first, :conditions => [
                 'provider_account_id=:provider_account_id AND taken_at=:taken_at',
@@ -18,18 +18,17 @@ class StatsAdapter
                 provider_account.id
             ])
             iaRecords.each do |iaRecord|
-                if iaRecord.server_id.blank?
-                    server_id = nil
-                    server_name = ''
-                    cluster_id = nil
-                    cluster_name = ''
-                else
+                server_id = nil
+                server_name = ''
+                cluster_id = nil
+                cluster_name = ''
+                unless iaRecord.server_id.blank?
                     server = Server.find(iaRecord.server_id)
-                    cluster = Cluster.find(server.cluster_id)
-                    server_id = server.id
-                    server_name = server.name
-                    cluster_id = cluster.id
-                    cluster_name = cluster.name
+                    cluster = Cluster.find(server.cluster_id) if server
+                    server_id = server.id if server
+                    server_name = server.name if server
+                    cluster_id = cluster.id if cluster
+                    cluster_name = cluster.name if cluster
                 end
                 instance_allocation_record = stat_record.instance_allocation_records.build({
                     :server_id => server_id,
