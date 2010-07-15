@@ -2,7 +2,6 @@
 	<td><%= link_to cluster.name, cluster %></td>
 	<td><%=h cluster.description %></td>
 	<td><%= link_to cluster.instances.length, cluster_path(cluster, :anchor => :instances) %></td>
-	<td><%= link_to cluster.servers_count, cluster_path(cluster, :anchor => :servers) %></td>
 	<% if current_user.has_provider_account_access?(cluster.provider_account_id) %>
 		<td><%= remove_cluster_link 'Delete', cluster %></td>
 	<% end %>

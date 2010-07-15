@@ -65,29 +65,28 @@ class PublishersController < ApplicationController
     # POST /publishers
     # POST /publishers.xml
     def create
-	@provider_account = ProviderAccount.find(params[:provider_account_id])
+		@provider_account = ProviderAccount.find(params[:provider_account_id])
         redirect_url = provider_account_path(@provider_account, :anchor => :communication)
-	    if params[:cancel_button]
-                redirect_back_or_default(redirect_url)
-            else
-		@publisher = @provider_account.publishers.build(params[:publisher])
 
-        redirect_url = provider_account_path(@provider_account, :anchor => :communication)
-        
-        respond_to do |format|
-	if @provider_account && !current_user.has_provider_account_access?(@provider_account)
-                flash[:error] = "You don't have permisson to add Publishers to #{@provider_account.name}"
-                format.html { render :action => "new" }
-                format.xml  { render :xml => @publisher.errors, :status => :unprocessable_entity }
-            elsif @publisher.save
-                flash[:notice] = 'Publisher was successfully created.'
-                format.html { redirect_to redirect_url }
-                format.xml  { render :xml => @publisher, :status => :created, :location => @publisher }
-			else				
-                format.html { render :action => "new" }
-                format.xml  { render :xml => @publisher.errors, :status => :unprocessable_entity }
-            end
-          end
+	    if params[:cancel_button]
+			redirect_back_or_default(redirect_url)
+        else
+			@publisher = @provider_account.publishers.build(params[:publisher])
+
+	        respond_to do |format|
+				if @provider_account && !current_user.has_provider_account_access?(@provider_account)
+	                flash[:error] = "You don't have permisson to add Publishers to #{@provider_account.name}"
+	                format.html { render :action => "new" }
+	                format.xml  { render :xml => @publisher.errors, :status => :unprocessable_entity }
+	            elsif @publisher.save
+	                flash[:notice] = 'Publisher was successfully created.'
+	                format.html { redirect_to redirect_url }
+	                format.xml  { render :xml => @publisher, :status => :created, :location => @publisher }
+				else				
+	                format.html { render :action => "new" }
+	                format.xml  { render :xml => @publisher.errors, :status => :unprocessable_entity }
+	            end
+			end
         end
     end
 
