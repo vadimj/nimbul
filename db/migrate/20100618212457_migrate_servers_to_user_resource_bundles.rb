@@ -4,6 +4,8 @@ class MigrateServersToUserResourceBundles < ActiveRecord::Migration
 		Address.all.each do |a|; CloudAddress.create_from(a); end
 		puts "Importing Volumes into CloudVolumes"
 		Volume.all.each do |v|; CloudVolume.create_from(v); end
+		puts "Importing Snapshots into CloudSnapshots"
+		Snapshot.all.each do |s|; CloudSnapshot.create_from(s); end
 		puts "Migrating Servers"
         Cluster.reset_column_information
         Cluster.find(:all, :include => [ :provider_account, :servers, :cloud_resources ], :order => 'name' ).each do |cluster|
