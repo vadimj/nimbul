@@ -26,7 +26,7 @@
 </td>
 <td><%= h row.key_name %></td>
 <td>
-	<%= row.zones.collect{ |z| z.name }.sort{ |a,b| a <=> b }.join('<br/>') %>
+	<%= row.zones.collect{ |z| z.name unless z.nil? }.compact.sort{ |a,b| a <=> b }.join('<br/>') %>
 </td>
 <td>
 	<%= link_to row.addresses.length, server_url(row, :anchor => :launch_configurations) %>

@@ -20,7 +20,7 @@ class Server < BaseModel
 	has_many :server_tasks, :dependent => :destroy
 	has_one :default_resource_bundle, :class_name => 'ResourceBundle', :conditions => { :is_default => true }, :include => [ :zone, :server_resources, :addresses, :volumes, :instance ]
 	has_many :resource_bundles, :dependent => :destroy, :order => 'position', :include => [ :zone, :server_resources, :addresses, :volumes, :instance ]
-	has_many :zones, :through => :resource_bundles, :order => :name, :uniq => true
+	has_many :zones, :through => :resource_bundles, :order => :name, :uniq => true, :readonly => true
 	has_many :addresses, :through => :resource_bundles, :uniq => true
 	has_many :volumes, :through => :resource_bundles, :uniq => true
 	
