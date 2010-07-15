@@ -98,28 +98,25 @@ class PublishersController < ApplicationController
         @publisher = Publisher.find(params[:id])
         @provider_account = @publisher.provider_account
         redirect_url = provider_account_path(@provider_account, :anchor => :communication)
-	    if params[:cancel_button]
-                redirect_back_or_default(redirect_url)
-            else
-		@publisher = @provider_account.publishers.build(params[:publisher])
-        
-        redirect_url = provider_account_path(@provider_account, :anchor => :communication)
 
-        respond_to do |format|
-            if @publisher.update_attributes(params[:publisher])
-                flash[:notice] = 'Publisher was successfully updated.'
-                format.html { redirect_to redirect_url }
-                format.xml  { head :ok }
-                format.js   { render :partial => 'publisher', :layout => false }
-				format.json { render :json => @publisher }
-            else
-                flash[:error] = 'There was a problem updating this Publisher.'
-                format.html { render :action => "edit" }
-                format.xml  { render :xml => @publisher.errors, :status => :unprocessable_entity }
-                format.js   { render :partial => 'publisher', :layout => false }
-				format.json { render :json => @publisher }
-            end
-         end
+	    if params[:cancel_button]
+            redirect_back_or_default(redirect_url)
+        else
+	        respond_to do |format|
+	            if @publisher.update_attributes(params[:publisher])
+	                flash[:notice] = 'Publisher was successfully updated.'
+	                format.html { redirect_to redirect_url }
+	                format.xml  { head :ok }
+	                format.js   { render :partial => 'publisher', :layout => false }
+					format.json { render :json => @publisher }
+	            else
+	                flash[:error] = 'There was a problem updating this Publisher.'
+	                format.html { render :action => "edit" }
+	                format.xml  { render :xml => @publisher.errors, :status => :unprocessable_entity }
+	                format.js   { render :partial => 'publisher', :layout => false }
+					format.json { render :json => @publisher }
+	            end
+	        end
         end
     end
     
