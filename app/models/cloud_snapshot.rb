@@ -65,7 +65,6 @@ class CloudSnapshot < CloudResource
 			:start_time => snapshot.start_time,
 			:progress => snapshot.progress,
 			:is_enabled => snapshot.is_enabled,
-			:cloud_instance_id => snapshot.instance_id,			
 		})
 		a.save
     end
