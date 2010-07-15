@@ -4,9 +4,11 @@
 
 <br/>
 
-Service Provider is a Server provides a Service that needs to be exposed to the rest of your infrastructure.<br/>
-For example, an SVN server, or a AMQP server. The IP address of the first 'ready' instance of the Server will be used<br/>
-when populating the hosts file with the ip / dns name of the Service.
+Here you can define Servers that provide Services used by different parts of your infrastructure.<br/>
+For example, you can designate one of your SVN Servers to be a Source Control Service Provider.<br/>
+Once a Server is designated as a Service Provider, Nimbul starts monitoring the Server for<br/>
+'ready' instances. If there is a 'ready' instance of this Server, the instance's IP address<br/>
+is used to resolve the Service's DNS name.
 
 <br/><br/>
 
