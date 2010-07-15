@@ -2,6 +2,9 @@ class MigrateServersToUserResourceBundles < ActiveRecord::Migration
     def self.up
 		puts "Importing Addresses into CloudAddresses"
 		Address.all.each do |a|; CloudAddress.create_from(a); end
+		puts "Importing Volumes into CloudVolumes"
+		Volume.all.each do |v|; CloudVolume.create_from(v); end
+		puts "Migrating Servers"
         Cluster.reset_column_information
         Cluster.find(:all, :include => [ :provider_account, :servers, :cloud_resources ], :order => 'name' ).each do |cluster|
             puts "Processing cluster #{cluster.name} [#{cluster.id}]"

@@ -52,4 +52,21 @@ class CloudSnapshot < CloudResource
         
         return true
     end
+
+    def self.create_from(snapshot)
+		a = new({
+			:provider_account_id => snapshot.provider_account_id,
+			:cloud_id => snapshot.snapshot_id,
+			:name => snapshot.name,
+			:state => snapshot.status,
+			:parent_cloud_id => snapshot.volume_id,
+			:owner_id => snapshot.owner_id,
+			:description => snapshot.description,
+			:start_time => snapshot.start_time,
+			:progress => snapshot.progress,
+			:is_enabled => snapshot.is_enabled,
+			:cloud_instance_id => snapshot.instance_id,			
+		})
+		a.save
+    end
 end
