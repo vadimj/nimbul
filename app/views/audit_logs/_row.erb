@@ -33,7 +33,7 @@
 <% end %>
 <td class="small"><%= row.auditable_type.underscore.humanize.titleize.gsub('Provider ','').gsub('Cloud ','') %></td>
 <td class="small">
-    <% if row.auditable_id.blank? %>
+    <% if row.auditable_id.blank? or row.auditable_type.include?('Cloud') %>
 	    <%= h(row.auditable_name) %>
     <% else %>
 	    <%= link_to h(row.auditable_name),
