@@ -1,14 +1,7 @@
 class MigrateServersToUserResourceBundles < ActiveRecord::Migration
     def self.up
-        puts "Refreshing accounts..."
-        ProviderAccount.find(:all).each do |pa|
-            begin
-                pa.refresh unless pa.aws_access_key.blank?
-            rescue Exception => e
-                puts "\t\tCouldn't refresh account #{pa.name} [#{pa.id}] #{pa.aws_access_key}: #{e.message}\n\t#{e.backtrace.join("\n\t")}"
-            end
-        end
-        puts "Done refreshing accounts"
+		puts "Importing Addresses into CloudAddresses"
+		Address.all.each do |a|; CloudAddress.create_from(a); end
         Cluster.reset_column_information
         Cluster.find(:all, :include => [ :provider_account, :servers, :cloud_resources ], :order => 'name' ).each do |cluster|
             puts "Processing cluster #{cluster.name} [#{cluster.id}]"

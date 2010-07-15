@@ -75,4 +75,19 @@ class CloudVolume < CloudResource
         
         return true
     end
+
+    def self.create_from(volume)
+		a = new({
+			:provider_account_id => volume.provider_account_id,
+			:zone_id => volume.zone_id,
+			:cloud_id => volume.volume_id,
+			:name => volume.name,
+			:state => volume.status,
+			:size => volume.size,
+			:parent_cloud_id => volume.snapshot_id,
+			:is_enabled => volume.is_enabled,
+			:cloud_instance_id => volume.instance_id,			
+		})
+		a.save
+    end
 end
