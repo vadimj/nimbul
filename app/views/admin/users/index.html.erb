@@ -1,6 +1,6 @@
 <% subtitle 'Users' %>
 
-<h1>Users</h1>
+<h1><%= link_to 'Admin Controls', admin_controls_path %> / Users</h1>
 
 <br />
 
@@ -8,6 +8,15 @@
   <p><%= link_to 'Manage Beta Invitations for All Users', admin_invites_path %> |
   <%= link_to 'Pending Beta Users', admin_invite_actions_path %></p>
 <% end %>
+
+Search: <%= text_field_tag("search", params['search'], :size => 10, :title => 'Search by '+User.search_fields.collect{|f| f.titleize}.join(', ') ) %>
+<%= observe_field 'search',
+    :frequency => 2,
+    :update => 'users',
+    :url => { :action => :list },
+    :with => 'search' %>
+	
+<hr/>
 
 <%= render :partial => "shared/users_list", :object => @users %>
 

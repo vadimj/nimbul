@@ -1,4 +1,20 @@
-<h1>Member: <%=h @user.login %></h1>
-<p>Joined on: <%= @user.created_at.to_s(:long) %></p>
+<% subtitle h(@user.login) %>
+
+<h1><%= link_to 'Admin Controls', admin_controls_path %> / <%= link_to "Users", admin_users_path %> / <%=h @user.login %></h1>
+
+<br/>
+
+<strong>User:</strong> <%=h @user.login %><br/><br/>
+<strong>Registered on:</strong> <%= @user.created_at.to_s(:long) %>
+
+<br/>
+<br/>
+
+<strong><%=h @user.login %>'s Recent Activity</strong>
+<span id="author_<%= @user.id %>_audit_logs_index"></span>
+
+<%= javascript_tag(remote_function(:url => author_audit_logs_url(@user), :method => :get) ) %>
+<%= periodically_call_remote(:url => list_author_audit_logs_url(@user), :method => :get, :with=>"'search='+$('author_#{@user.id}_audit_log_search').value", :frequency => '30') %>
+
 
 

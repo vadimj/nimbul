@@ -356,6 +356,14 @@ ActionController::Routing::Routes.draw do |map|
 
 	# activity logs
 	map.resources :audit_logs, :controller => 'parent/audit_logs', :collection => { :list => :any }, :only => [ :index ]
+	
+	# author's activity logs
+	map.resources :authors, :only => [] do |author|
+		author.resources :audit_logs,
+			:controller => 'parent/audit_logs',
+			:collection => { :list => :any },
+			:only => [ :index ] 
+	end
 
 	# session handling
 	map.resource  :session

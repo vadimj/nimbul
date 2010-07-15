@@ -1,16 +1,6 @@
 <div id="users">
 <%= will_paginate_remote @users, 'users' %>
 
-Search: <%= text_field_tag("search", params['search'], :size => 10, :title => 'Search by '+User.search_fields.collect{|f| f.titleize}.join(', ') ) %>
-<%= observe_field 'search',
-    :frequency => 2,
-    :update => 'users',
-    :url => { :action => :list },
-    :with => 'search' %>
-	
-<br />
-<br />
-
 <table>
 	<tr>
     <th <%= sort_td_class_helper "login" %>>
