@@ -51,7 +51,7 @@ class CloudAddress < CloudResource
     end
     
     def self.create_from(address)
-		a = build({
+		a = new({
 			:provider_account_id => address.provider_account_id,
 			:cloud_id => address.public_ip,
 			:name => address.name,
