@@ -49,4 +49,16 @@ class CloudAddress < CloudResource
         
         return true
     end
+    
+    def self.create_from(address)
+		a = build({
+			:provider_account_id => address.provider_account_id,
+			:cloud_id => address.public_id,
+			:name => address.name,
+			:state => address.state,
+			:is_enabled => address.is_enabled,
+			:cloud_instance_id => address.instance_id,			
+		})
+		a.save
+    end
 end
