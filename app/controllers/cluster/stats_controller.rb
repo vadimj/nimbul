@@ -4,11 +4,11 @@ class Cluster::StatsController < ApplicationController
 		:unless => "current_user.has_cluster_access?(Cluster.find(params[:cluster_id])) "
 
 	def index
+        @cluster = Cluster.find(params[:cluster_id])
         @provider_account = ProviderAccount.find(@cluster.provider_account_id, :include => [ :clusters, :reserved_instances, :zones ])
         @zones = @provider_account.zones
         @reserved_instances = @provider_account.reserved_instances
 
-        @cluster = Cluster.find(params[:cluster_id])
         @cluster_names = ( @cluster.name )
         @latest_stat_record = StatRecord.find_by_provider_account_id(@cluster.provider_account_id, :order => 'taken_at DESC', :include => :instance_allocation_records)
         @zone_type_stats = Hash.new()
