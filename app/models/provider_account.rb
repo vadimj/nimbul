@@ -56,8 +56,6 @@ class ProviderAccount < BaseModel
 	attr_accessor :destroyed, :aws_access_key_ui, :aws_secret_key_ui, :ssh_master_key_ui
 
 	before_save :strip_spaces_provider_account
-	before_create :regenerate_messaging_password
-  after_create :send_messaging_credentials
 	after_update :update_servers
 	after_destroy :mark_as_destroyed
 
@@ -73,6 +71,10 @@ class ProviderAccount < BaseModel
 	def regenerate_messaging_password
 		self.messaging_password = PasswordGenerator.generate
 	end
+  
+  def regenerate_messaging_password!
+    self.update_attribute(:messaging_password, PasswordGenerator.generate)
+  end
   
 	def messaging_url()
 	    uri          = URI.parse(messaging_uri)
@@ -98,7 +100,7 @@ class ProviderAccount < BaseModel
 	end
 
 	def aws_access_key_ui=(key)
-		key.delete!("\s\t")
+		key.strip!
 		TransientKeyStore.instance(ENV['RAILS_ENV']).reload.set(self.aws_access_key_attribute, key) if name and !key.blank?
 	end
 
@@ -118,7 +120,7 @@ class ProviderAccount < BaseModel
 	end
 
 	def aws_secret_key_ui=(key)
-		key.delete!("\s\t")
+		key.strip!
 		TransientKeyStore.instance(ENV['RAILS_ENV']).reload.set(self.aws_secret_key_attribute, key) if name and !key.blank?
 	end
 
@@ -171,23 +173,22 @@ class ProviderAccount < BaseModel
 		true
 	end
 
-  def send_messaging_credentials
+  def send_control_update type, args = {}
     begin
-      instance = service(:events).first_active_instance
+      unless (instance = service(:events).first_active_instance).nil?
+        type = "operations/rabbit_mq/#{type.to_s}".classify
+        options = { :args => args.merge({ :provider_account_id => self.id }) }
+        puts "Creating Operation '#{type}' with arguments: #{options.inspect}"
+        instance.operations << Operation.factory(type, options)
+      end        
     rescue ServiceWithoutActiveInstance
       # pass if no active instances
     rescue Exception => e
       Rails.logger.warn "Exception Caught: #{e.message}\n\t#{e.backtrace.join("\n\t")}"
-    end
-    
-    unless instance.nil?
-      instance.operations << Operation.factory(
-        'Operations::RabbitMq::AddNodeAccount',
-        :args => { :provider_account_id => self.id }
-      )
+      puts "Exception Caught: #{e.message}\n\t#{e.backtrace.join("\n\t")}"
     end
   end
-
+  
 	attr_accessor :should_destroy
 	def should_destroy?
 		should_destroy.to_i == 1
@@ -386,7 +387,7 @@ class ProviderAccount < BaseModel
 	end
 
 	def strip_spaces_provider_account
-		account_id.delete("\s\t")
+		account_id.strip!
 	end
 
 	# getter and setter for the type
