@@ -1,6 +1,12 @@
+'Full featured restful authentication starter app from
+http://railsforum.com/viewtopic.php?id=14216' Copyright by Matthew Solt, 2008
+
 Files:
    public/images/trash_256x256.png  - Free for non-commercial, Copyright: TheIconLab.com
    public/images/trash_16x16.png    - Free for non-commercial, Copyright: TheIconLab.com
 
 Gauge Icons:
   public/images/guage*  - see copyrights/gauges.readme.rtf
+  
+All Other Icons - Public Domain:
+  Developed by: Tango Desktop Project, http://tango.freedesktop.org
