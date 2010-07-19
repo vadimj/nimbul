@@ -10,4 +10,13 @@ unlimited permission to copy, distribute and modify it.
 Basic Installation
 ==================
 
-Briefly, the shell command `./install' should do it
+	- git clone git://github.com/vadimj/nimbul.git
+	- cd nimbul
+	- Set up database.yml file
+	- Set up config.yml file (repeat as necessary for test and production environments)
+	- Change the login and password for the admin user in the _set_up_first_admin_user.rb migration
+    - Change the host, user and password for the amqp server in config/broker.yml
+	- ./install.sh
+	- rake db:create:all or db:create
+	- rake db:migrate
+	- ./start
