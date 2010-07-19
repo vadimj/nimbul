@@ -85,7 +85,7 @@ module Behaviors::Service
     end
     
     def service_override name
-      stype = name.instance_of?(ServiceType) ? name: ServiceType[name.to_s]
+      stype = name.instance_of?(ServiceType) ? name: ServiceType.find_by_name(name.to_s)
       return nil unless not stype.nil?
       service_overrides(:include => :service_provider).by_type(stype.name).first rescue nil
     end

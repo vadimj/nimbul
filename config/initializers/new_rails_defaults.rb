@@ -28,7 +28,7 @@ ActiveSupport.escape_html_entities_in_json = false
 
 class Object
 	def try(method, *args)
-		send method, *args if respond_to? method
+		send(method, *args) rescue nil if respond_to? method
 	end
 
 	if self.respond_to? :empty?

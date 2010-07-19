@@ -14,13 +14,11 @@ class ProviderAccountObserver < ActiveRecord::Observer
 	end
 
   def before_create account
-    puts "Generating random messaging password"
     account.regenerate_messaging_password
   end
   
   def after_create account
     Rails.logger.info "Account created - sending control update"
-    puts "Account created - sending control update"
     account.send_control_update :add_node_account    
   end
   
@@ -31,7 +29,6 @@ class ProviderAccountObserver < ActiveRecord::Observer
   def after_update account
     unless not @messaging_password_changed
       Rails.logger.info "Sending Password Update for Messaging User '#{account.messaging_username}'"
-      puts "Sending Password Update for Messaging User '#{account.messaging_username}'"
       account.send_control_update :change_password    
     end
   end
