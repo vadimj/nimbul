@@ -240,8 +240,7 @@ ActionController::Routing::Routes.draw do |map|
 
 	# servers
 	map.resources :servers,
-		:collection => { :list => :any },
-		:only => [ :index, :show, :edit, :update ] do |server|
+		:collection => { :list => :any } do |server|
 		server.resources :instances, :controller => 'parent/instances',
 			:collection => { :list => :any, :control => :any },
 			:only => [ :index ]
