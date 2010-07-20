@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="author" content="The New York Times / Based on a design by Andreas Viklund - http://andreasviklund.com/" />
+    <meta name="generator" content="webgen - http://webgen.rubyforge.com/" />
+    <link rel="stylesheet" type="text/css" href="../nyt_open.css" media="screen,projection" />
+   <link rel="stylesheet" type="text/css" href="../nyt_open.css" media="print" />
+    <title>Managing Security Groups</title>
+  </head>
+
+  <body>
+    <div id="wrap">
+
+      <div id="header">
+        <p id="toplinks">
+        <a href="../index.html">Nimbul</a> / <a href="index.html">Security</a> / <span>Managing Security Groups</span>
+        </p>
+	<h1 class="logo"><a href="../index.html"><img src="../images/logo.png"></a></h1>
+        <!--<h1><a href="../index.html"><span class="fade">Nimbul</span></a></h1>-->
+      </div>
+
+      <div id="content">
+        <h1>Managing Security Groups</h1>
+<table style="margin-left:10px;">
+	<tr>
+		<td class="head">Permissions Required</td>
+	</tr>
+	<tr>
+		<td>To manage security groups, you must be a Nimbul administrator or a provider account administrator. For more information, see <a href="../user_accounts/user_account_permissions_roles.html">Permissions and Roles</a>.</td>
+	</tr>
+</table>
+<p class="thinspace"></p><p>To effectively manage security groups, you should first create <a href="firewall_rules_setting_up.html">firewall rules</a>.</p>
+<p>Topics covered on this page:</p>
+<p style="margin-top:-15px;">&nbsp;&nbsp;&nbsp;&nbsp;<a href="#add">Add or Delete a Security Group</a><br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#apply">Apply Firewall Rules to Security Groups</a></p>
+<h2 id="add">Add or Delete a Security Group</h2>
+<h3>Adding a Security Group</h3>
+<p>To add a security group, complete these steps:</p>
+<ol>
+	<li>In the main Nimbul menu, click <strong>Provider Accounts.</strong></li>
+	<li>In the list of provider accounts, click the name of the account for which you want to manage groups.<br><br><strong>Tip:</strong> You can use the <strong>Search</strong> box to quickly find the account (the list of accounts will automatically refresh to match the characters you type).</li>
+	<li>On the provider account details page, click the <strong>Groups</strong> tab.<br><br><img src="../images/security/pa_groups.png" alt="" /><br><br></li>
+	<li>Click the green plus sign at the top of the tab.</li>
+	<li>In the pop-up that appears, specify a security group <strong>Name</strong> and <strong>Description.</strong> Both fields are required.</li>
+	<li>Your new group will appear in the list. You can also search for it by typing characters in the <strong>Search</strong> box at the top of the tab.</li>
+</ol>
+<p>You can assign security groups to servers on the <a href="../servers_clusters/servers_managing.html#configure"><strong>Networking</strong> tab</a>.</p>
+<h3>Deleting a Security Group</h3>
+<p><strong>Note:</strong> Before you delete a security group, be sure you have assigned other security groups to all instances and servers currently using that group.</p>
+<p>To delete a security group, complete these steps:</p>
+<ol>
+	<li>View the <strong>Groups</strong> tab for the provider account by completing steps 1&ndash;3 <a href="#add">above</a>.</li>
+	<li>In the <strong>Actions</strong> column in the row for the group you want to delete, click <strong>Delete.</strong> A warning message appears. Click <strong>OK.</strong></li>
+</ol>
+<p>The group will be deleted from the provider account and from any servers currently using the group.</p>
+<h2 id="apply">Apply Firewall Rules to Security Groups</h2>
+<ol>
+	<li>View the <strong>Groups</strong> tab for the provider account by completing steps 1&ndash;3 <a href="#add">above</a>.</li>
+	<li>In the list of groups, click the name of the security group you want to configure rules for.<br><br><strong>Tip:</strong> You can use the <strong>Search</strong> box to quickly find the group. (The list of groups will automatically refresh as you type.)<br><br>If the security group does not yet exist, create it as described <a href="#add">above</a>.</li>
+	<li>Type the name of a firewall rule directly in the <strong>Add Firewall Rule</strong> field. As you type, names of existing firewall rules will appear.</li>
+	<li>Click the name of the rule you want to apply to this group. You can continue to add rules by typing characters and selecting names.</li>
+	<li>Click <strong>Done.</strong> The new rules will go into effect as soon as you add it to the group.</li>
+</ol>
+<p>You can assign security groups to servers on the <a href="../servers_clusters/servers_managing.html"><strong>Networking</strong> tab</a>.</p>
+<p style="text-align:right;">Next: <a href="security_ssh.html">Setting Up <span class="caps">SSH</span> Access &raquo;</a></p>
+
+        <!--<p class="readmore"><a href="styles.html">Example "Read more" link</a> &raquo;</p>-->
+      </div>
+
+      <div id="sidebar">
+        <h2>About</h2>
+        <p>Nimbul helps you manage your work in the cloud.</p>
+
+        <h2>Documentation</h2>
+        <div id="menu"><ul><li class="webgen-menu-level1"><a href="../index.html">Overview</a></li><li class="webgen-menu-level1 webgen-menu-submenu"><a href="../getting_started/index.html">Getting Started</a></li><li class="webgen-menu-level1 webgen-menu-submenu"><a href="../user_accounts/index.html">User Accounts</a></li><li class="webgen-menu-level1 webgen-menu-submenu"><a href="../provider_accounts/index.html">Provider Accounts</a></li><li class="webgen-menu-level1 webgen-menu-submenu"><a href="../servers_clusters/index.html">Clusters and Servers</a></li><li class="webgen-menu-level1 webgen-menu-submenu"><a href="../instances/index.html">Instances</a></li><li class="webgen-menu-level1 webgen-menu-submenu"><a href="../hostnames/index.html">Hostnames and Addresses</a></li><li class="webgen-menu-level1 webgen-menu-submenu webgen-menu-submenu-inhierarchy"><a href="index.html">Security</a><ul><li class="webgen-menu-level2"><a href="index.html">Overview</a></li><li class="webgen-menu-level2"><a href="firewall_rules_setting_up.html">Setting Up Firewall Rules</a></li><li class="webgen-menu-level2 webgen-menu-item-selected"><span>Managing Security Groups</span></li><li class="webgen-menu-level2"><a href="security_ssh.html">Setting Up SSH Access</a></li></ul></li><li class="webgen-menu-level1 webgen-menu-submenu"><a href="../system_admin/index.html">Administration</a></li><li class="webgen-menu-level1"><a href="../license.html">License and Feedback</a></li><li class="webgen-menu-level1"><a href="../glossary.html">Glossary</a></li></ul></div>
+        
+        <h2>Downloads</h2>
+        <p><strong>Version 1.0</strong><br />
+        <a href="http://github.com/nimbul/nimbul">GitHub</a><br>
+        Released July 2010</p>
+
+        <h2>Other Projects</h2>
+        <ul class="links">
+	<li><a href="http://developer.nytimes.com">Times Developer Network</a></li>
+	<li><a href="http://code.nytimes.com/projects/nyt_transformer/doc/">NYT_Transformer</a></li>
+          <li><a href="http://code.nytimes.com/projects/dbslayer">DBSlayer</a></li>
+          <li><a href="http://code.nytimes.com/projects/xslcache">XSL Cache</a></li>
+        </ul>
+      </div>
+
+      <div id="footer">
+        <p>&copy; 2010 <a href="http://www.nytimes.com">The New York Times</a> | Made with <a href="http://webgen.rubyforge.org">webgen</a></p>
+      </div>
+
+    </div>
+  </body>
+</html>
