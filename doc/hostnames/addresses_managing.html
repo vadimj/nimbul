@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="author" content="The New York Times / Based on a design by Andreas Viklund - http://andreasviklund.com/" />
+    <meta name="generator" content="webgen - http://webgen.rubyforge.com/" />
+    <link rel="stylesheet" type="text/css" href="../nyt_open.css" media="screen,projection" />
+   <link rel="stylesheet" type="text/css" href="../nyt_open.css" media="print" />
+    <title>Managing IP Addresses</title>
+  </head>
+
+  <body>
+    <div id="wrap">
+
+      <div id="header">
+        <p id="toplinks">
+        <a href="../index.html">Nimbul</a> / <a href="index.html">Hostnames and Addresses</a> / <span>Managing IP Addresses</span>
+        </p>
+	<h1 class="logo"><a href="../index.html"><img src="../images/logo.png"></a></h1>
+        <!--<h1><a href="../index.html"><span class="fade">Nimbul</span></a></h1>-->
+      </div>
+
+      <div id="content">
+        <h1>Managing IP Addresses</h1>
+<p>Elastic IP addresses are used throughout Nimbul. Look for <strong>Addresses</strong> tabs that allow you to view and work with addresses as they relate to provider accounts, clusters, servers and instances.</p>
+<table style="margin-left:10px;">
+	<tr>
+		<td class="head"><span class="caps">PERMISSIONS</span> <span class="caps">REQUIRED</span></td>
+	</tr>
+	<tr>
+		<td>To add IP addresses to a provider account, you must have administrator access to the relevant provider account. Cluster administrators can attach IP addresses to specific instances.</td>
+</table>
+<p class="thinspace"></p><p>Topics covered on this page:</p>
+<p style="margin-top:-15px;">&nbsp;&nbsp;&nbsp;&nbsp;<a href="#add">Add and Release IP Addresses</a><br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#attach">Attach and Detach IP Addresses</a><br><br></p>
+<h2 id="add">Add and Release IP Addresses</h2>
+<h3 id="add-pa">Adding an Address</h3>
+<p>To add an IP address to a provider account and give certain clusters access to the address, complete these steps:</p>
+<ol>
+	<li>In the main Nimbul menu, click <strong>Provider Accounts.</strong></li>
+	<li>In the <strong>Name</strong> column, click the name of the account you want to configure. The provider account details page appears. (You can also open this page by clicking the name of a provider account anywhere in the system, such as on a dashboard.)</li>
+	<li>Click the <strong>Addresses</strong> tab. On this tab, you can view the addresses currently allocated to this account. The <strong>State</strong> column indicates whether the address is <code>in-use</code> or <code>available</code>, and the <strong>Instance</strong> column provides quick access to instances with addresses attached.<br><br><img src="../images/hostnames/pa_addresses.png" alt="" /><br><br></li>
+	<li>To allocate a new address to the account, click the green plus sign at the top of the tab, near the <strong>Search</strong> box.</li>
+	<li>In the pop-up that appears, enter a <strong>Name</strong> for the address. You can change this name at any time, and it does not have to be a domain name; this field is simply an identifier for the address.</li>
+	<li>Click <strong>Create.</strong> Nimbul will request allocation of a new IP address from the cloud provider. The allocation process make take several seconds. When the address is available, the <strong>State</strong> column will change from <code>unknown</code> to <code>available</code>.</li>
+	<li>Proceed to the next section to configure cluster access for the address.</li>
+</ol>
+<h3>Configuring Cluster Access to an Address</h3>
+<ol>
+	<li>View the <strong>Addresses</strong> tab for the provider account as described in steps 1&ndash;3 <a href="#add-pa">above</a>.</li>
+	<li>Use the <strong>Search</strong> box to find the IP address in the list.</li>
+	<li>In the <strong>Cluster Access</strong> column of the table, click <strong>Add.</strong></li>
+	<li>In the pop-up that appears, type the name of a cluster, or type a few characters to see cluster names that contain the characters.</li>
+	<li>Click <strong>Close.</strong> You will now be able to attach this IP address to instances started in the specified cluster. For details, see <a href="../instances/instances_viewing_updating.html#update">Viewing and Updating Instances</a>.</li>
+</ol>
+<h3>Releasing an Address</h3>
+<p>Even when they are not in use and have been detached from all instances, IP addresses remain allocated to your account. Amazon Web Services imposes a small charge for IP addresses that have been allocated to an account but are not attached to an instance.</p>
+<p>To release addresses from the provider account in order to prevent charges from accruing, complete these steps:</p>
+<ol>
+	<li>View the <strong>Addresses</strong> tab for the provider account as described in steps 1&ndash;3 <a href="#add-pa">above</a>.</li>
+	<li>Select the checkbox in the first column for the addresses you want to release.</li>
+	<li>Click the trash can icon at the top of the tab. A warning message appears. Click <strong>OK.</strong></li>
+</ol>
+<h2 id="attach">Attach and Detach IP Addresses</h2>
+<p>To attach an IP address to an instance, complete these steps:</p>
+<ol>
+	<li>View the instance details page by clicking the instance ID anywhere you find it in the system (e.g., on a dashboard; on the <strong>Instances</strong> tab for a provider account; or on the <strong>Instances</strong> or <strong>Servers</strong> tab for a cluster).</li>
+	<li>In the <strong>Address</strong> area, click <strong>Add.</strong></li>
+	<li>Select an available IP address from the list. To remap an address that is currently attached to another instance, select the address and check the <strong>Force Allocation</strong> box.<br><br><img src="../images/hostnames/attach_ip.png" alt="" /><br><br></li>
+	<li>Click the <strong>Add</strong> button. The address will be assigned to the instance.</li>
+	<li>Complete the mapping process by clicking the green arrow icon.</li>
+</ol>
+<p>To detach an address from an instance, complete these steps:</p>
+<ol>
+	<li>View the instance details page by clicking the instance ID anywhere you find it in the system (e.g., on a dashboard; on the <strong>Instances</strong> tab for a provider account; or on the <strong>Instances</strong> or <strong>Servers</strong> tab for a cluster).</li>
+	<li>In the <strong>Addresses</strong> area, click the yellow arrow icon next to the address you want to detach.</li>
+	<li>(Optional) To completely disassociate the address from the instance, click the trash can icon. The address will remain allocated to the account for attaching to other instances.</li>
+</ol>
+<h2>Related Topics</h2>
+<ul>
+	<li><a href="../instances/instances_viewing_updating.html#update">Viewing and Updating Instances</a></li>
+</ul>
+<p style="text-align:right;">End of section. Next section: <a href="../security/index.html">Security &raquo;</a></p>
+
+        <!--<p class="readmore"><a href="styles.html">Example "Read more" link</a> &raquo;</p>-->
+      </div>
+
+      <div id="sidebar">
+        <h2>About</h2>
+        <p>Nimbul helps you manage your work in the cloud.</p>
+
+        <h2>Documentation</h2>
+        <div id="menu"><ul><li class="webgen-menu-level1"><a href="../index.html">Overview</a></li><li class="webgen-menu-level1 webgen-menu-submenu"><a href="../getting_started/index.html">Getting Started</a></li><li class="webgen-menu-level1 webgen-menu-submenu"><a href="../user_accounts/index.html">User Accounts</a></li><li class="webgen-menu-level1 webgen-menu-submenu"><a href="../provider_accounts/index.html">Provider Accounts</a></li><li class="webgen-menu-level1 webgen-menu-submenu"><a href="../servers_clusters/index.html">Clusters and Servers</a></li><li class="webgen-menu-level1 webgen-menu-submenu"><a href="../instances/index.html">Instances</a></li><li class="webgen-menu-level1 webgen-menu-submenu webgen-menu-submenu-inhierarchy"><a href="index.html">Hostnames and Addresses</a><ul><li class="webgen-menu-level2"><a href="index.html">Overview</a></li><li class="webgen-menu-level2"><a href="hostnames_managing.html">Managing Hostnames</a></li><li class="webgen-menu-level2 webgen-menu-item-selected"><span>Managing IP Addresses</span></li></ul></li><li class="webgen-menu-level1 webgen-menu-submenu"><a href="../security/index.html">Security</a></li><li class="webgen-menu-level1 webgen-menu-submenu"><a href="../system_admin/index.html">Administration</a></li><li class="webgen-menu-level1"><a href="../license.html">License and Feedback</a></li><li class="webgen-menu-level1"><a href="../glossary.html">Glossary</a></li></ul></div>
+        
+        <h2>Downloads</h2>
+        <p><strong>Version 1.0</strong><br />
+        <a href="http://github.com/nimbul/nimbul">GitHub</a><br>
+        Released July 2010</p>
+
+        <h2>Other Projects</h2>
+        <ul class="links">
+	<li><a href="http://developer.nytimes.com">Times Developer Network</a></li>
+	<li><a href="http://code.nytimes.com/projects/nyt_transformer/doc/">NYT_Transformer</a></li>
+          <li><a href="http://code.nytimes.com/projects/dbslayer">DBSlayer</a></li>
+          <li><a href="http://code.nytimes.com/projects/xslcache">XSL Cache</a></li>
+        </ul>
+      </div>
+
+      <div id="footer">
+        <p>&copy; 2010 <a href="http://www.nytimes.com">The New York Times</a> | Made with <a href="http://webgen.rubyforge.org">webgen</a></p>
+      </div>
+
+    </div>
+  </body>
+</html>

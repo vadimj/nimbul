@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="author" content="The New York Times / Based on a design by Andreas Viklund - http://andreasviklund.com/" />
+    <meta name="generator" content="webgen - http://webgen.rubyforge.com/" />
+    <link rel="stylesheet" type="text/css" href="../nyt_open.css" media="screen,projection" />
+   <link rel="stylesheet" type="text/css" href="../nyt_open.css" media="print" />
+    <title>Managing Servers</title>
+  </head>
+
+  <body>
+    <div id="wrap">
+
+      <div id="header">
+        <p id="toplinks">
+        <a href="../index.html">Nimbul</a> / <a href="index.html">Clusters and Servers</a> / <span>Managing Servers</span>
+        </p>
+	<h1 class="logo"><a href="../index.html"><img src="../images/logo.png"></a></h1>
+        <!--<h1><a href="../index.html"><span class="fade">Nimbul</span></a></h1>-->
+      </div>
+
+      <div id="content">
+        <h1>Managing Servers</h1>
+<table style="margin-left:10px;">
+	<tr>
+		<td class="head"><span class="caps">PERMISSIONS</span> <span class="caps">REQUIRED</span></td>
+	</tr>
+	<tr>
+		<td>To manage servers, you need to have administrator access to the relevant cluster. To get access, contact your Nimbul administrator. See also <a href="../user_accounts/user_account_permissions_roles.html">Permissions and Roles</a> and <a href="../servers_clusters/index.html">Clusters: Overview</a>.</td>
+</table>
+<p class="thinspace"></p><p>Topics covered on this page:</p>
+<p style="margin-top:-15px;">&nbsp;&nbsp;&nbsp;&nbsp;<a href="#add">Add or Delete a Server</a><br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#view">Viewing Server Details</a><br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#configure">Configure or Update a Server</a><br><br></p>
+<h2 id="add">Add or Delete a Server</h2>
+<h3>Adding a Server</h3>
+<p>To add a server, complete these steps:</p>
+<ol>
+	<li>In the main Nimbul menu, click <strong>Clusters.</strong></li>
+	<li>In the appropriate provider account table, find the cluster in which you want to add a server. In the <strong>Name</strong> column, click the name of the cluster.<br></li>
+	<li>On the cluster details page, click the <strong>Servers</strong> tab.<br><br><img src="../images/servers_clusters/cluster_server_tab.png" alt="" /><br><br></li>
+	<li>At the top of the tab, click the green plus sign near the search box.<br></li>
+	<li>Enter a name for the new server, then click <strong>Create Server</strong>.</li>
+</ol>
+<p class="num-sub"><strong>Note:</strong> You can change the server name at any time by clicking the <strong>edit</strong> link at the top of the server details page. (Click a server name to view the server details page.)</p>
+<h3 id="delete">Deleting a Server</h3>
+<p><strong><span class="caps">WARNING</span>:</strong> In most cases, you will not need to delete a server. A cluster can remain dormant in Nimbul indefinitely. Delete the server only if you are certain you will never need access to it again.</p>
+<p>To delete a server, complete these steps:</p>
+<ol>
+	<li>In the main Nimbul menu, click <strong>Clusters.</strong></li>
+	<li>In the appropriate provider account table, find the cluster that contains the server you want to delete. In the <strong>Name</strong> column, click the name of the cluster.</li>
+	<li>On the <strong>Servers</strong> tab, find the name of the server you want to delete.</li>
+	<li>In the <strong>Actions</strong> column, click the trash can icon. A warning message appears. Click <strong>OK.</strong></li>
+</ol>
+<h2 id="view">Viewing Server Details</h2>
+<p>You can get access to server details throughout Nimbul &mdash; just click a server name wherever it appears.</p>
+<p>In most cases, you will find it easiest to use (1) the <a href="#view_tab"><strong>Servers</strong> tab in the Clusters area</a> and (2) <a href="#view_details">the server details page</a>.</p>
+<h3 id="view_tab">The <strong>Servers</strong> Tab in the Clusters Area</h3>
+<p>To view the <strong>Servers</strong> tab, complete these steps:</p>
+<ol>
+	<li>In the main Nimbul menu, click <strong>Clusters.</strong></li>
+	<li>In the appropriate provider account table, find the cluster that contains the server you want to view. In the <strong>Name</strong> column, click the name of the cluster.<br></li>
+	<li>On the cluster details page, click the <strong>Servers</strong> tab.<br><br>
+The <strong>Servers</strong> tab shows the instances currently running under each server profile. The table provides summary information, including the number of instances running, the security groups in use, and the addresses and storage volumes currently attached. <br><br>The <strong>Instances</strong> column includes indicators for current instance states:</li>
+</ol>
+<table style="margin-left:50px;">
+	<tr>
+		<td class="head">Indicator</td>
+		<td class="head">State</td>
+	</tr>
+	<tr>
+		<th><img src="../images/servers_clusters/instance_state_oval_gr.png" alt="" /> </th>
+		<td>Running</td>
+	</tr>
+	<tr>
+		<th><img src="../images/servers_clusters/instance_state_oval_bl.png" alt="" /> </th>
+		<td>Ready</td>
+	</tr>
+	<tr>
+		<th><img src="../images/servers_clusters/instance_state_oval_yl.png" alt="" /> </th>
+		<td>Requested or Pending</td>
+	</tr>
+	<tr>
+		<th><img src="../images/servers_clusters/instance_state_oval_r.png" alt="" /> </th>
+		<td>Shutting Down or Terminated</td>
+	</tr>
+</table>
+<p class="thinspace">&nbsp;</p><ol start="4">
+<li>To view more details about current instances, click the <strong>show</strong> link in the <strong>Instances</strong> column. The row expands to provide more details similar to those on the <a href="clusters_managing.html#configure"><strong>Instances</strong> tab for the cluster</a>.<br><br><img src="../images/servers_clusters/expanded_server_row.png" alt="" /><br><br>While the row is expanded, you can reboot and terminate instances by using the check boxes and the icons. (For details, see <a href="../instances/instances_starting_stopping.html#stop">rebooting and terminating instances</a>.)</li>
+<li>Click <strong>hide</strong> in the <strong>Instances</strong> column to collapse the row back to summary information.</li>
+</ol>
+<h3 id="view_details">The Server Details Page</h3>
+<p>To view server details, click a server name anywhere you find it in the system, such as on the <a href="#view_tab"><strong>Servers</strong> tab for the cluster</a>.</p>
+<p><img src="../images/servers_clusters/server_details.png" alt="" /></p>
+<h2 id="configure">Configure or Update a Server</h2>
+<p>To configure or update a server, first view the server details page as described <a href="#view_details">above</a>.</p>
+<p>The server details page contains the following tabs:</p>
+<table style="margin-left:10px;">
+	<tr>
+		<td class="head">Tab</td>
+		<td class="head">Available Actions</td>
+	</tr>
+	<tr>
+		<th><a href="../instances/index.html">Instances</a></th>
+		<td><ul class="table"><li>View summary information about instances running under this server profile.<li>Reboot and terminate instances.</li><li>Click instance IDs and security group names to view details or make changes.</li><li>View console output.</li></ul></td>
+	</tr>
+	<tr>
+		<th>Server Profile</th>
+		<td><ul class="table"><li>View and edit essential server information: the instance type, the server image (<span class="caps">AMI</span>), environment variables and startup script. These settings are used for all servers started under this profile. (You can also set variables and scripts at the <a href="../provider_accounts/provider_managing.html#configure">provider account</a> and <a href="../servers_clusters/clusters_managing.html#configure">cluster</a> levels.)</li></ul></td>
+	</tr>
+	<tr>
+		<th>Launch Configurations</th>
+		<td><ul class="table"><li>Specify IP addresses and storage volume for instances started under this profile.</li><li>Set the default configuration and delete existing configurations.</li></ul><strong>Note:</strong> You can also define launch configurations as part of the auto-scaling settings for the provider account. See <a href="../provider_accounts/provider_managing.html#configure">Managing Provider Accounts</a>.</td>
+	</tr>
+	<tr>
+		<th>Networking</th>
+		<td><ul class="table"><li>Add and remove security groups for instances started under this server profile.</li></ul></td>
+	</tr>
+	<tr>
+		<th><span class="caps">DNS</span></th>
+		<td><ul class="table"><li>View existing <a href="../hostnames/index.html">hostnames</a>, including accrued leases and leases currently in use.</li><li>Assign hostnames to instances started under this server. <strong>Note:</strong> Each hostname can be assigned to only one server. If you try to add a hostname that is currently assigned to a different server, an error message will appear.</li><li>Release current hostname leases.</li><li>Click instance IDs to view details and make changes.</li></ul></td>
+	</tr>
+	<tr>
+		<th>Operations</th>
+		<td><ul class="table"><li>View information about server tasks that have been run or attempted.</li><li>Click the name of an operation to view logs.</li><li>Click the name of a task to view details and make changes.</li></ul></td>
+	</tr>
+	<tr>
+		<th>Tasks</th>
+		<td><ul class="table"><li>Configure and schedule server tasks (MySQL snapshots, <span class="caps">EBS</span> snapshots and snapshot purges). Tasks can be set to run at a specific time, once or periodically.</li></ul></td>
+	</tr>
+	<tr>
+		<th>Security</th>
+		<td><ul class="table"><li>Lock created instances.</li><li>Set the main key for the server (this value can be overridden by account settings).</li><li><a href="../security/security_ssh.html">Set up <span class="caps">SSH</span> access</a> for users.</li></ul></td>
+	</tr>
+</table>
+<p class="thinspace">&nbsp;</p><h4>UI Elements</h4>
+<p>Use the tabs described <a href="#view">above</a> to configure and update cluster details as you use Nimbul. Note the following UI elements on each tab:</p>
+<ul>
+	<li>Click links to instances, security groups and other objects to get more details and make changes.</li>
+	<li>Use the standard icons to enable, disable, add and remove various resources.</li>
+	<li>Look for confirmation messages and other information in the left margin (under the main Nimbul menu).</li>
+	<li>Be sure to click <strong>Update</strong> buttons where available.</li>
+</ul>
+<p>For more information, see <a href="../getting_started/ui_elements.html">User Interface Elements</a>.</p>
+<h2>Related Topics</h2>
+<ul>
+	<li><a href="clusters_managing.html">Managing Clusters</a></li>
+	<li><a href="../instances/instances_starting_stopping.html">Launching and Terminating Instances</a></li>
+	<li><a href="../instances/instances_viewing_updating.html">Viewing and Updating Instances</a></li>
+</ul>
+<p style="text-align:right;">End of section. Next section: <a href="../instances/index.html">Instances &raquo;</a></p>
+
+        <!--<p class="readmore"><a href="styles.html">Example "Read more" link</a> &raquo;</p>-->
+      </div>
+
+      <div id="sidebar">
+        <h2>About</h2>
+        <p>Nimbul helps you manage your work in the cloud.</p>
+
+        <h2>Documentation</h2>
+        <div id="menu"><ul><li class="webgen-menu-level1"><a href="../index.html">Overview</a></li><li class="webgen-menu-level1 webgen-menu-submenu"><a href="../getting_started/index.html">Getting Started</a></li><li class="webgen-menu-level1 webgen-menu-submenu"><a href="../user_accounts/index.html">User Accounts</a></li><li class="webgen-menu-level1 webgen-menu-submenu"><a href="../provider_accounts/index.html">Provider Accounts</a></li><li class="webgen-menu-level1 webgen-menu-submenu webgen-menu-submenu-inhierarchy"><a href="index.html">Clusters and Servers</a><ul><li class="webgen-menu-level2"><a href="index.html">Overview</a></li><li class="webgen-menu-level2"><a href="clusters_managing.html">Managing Clusters</a></li><li class="webgen-menu-level2 webgen-menu-item-selected"><span>Managing Servers</span></li></ul></li><li class="webgen-menu-level1 webgen-menu-submenu"><a href="../instances/index.html">Instances</a></li><li class="webgen-menu-level1 webgen-menu-submenu"><a href="../hostnames/index.html">Hostnames and Addresses</a></li><li class="webgen-menu-level1 webgen-menu-submenu"><a href="../security/index.html">Security</a></li><li class="webgen-menu-level1 webgen-menu-submenu"><a href="../system_admin/index.html">Administration</a></li><li class="webgen-menu-level1"><a href="../license.html">License and Feedback</a></li><li class="webgen-menu-level1"><a href="../glossary.html">Glossary</a></li></ul></div>
+        
+        <h2>Downloads</h2>
+        <p><strong>Version 1.0</strong><br />
+        <a href="http://github.com/nimbul/nimbul">GitHub</a><br>
+        Released July 2010</p>
+
+        <h2>Other Projects</h2>
+        <ul class="links">
+	<li><a href="http://developer.nytimes.com">Times Developer Network</a></li>
+	<li><a href="http://code.nytimes.com/projects/nyt_transformer/doc/">NYT_Transformer</a></li>
+          <li><a href="http://code.nytimes.com/projects/dbslayer">DBSlayer</a></li>
+          <li><a href="http://code.nytimes.com/projects/xslcache">XSL Cache</a></li>
+        </ul>
+      </div>
+
+      <div id="footer">
+        <p>&copy; 2010 <a href="http://www.nytimes.com">The New York Times</a> | Made with <a href="http://webgen.rubyforge.org">webgen</a></p>
+      </div>
+
+    </div>
+  </body>
+</html>

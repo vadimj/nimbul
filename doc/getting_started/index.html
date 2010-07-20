@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="author" content="The New York Times / Based on a design by Andreas Viklund - http://andreasviklund.com/" />
+    <meta name="generator" content="webgen - http://webgen.rubyforge.com/" />
+    <link rel="stylesheet" type="text/css" href="../nyt_open.css" media="screen,projection" />
+   <link rel="stylesheet" type="text/css" href="../nyt_open.css" media="print" />
+    <title>Navigation</title>
+  </head>
+
+  <body>
+    <div id="wrap">
+
+      <div id="header">
+        <p id="toplinks">
+        <a href="../index.html">Nimbul</a> / <span>Getting Started</span> / <span>Navigation</span>
+        </p>
+	<h1 class="logo"><a href="../index.html"><img src="../images/logo.png"></a></h1>
+        <!--<h1><a href="../index.html"><span class="fade">Nimbul</span></a></h1>-->
+      </div>
+
+      <div id="content">
+        <h1>Navigation</h1>
+<p>The Nimbul user interface is web-based. On every Nimbul page, the main menu in the top left corner gives you access to the dashboard and the main UI areas.</p>
+<p style="margin-left:50px;"><img src="../images/getting_started/main_nimbul_menu2.png" alt="" /></p>
+<h2>Dashboard</h2>
+<p>When you first log in to Nimbul, a dashboard appears, summarizing the objects you have access to:</p>
+<p><img src="../images/getting_started/index1.png" alt="" /></p>
+<p>Click a dashboard item to view information about that type of object. See also the <a href="object_hierarchy.html">object hierarchy</a>.</p>
+<p>In the lower part of the main dashboard, a table shows your recent activity. Within the table, click an account name or object name for details.</p>
+<p>You can also search for specific activity by typing keywords in the <strong>Your Recent Activity</strong> search box. Click the refresh icon to limit the table rows to activity that matches your search terms.</p>
+<p>When you click an object type on the main dashboard, a dashboard for that object appears, providing links to details and options for filtering the table. For example, when you click <strong>Instances</strong> on the main dashboard, an instances dashboard appears, showing summary information for all instances currently in the system:</p>
+<p><img src="../images/getting_started/instances_dashboard.png" alt="" /></p>
+<p>Using the buttons at the top, you can filter the table to show only those instances you have launched, or to show instances by state (<strong>Running, Terminated</strong> or <strong>Pending</strong>). Click an instance ID for more details, or click a provider account, cluster or server name to view those details. You can also view console output directly from the table by clicking the icon in the last column.</p>
+<h2>UI Areas</h2>
+<p>You can think of Nimbul as having a few main &#8220;areas&#8221; that offer multiple access points to several sets of data.</p>
+<ul>
+	<li><strong>The Clusters Area</strong>: In the main Nimbul menu, click <strong>Clusters.</strong> This area of Nimbul gives you access to clusters and allows you to drill down to servers, instances and other aspects of each cluster.</li>
+</ul>
+<p style="margin-left:50px;"><img src="../images/getting_started/dashboard_clusters.png" alt="" /></p>
+<ul>
+	<li><strong>The Provider Accounts Area</strong>: In the main Nimbul menu, click <strong>Provider Accounts</strong>. This area gives you access to provider accounts and allows you to drill down to a wealth of information about each account.</li>
+</ul>
+<p style="margin-left:50px;"><img src="../images/getting_started/dashboard_pa.png" alt="" /></p>
+<ul>
+	<li><strong>The Administration Area</strong>: In the main Nimbul menu, click <strong>Admin Controls</strong> to administer users, services and daemons, as well as view system messages and logged exceptions. This option will not appear in the main Nimbul menu unless you are a Nimbul administrator. (If you are not a system administrator, you can still view and edit your own account information by clicking <strong><em>[Your User Name]</em>&#8217;s Account</strong> in the main Nimbul menu.)</li>
+</ul>
+<p style="margin-left:50px;"><img src="../images/getting_started/admin_panel.png" alt="" /></p>
+<h2>Multiple Access Points</h2>
+<p>The Nimbul areas described above offer different entry points to several categories of information. As you use Nimbul, you will see that some information appears in more than one area of the system and on several different tabs. The multiple access points are designed to ensure that you have the data you need &mdash; anytime you need it.</p>
+<h3>Examples</h3>
+<ul>
+	<li><strong>Example 1: Instances</strong>: Information about instances appears in the provider accounts area and the clusters area.<br><br>In the provider accounts area, instances for all server clusters are listed  on the <strong>Instances</strong> tab, with links to more details about each instance. The provider accounts area includes system-owned instances that were launched outside of Nimbul and have not yet been mapped to a server profile. <br><br><img src="../images/getting_started/access_points1.png" alt="" /><br><br>In the clusters area, the <strong>Servers</strong> tab groups instances by server; within each server group, instances can be shown or hidden. Links are also provided to more details about each instance. Unlike the provider accounts area, the clusters area does not provide information about system-owned instances that were launched outside of Nimbul &mdash; in order to appear in the clusters area, the instance must be mapped to a server profile.<br><br>
+<img src="../images/getting_started/access_points2.png" alt="" /></li>
+</ul>
+<ul>
+	<li><strong>Example 2: User Access</strong>: In Nimbul, you can set user access rules for provider accounts and clusters. User access information appears in the provider accounts area, the clusters area and the administration area.<br><br>
+In the provider accounts area, the <strong>Security</strong> tab lists current account administrators and allows you to designate additional administrators.<br><br><a href="../images/getting_started/navigation_provider_account_security.png"><img src="../images/getting_started/navigation_provider_account_security_sm.png" alt="" /></a><br><br>
+In the administration area, you can edit access rules for a specific user. On each user page, check boxes allow you to grant administrator access to specific clusters or all clusters under a particular provider account. <br><br><img src="../images/getting_started/user_access.png" alt="" /><br><br>
+In the clusters area, the <strong>Security</strong> tab lists current cluster administrators and allows you to designate additional cluster administrators. (Note that these administrators are at the cluster level, not the provider account level.)<br><br><img src="../images/getting_started/navigation_cluster_security.png" alt="" /></li>
+</ul>
+<p>As shown in these examples, each area (administration, provider accounts, clusters) gives you access to the relevant information for that area. Updates you make in each area will be immediately reflected in the other areas.</p>
+<h2>Related Topics</h2>
+<ul>
+	<li><a href="../user_accounts/user_account_permissions_roles.html">Permissions and Roles</a></li>
+</ul>
+<p style="text-align:right;">Next: <a href="ui_elements.html">UI Elements &raquo;</a></p>
+<p><!-- MW: reviewed 7/13 --></p>
+
+        <!--<p class="readmore"><a href="styles.html">Example "Read more" link</a> &raquo;</p>-->
+      </div>
+
+      <div id="sidebar">
+        <h2>About</h2>
+        <p>Nimbul helps you manage your work in the cloud.</p>
+
+        <h2>Documentation</h2>
+        <div id="menu"><ul><li class="webgen-menu-level1"><a href="../index.html">Overview</a></li><li class="webgen-menu-level1 webgen-menu-submenu webgen-menu-submenu-inhierarchy"><span>Getting Started</span><ul><li class="webgen-menu-level2 webgen-menu-item-selected"><span>Navigation</span></li><li class="webgen-menu-level2"><a href="ui_elements.html">UI Elements</a></li><li class="webgen-menu-level2"><a href="object_hierarchy.html">Object Hierarchy</a></li><li class="webgen-menu-level2"><a href="doc.html">About the Documentation</a></li></ul></li><li class="webgen-menu-level1 webgen-menu-submenu"><a href="../user_accounts/index.html">User Accounts</a></li><li class="webgen-menu-level1 webgen-menu-submenu"><a href="../provider_accounts/index.html">Provider Accounts</a></li><li class="webgen-menu-level1 webgen-menu-submenu"><a href="../servers_clusters/index.html">Clusters and Servers</a></li><li class="webgen-menu-level1 webgen-menu-submenu"><a href="../instances/index.html">Instances</a></li><li class="webgen-menu-level1 webgen-menu-submenu"><a href="../hostnames/index.html">Hostnames and Addresses</a></li><li class="webgen-menu-level1 webgen-menu-submenu"><a href="../security/index.html">Security</a></li><li class="webgen-menu-level1 webgen-menu-submenu"><a href="../system_admin/index.html">Administration</a></li><li class="webgen-menu-level1"><a href="../license.html">License and Feedback</a></li><li class="webgen-menu-level1"><a href="../glossary.html">Glossary</a></li></ul></div>
+        
+        <h2>Downloads</h2>
+        <p><strong>Version 1.0</strong><br />
+        <a href="http://github.com/nimbul/nimbul">GitHub</a><br>
+        Released July 2010</p>
+
+        <h2>Other Projects</h2>
+        <ul class="links">
+	<li><a href="http://developer.nytimes.com">Times Developer Network</a></li>
+	<li><a href="http://code.nytimes.com/projects/nyt_transformer/doc/">NYT_Transformer</a></li>
+          <li><a href="http://code.nytimes.com/projects/dbslayer">DBSlayer</a></li>
+          <li><a href="http://code.nytimes.com/projects/xslcache">XSL Cache</a></li>
+        </ul>
+      </div>
+
+      <div id="footer">
+        <p>&copy; 2010 <a href="http://www.nytimes.com">The New York Times</a> | Made with <a href="http://webgen.rubyforge.org">webgen</a></p>
+      </div>
+
+    </div>
+  </body>
+</html>
