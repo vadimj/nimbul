@@ -43,7 +43,7 @@ class Operations::Snapshot::Mysql < Operations::Snapshot
     steps << Operation::Step.new('check_lock_mysql_response') do
       success = false
 
-      message = get_response_for_message("mysql")
+      message = get_response_by_handler("mysql")
 
       # Make sure we got a response message
       if message.nil?
@@ -75,6 +75,8 @@ class Operations::Snapshot::Mysql < Operations::Snapshot
   end
   
   def post_snapshot_steps
+    steps = []
+    
     steps << Operation::Step.new('request_unlock_mysql') do
       success = false
       
@@ -100,7 +102,7 @@ class Operations::Snapshot::Mysql < Operations::Snapshot
     steps << Operation::Step.new('check_unlock_mysql_response') do
       success = false
 
-      message = get_response_for_message("unlock_mysql")
+      message = get_response_by_handler("mysql")
 
       # Make sure we got a response message
       if message.nil?
