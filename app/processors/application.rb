@@ -1,7 +1,6 @@
 class ApplicationProcessor < ActiveMessaging::Processor
   
-  attr_accessor :operation
-  attr_reader :stored_message, :account
+  attr_reader :operation, :stored_message, :account
   
   def initialize
     @stored_message = nil
@@ -12,33 +11,33 @@ class ApplicationProcessor < ActiveMessaging::Processor
   def process!(message)
     @stored_message = store_message(message)
     @operation = get_operation(message)
-    @account = ProviderAccount.find(message.account)
+    @account = ProviderAccount.find(message.account) rescue nil
     
     super(message)
 
-    if operation.nil?
+    if @operation.nil?
       text = "Message #{stored_message.message_id} has no Operation waiting for it"
       puts text
       Rails.logger.error text
-      stored_message.message = text
-      stored_message.state = 'error'
-      stored_message.save
+      @stored_message.message = text
+      @stored_message.state = 'error'
+      @stored_message.save
       return 
     end
 
     case true
       when stored_message.bounced?
-        operation.result_code = 'ClientError_MissingHandler'
-        operation.result_message = message.message
-        operation.fail!
+        @operation.result_code = 'ClientError_MissingHandler'
+        @operation.result_message = message.message
+        @operation.fail!
 
       when stored_message.errored?
-        operation.result_code = 'ClientError_General'
-        operation.result_message = message.message
-        operation.next_attempt!
+        @operation.result_code = 'ClientError_General'
+        @operation.result_message = message.message
+        @operation.next_attempt!
 
       when stored_message.ok?
-        operation.proceed! if operation.can_proceed?
+        @operation.proceed! if @operation.can_proceed?
     end
   end
   
