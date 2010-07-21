@@ -13,7 +13,7 @@ class Operations::Snapshot < Operation
   end
 
   def steps()
-    steps = super || []
+    steps = []
     steps += pre_snapshot_steps || []
     steps += [ snapshot_step ].compact.flatten
     steps += post_snapshot_steps || []

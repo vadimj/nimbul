@@ -3,13 +3,13 @@ class Operations::SshKeys < Operation
   def max_attempts() super; end
   def initiate_failure() super; end
 
-    def self.label
-        'Key Manager'
-    end
+  def self.label
+    'Key Manager'
+  end
 
-    def self.is_schedulable?
-        false
-    end
+  def self.is_schedulable?
+    false
+  end
 
 private
 

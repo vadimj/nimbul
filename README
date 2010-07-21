@@ -1,9 +1,9 @@
 07/20/2010: RC1
 
-Full featured Cloud Manager developed by the Infrastructure and Automation Group of The New York Times Digital
+Full-featured Cloud Manager developed by the Infrastructure and Automation Group of The New York Times Digital
 
 SET UP
-	- git clone git://github.com/vadimj/nimbul.git
+	- git clone git://github.com/nimbul/nimbul.git
 	- cd nimbul
 	- Set up database.yml file
 	- Set up config.yml file (repeat as necessary for test and production environments)
@@ -18,34 +18,34 @@ CURRENT FEATURES
 
 Web-Based User Interface
 
-Nimbul offers an easy-to-use web-based interface, with standard page elements such as tabs and tables. Most Nimbul “objects” (such as servers and accounts) are linked to detail pages, allowing you to get a quick overview and then click through to get more information or make changes.
+Nimbul offers an easy-to-use web-based interface, with standard page elements such as tabs and tables. Most Nimbul "objects" (such as servers and accounts) are linked to detail pages, allowing you to get a quick overview and then click through to get more information or make changes.
 
 When you first log in, a dashboard view gives you quick access to the main system objects and your recent activity. The rest of the Nimbul UI has three main areas:
 
-    - Clusters: View and manage server clusters; start, reboot and terminate instances; get details about currently running instances; click through to server profiles.
+    - Clusters: View and manage server clusters; launch, reboot and terminate instances; get details about currently running instances; click through to server profiles.
     - Provider Accounts: View and manage cloud provider accounts, including DNS information, IP addresses, storage volumes, images and security settings.
     - Administration: View and manage users, daemons, system messages and exceptions (requires administrator access).
 
 ARCHITECTURE
 
-Nimbul’s architecture is straightforward and flexible. Built on the Amazon APIs, Nimbul consists of the following:
+Nimbul's architecture is straightforward and flexible. Built on the Amazon APIs, Nimbul consists of the following:
 
     - A library
     - A set of adapters (EC2, SQS, S3, Auto Scaling)
     - The publishers framework
     - The server tasks framework
-	- A communication framwork
+	- A communication framework
     - The web-based UI
 
 All of these pieces can be customized to suit your cloud provider accounts and local environment.
 
-The following list is just a sampling of Nimbul’s features.
+The following list is just a sampling of Nimbul's features.
 
     - Enterprise-oriented:
-          * Supports clusters, allowing you to “slice” your cloud accounts
+          * Supports clusters, allowing you to "slice" your cloud accounts
           * Supports LDAP and database authentication, as well as SSH access
           * Supports user roles, access rules, firewall rules and security groups
-    - Designed to be cloud-agnostic: Version 1.0 of Nimbul supports Amazon EC2 only, but future versions will support other cloud providers.
+    - Designed to be cloud-agnostic: Version 1.0 of Nimbul supports Amazon EC2 only, but its concepts and structures are designed to be adaptable for most infrastructures and providers.
     - Flexible: Offers a publisher framework, command-line tools and scripts to support operations when the Nimbul UI is unavailable
 	
 KNOWN ISSUES
