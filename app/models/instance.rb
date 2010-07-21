@@ -2,7 +2,6 @@ require 'aasm'
 
 class Instance < BaseModel
     include AASM
-    set_inheritance_column :instance_type
   
     belongs_to :provider_account
     belongs_to :zone
@@ -97,11 +96,11 @@ class Instance < BaseModel
 	end
 
 	def self.sort_fields
-		%w(instance_id zone_id server_name auto_scaling_group_id state launch_time image_id type key_name public_dns dns_name private_dns volume_name is_locked is_ready user_id)
+		%w(instance_id zone_id server_name auto_scaling_group_id state launch_time image_id instance_type key_name public_dns dns_name private_dns volume_name is_locked is_ready user_id)
 	end
 
 	def self.search_fields
-		%w(instance_id server_name state image_id type key_name public_dns dns_name private_dns volume_name)
+		%w(instance_id server_name state image_id instance_type key_name public_dns dns_name private_dns volume_name)
 	end
 
 	def self.filter_fields

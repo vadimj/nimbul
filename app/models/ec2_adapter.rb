@@ -522,7 +522,7 @@ class Ec2Adapter
         compress_user_data = true # false by default
     	options = {
             :key_name => key_name,
-            :instance_type => server.type,
+            :instance_type => server.instance_type,
             :user_data => Server::UserDataController.generate(server, compress_user_data),
             :security_groups => security_groups,
         }
@@ -672,14 +672,14 @@ class Ec2Adapter
         # find zones with reserved instances of this instance type
         zone_ids = []
         unless provider_account.reserved_instances.nil?
-            zone_ids = provider_account.reserved_instances.collect{|i| i.zone_id if i.instance_type == server.type and i.state == 'active'}.compact.uniq
+            zone_ids = provider_account.reserved_instances.collect{|i| i.zone_id if i.instance_type == server.instance_type and i.state == 'active'}.compact.uniq
         end
 
         # amongst zones find zones with unused reserved instances
         free_zone_ids = []
         zone_ids.each do |zone_id|
-            reserved = ReservedInstance.sum(:count, :conditions => ['provider_account_id=? AND zone_id=? AND instance_type=? AND state=?', provider_account.id, zone_id, server.type, 'active'])
-            running = Instance.count(:all, :conditions => ['provider_account_id=? AND zone_id=? AND type=? AND (state=? OR state=?)', provider_account.id, zone_id, server.type, 'running', 'pending'])
+            reserved = ReservedInstance.sum(:count, :conditions => ['provider_account_id=? AND zone_id=? AND instance_type=? AND state=?', provider_account.id, zone_id, server.instance_type, 'active'])
+            running = Instance.count(:all, :conditions => ['provider_account_id=? AND zone_id=? AND instance_type=? AND (state=? OR state=?)', provider_account.id, zone_id, server.instance_type, 'running', 'pending'])
             free_zone_ids << zone_id if reserved > running
         end
         
@@ -706,11 +706,16 @@ class Ec2Adapter
 		account_zones ||= account.zones
 		account_security_groups ||= account.security_groups
 		
+	# delete :id attribute before building a instance record - :id is a special rails attribute
+	attributes[:instance_id] = attributes[:id]
+	attributes.delete(:id)
+
+	# store :type attribute in the instance_type - :type is a special rails attribute
+	attributes[:instance_type] = attributes[:type]
+	attributes.delete(:type)
+	
         # process ec2 instance info
         if attributes[:lifecycle_state].blank?
-			# delete :id attribute before building a instance record - :id is a special rails attribute
-			attributes[:instance_id] = attributes[:id]
-	        attributes.delete(:id)
 	        zone_name = attributes[:zone]
 	        attributes.delete(:zone)
 		# process as instance info

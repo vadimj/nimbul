@@ -93,6 +93,7 @@ class Parent::ServersController < ApplicationController
 					:commit_message => "Initial check in",
 			    }
 			    if @instance
+				    spr_attr[:instance_type] = @instance.instance_type
 				    spr_attr[:image_id] = @instance.image_id
 			    end
 				@server_profile_revision = @server_profile.server_profile_revisions.build(spr_attr)

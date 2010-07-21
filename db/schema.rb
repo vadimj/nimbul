@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100712093836) do
+ActiveRecord::Schema.define(:version => 20100721031607) do
 
   create_table "addresses", :force => true do |t|
     t.integer  "provider_account_id"
@@ -416,7 +416,7 @@ ActiveRecord::Schema.define(:version => 20100712093836) do
     t.integer  "server_id"
     t.integer  "server_pool_id"
     t.string   "image_id"
-    t.string   "type"
+    t.string   "instance_type"
     t.string   "key_name"
     t.string   "state"
     t.string   "public_dns"

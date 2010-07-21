@@ -4,7 +4,6 @@ class Server < BaseModel
 	service_parent_relationship :cluster
 	service_child_relationship :none
 
-	set_inheritance_column :server_type
 	belongs_to :cluster, :counter_cache => true, :include => :provider_account
 	belongs_to :server_profile_revision
 
@@ -126,7 +125,7 @@ class Server < BaseModel
 	
 	# has bare minimum attributes set allowing for start of instances
 	def startable?
-		return false if self.key_name.blank? || self.type.blank? || self.image_id.blank? || self.security_groups.nil?
+		return false if self.key_name.blank? || self.instance_type.blank? || self.image_id.blank? || self.security_groups.nil?
 		return true
 	end
 	
@@ -145,7 +144,7 @@ class Server < BaseModel
 		self.server_profile_revision.image_id
 	end
 
-	def type
+	def instance_type
 		return nil unless self.server_profile_revision
 		self.server_profile_revision.instance_type
 	end
