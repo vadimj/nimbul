@@ -444,7 +444,7 @@ ActiveRecord::Schema.define(:version => 20100722002618) do
     t.integer  "server_id"
     t.integer  "server_pool_id"
     t.string   "image_id"
-    t.string   "type"
+    t.string   "instance_type"
     t.string   "key_name"
     t.string   "state"
     t.string   "public_dns"

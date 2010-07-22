@@ -19,14 +19,14 @@
 <tr>
     <th><%= label_tag :launch_time, 'Launch Time' %></th>
     <th><%= label_tag :image_id, 'Server Image' %></th>
-	<th><%= label_tag :type, 'Type' %></th>
+	<th><%= label_tag :instance_type, 'Type' %></th>
     <th><%= label_tag :zone, 'Zone' %></th>
     <th>Security Groups</th>
 </tr>
 <tr>
     <td><%= h @instance.launch_time %> - <%= time_ago_in_words(@instance.launch_time) %> ago</td>
     <td><%= h @instance.image_id %></td>
-    <td><%= h @instance.type %></td>
+    <td><%= h @instance.instance_type %></td>
     <td><%= h @instance.zone %></td>
     <td>
         <table>

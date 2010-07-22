@@ -1,4 +1,3 @@
-
 class ServerProfile < BaseModel
     belongs_to :provider_account
     belongs_to :creator, :class_name => 'User'

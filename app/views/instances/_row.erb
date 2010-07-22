@@ -52,7 +52,7 @@
             System
         <% end %>
     </td>
-    <td><%= instance.type %></td>
+    <td><%= instance.instance_type %></td>
     <td><%= instance.zone %></td>
     <td class="small"><%= instance.security_groups.collect{ |g| link_to(h(g.name), security_group_path(g)) }.join('<br />') %></td>
     <td><%= text_field_tag nil, instance.public_dns, { :readonly => true, :length => '20', :onclick => '$(this).focus();$(this).select()' } %></td>

@@ -36,8 +36,8 @@
         <td><% if server_image %><%= server_image.name %><% else %><%= h @instance.image_id %><% end %></td>
 	</tr>
 	<tr>
-		<th><%= f.label :type, 'Type' %></th>
-        <td><%= h @instance.type %></td>
+		<th><%= f.label :instance_type, 'Type' %></th>
+        <td><%= h @instance.instance_type %></td>
     </tr>
     <tr>
         <th><%= f.label :zone, 'Zone' %></th>
