@@ -1,4 +1,4 @@
-class Operations::Emissary::Reconfigure < Operations::Emissary
+class Operation::Emissary::Reconfigure < Operation::Emissary
 	def self.label
 		'Reconfigure Emissary Clients'
 	end

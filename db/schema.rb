@@ -9,7 +9,35 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100712093736) do
+ActiveRecord::Schema.define(:version => 20100722002618) do
+
+  create_table "access_requests", :force => true do |t|
+    t.string   "state"
+    t.integer  "provider_account_id"
+    t.boolean  "admin_access"
+    t.integer  "requester_id"
+    t.integer  "approver_id"
+    t.text     "description"
+    t.string   "token"
+    t.datetime "sent_at"
+    t.datetime "approved_at"
+    t.datetime "rejected_at"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "access_requests", ["approver_id"], :name => "index_access_requests_on_approver_id"
+  add_index "access_requests", ["provider_account_id"], :name => "index_access_requests_on_provider_account_id"
+  add_index "access_requests", ["requester_id"], :name => "index_access_requests_on_requester_id"
+  add_index "access_requests", ["token"], :name => "index_access_requests_on_token"
+
+  create_table "access_requests_security_groups", :id => false, :force => true do |t|
+    t.integer "access_request_id"
+    t.integer "security_group_id"
+  end
+
+  add_index "access_requests_security_groups", ["access_request_id"], :name => "index_access_requests_security_groups_on_access_request_id"
+  add_index "access_requests_security_groups", ["security_group_id"], :name => "index_access_requests_security_groups_on_security_group_id"
 
   create_table "addresses", :force => true do |t|
     t.integer  "provider_account_id"
@@ -97,13 +125,14 @@ ActiveRecord::Schema.define(:version => 20100712093736) do
 
   create_table "auto_scaling_triggers", :force => true do |t|
     t.integer  "auto_scaling_group_id"
+    t.integer  "provider_account_id"
     t.string   "name",                         :limit => 64,                               :null => false
+    t.integer  "period"
     t.string   "lower_threshold"
     t.string   "upper_threshold"
     t.integer  "breach_duration"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "period"
     t.string   "lower_breach_scale_increment"
     t.string   "upper_breach_scale_increment"
     t.string   "state",                                      :default => "disabled"
@@ -113,6 +142,7 @@ ActiveRecord::Schema.define(:version => 20100712093736) do
   end
 
   add_index "auto_scaling_triggers", ["auto_scaling_group_id"], :name => "index_asg_id_on_asgt"
+  add_index "auto_scaling_triggers", ["provider_account_id"], :name => "index_pa_id_on_asgt"
 
   create_table "block_device_mappings", :force => true do |t|
     t.integer  "launch_configuration_id"

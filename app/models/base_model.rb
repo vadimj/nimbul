@@ -12,6 +12,18 @@ class BaseModel < ActiveRecord::Base
   # inheritance. Note: This MUST be set *before* any behaviors are defined.
   self.abstract_class = true
 
+  def self.inherited child
+    # if we're in development mode (i.e., /not/ caching
+    # classes) make sure that each model is unloadable
+    # fixes a bug whereby roles/siteuser aren't reloaded.
+    unless Rails.configuration.cache_classes
+      child.class_eval(<<-'EOS', __FILE__, __LINE__)
+        ActiveSupport::Dependencies.unloadable self
+      EOS
+    end
+    super child
+  end
+  
   # include behaviors into base class for later behavior additions
   include Behaviors
 

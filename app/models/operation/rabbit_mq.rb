@@ -1,4 +1,4 @@
-class Operations::RabbitMq < Operation
+class Operation::RabbitMq < Operation
 	def self.label
 		'RabbitMQ'
 	end

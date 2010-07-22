@@ -1,6 +1,6 @@
 require "models/volume"
 
-class Operations::Snapshot::Purge < Operation
+class Operation::Snapshot::Purge < Operation
 
   def timeout
     5.minutes

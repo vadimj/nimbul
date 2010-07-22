@@ -23,7 +23,7 @@ class StartupProcessor < ApplicationProcessor
     # Add initialization operation to the instance	
     instance.operations << (
       @operation = Operation.factory(
-        'Operations::Initialization',
+        'Operation::Initialization',
         :args => {
           :local_ip => local_ip,
           :public_ip => public_ip

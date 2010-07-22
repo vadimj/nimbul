@@ -1,4 +1,4 @@
-class Operations::Initialization < Operation
+class Operation::Initialization < Operation
   def max_attempts() 3; end
 
   def self.label

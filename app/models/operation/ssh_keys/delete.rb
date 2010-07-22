@@ -1,6 +1,6 @@
 require 'operations/ssh_keys'
 
-class Operations::SshKeys::Delete < Operations::SshKeys
+class Operation::SshKeys::Delete < Operation::SshKeys
   def initiate_failure() super; update_server_user_access(self[:result_message]); end
   def initiate_timeout() super; update_server_user_access(self[:result_message]); end
 

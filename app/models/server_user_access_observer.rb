@@ -11,7 +11,7 @@ private
 		server.instances.each do |instance|
 			next if not instance.running?
 			instance.operations << Operation.factory(
-					'Operations::SshKeys::Add',
+					'Operation::SshKeys::Add',
 					:args => { :local_user_id => local_user, :server_user => server_user }
 			)
 		end
@@ -21,7 +21,7 @@ private
 		server.instances.each do |instance|
 			next if not instance.running?
 			instance.operations << Operation.factory(
-					'Operations::SshKeys::Delete',
+					'Operation::SshKeys::Delete',
 					:args => { :local_user_id => local_user, :server_user => server_user }
 			)
 		end

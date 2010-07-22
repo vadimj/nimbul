@@ -25,7 +25,7 @@ class Parent::ServerTasksController < ApplicationController
     
     def new
         @server_task = ServerTask.new
-        @operation_type = 'Operations::'+params[:class_type] unless params[:class_type].blank?
+        @operation_type = 'Operation::'+params[:class_type] unless params[:class_type].blank?
         @operation = Operation.factory(@operation_type)
         @server_task.operation = @operation.type
 

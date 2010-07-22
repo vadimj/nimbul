@@ -1,4 +1,4 @@
-class Operations::SshKeys < Operation
+class Operation::SshKeys < Operation
   def steps() super; end
   def max_attempts() super; end
   def initiate_failure() super; end

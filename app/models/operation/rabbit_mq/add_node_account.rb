@@ -1,6 +1,6 @@
 require 'operations/rabbit_mq'
 
-class Operations::RabbitMq::AddNodeAccount < Operations::RabbitMq
+class Operation::RabbitMq::AddNodeAccount < Operation::RabbitMq
 	
 	def steps
     steps = super

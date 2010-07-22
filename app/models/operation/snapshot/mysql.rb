@@ -1,8 +1,4 @@
-require "models/volume"
-require "models/ec2_adapter"
-
-class Operations::Snapshot::Mysql < Operations::Snapshot
-
+class Operation::Snapshot::Mysql < Operation::Snapshot
   def self.label
     'MySQL EBS Snapshot'
   end
@@ -155,6 +151,4 @@ class Operations::Snapshot::Mysql < Operations::Snapshot
   
     [ host, user, password, timeout.to_i, coordinates_file ]
   end
-
-  
 end

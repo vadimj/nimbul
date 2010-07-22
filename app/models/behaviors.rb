@@ -18,6 +18,14 @@ module Behaviors
       
       class << self
         alias_method :behaviors, :behavior
+
+        unless Rails.configuration.cache_classes
+          ActionController::Dispatcher.before_dispatch do
+            write_inheritable_attribute :class_behaviors, [].dup
+            write_inheritable_attribute :instance_behaviors, [].dup
+            @@cached = {}
+          end
+        end
         
         def kind_of? klass
           unless klass.to_s[/Behaviors::([^:]+)/,1].nil?

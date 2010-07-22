@@ -1,4 +1,4 @@
-class Operations::Emissary < Operation
+class Operation::Emissary < Operation
 	def self.label
 		'Emissary'
 	end

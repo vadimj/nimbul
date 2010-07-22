@@ -1,6 +1,6 @@
 require 'operations/rabbit_mq'
 
-class Operations::RabbitMq::ChangePassword < Operations::RabbitMq
+class Operation::RabbitMq::ChangePassword < Operation::RabbitMq
 	
 	def steps
     steps = super

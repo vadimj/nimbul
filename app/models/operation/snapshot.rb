@@ -1,5 +1,8 @@
+require "models/volume"
+require "models/ec2_adapter"
 
-class Operations::Snapshot < Operation
+class Operation::Snapshot < Operation
+  
   def self.label
     'EBS Snapshot'
   end
