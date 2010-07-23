@@ -1,4 +1,4 @@
-require 'operations/rabbit_mq'
+require 'operation/rabbit_mq'
 
 class Operation::RabbitMq::AddNodeAccount < Operation::RabbitMq
 	
