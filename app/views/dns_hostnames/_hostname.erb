@@ -1,5 +1,5 @@
 <%- row_alt_name = cycle('even', 'odd') %>
 <tr id="hostname_<%= hostname.id %>" class="selectable hostname_record_<%=row_alt_name%>">
-    <%= render :partial => 'dns_hostnames/hostname_row', :locals => { :hostname => hostname } %>
+    <%= render :partial => 'dns_hostnames/hostname_row', :locals => { :hostname => hostname, :host_servers => host_servers } %>
 </tr>
 <tr id="hostname_<%= hostname.id %>_leases" class="hostname_leases_<%=row_alt_name%>"></tr>

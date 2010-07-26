@@ -1,101 +1,131 @@
-
 class DnsLease < BaseModel
 
 	ACTIVE   = 'isup'
 	INACTIVE = 'isdown'
 	
 	belongs_to :instance
-	belongs_to :dns_hostname_assignment
+	belongs_to :dns_hostname_assignment, :include => { :server => { :cluster => :provider_account } }
+	has_one :server, :through => :dns_hostname_assignment, :include => { :cluster => :provider_account } 
 	
 	validates_presence_of :dns_hostname_assignment_id, :idx
 	validates_numericality_of :instance_id, :allow_nil => true
 
 	def self.find_available(assignment)
 		# get an unassigned lease with the lowest index that matches the given dns hostname assignment id
-		find(
-			:first,
-			:conditions => [ 'dns_hostname_assignment_id = ? AND instance_id IS NULL', assignment.id ],
+		self.first(
+			:conditions => {
+        :dns_hostname_assignment_id => assignment.id,
+        :instance_id => nil
+      },
 			:order => 'idx ASC'
 		)
 	end
 	
-	def self.find_all_by_hostname_id(hostname = nil)
-		self.find(
-			:all,
-			:select => 'DISTINCT(dns_leases.id), dns_leases.*, dh.name as name',
-			:conditions => [ 'dh.id = ?', (hostname.is_a?(DnsHostname) ? hostname.id : hostname) ],
-			:joins => [
-				'INNER JOIN dns_hostname_assignments as dha on dns_leases.dns_hostname_assignment_id = dha.id',
-				'INNER JOIN dns_hostnames AS dh ON dha.dns_hostname_id = dh.id',
-			],
-			:order => 'name ASC, idx ASC'
-		)
+	def self.find_by_model(model, options = { :hostname => nil, :which => :all })
+    hostname = DnsHostname.normalize_hostname(options.delete(:hostname), model) 
+    conditions = {
+      model.class.table_name.to_sym => { :id => model[:id] },
+    }
+    
+    case options.delete(:which)
+      when :used:
+        conditions.merge!({:instance_id => (1)..(Instance.last[:id])})
+      when :available: 
+        conditions.merge!({:instance_id => nil })
+      else
+        # include both used and available
+    end
+
+    conditions.merge!({ :dns_hostnames => { :id => hostname[:id] }}) unless hostname.nil?
+    
+    all(
+      :select => 'DISTINCT(dns_leases.id), dns_leases.*, dns_hostnames.name as name',
+      :joins => {
+        :dns_hostname_assignment => {
+          :dns_hostname => :provider_account,
+          :server => [ :instances, :cluster ]
+        }
+      },
+      :conditions => conditions,
+      :order => 'name ASC, idx ASC'
+    )
+	end
+	
+	def self.find_all_by_hostname(hostname, only_in_use = false)
+    find_by_model 
+    self.all(
+      :select => 'DISTINCT(dns_leases.id), dns_leases.*, dns_hostnames.name as name',
+      :joins => {
+        :dns_hostname_assignment => :dns_hostname
+      },
+      :conditions => {
+        :dns_hostnames => { :id => (hostname.is_a?(DnsHostname) ? hostname.id : hostname) }
+      },
+      :order => 'name ASC, idx ASC'
+    )
 	end
 
-	def self.find_all_by_instance_id(instance)
-		self.find_all_by_instance_id_and_hostname_id(instance, nil)
+	def self.find_all_by_instance_id(instance, only_in_use = false)
+		self.find_all_by_instance_id_and_hostname_id(instance, nil, only_in_use)
 	end
 	
-	def self.find_all_by_instance_id_and_hostname_id(instance, hostname_id = nil)
-		self.find(
-			:all,
-			:select => 'DISTINCT(dns_leases.id), dns_leases.*, dh.name as name',
-			:conditions => if hostname_id.nil?
-				[ 'dns_leases.instance_id = ?', (instance.is_a?(Instance) ? instance.id : instance) ]
-			else
-				[ 'dns_leases.instance_id = ? and dh.id = ?', (instance.is_a?(Instance) ? instance.id : instance), hostname_id ]
-			end,
-			:joins => [
-				'INNER JOIN dns_hostname_assignments as dha on dns_leases.dns_hostname_assignment_id = dha.id',
-				'INNER JOIN dns_hostnames AS dh ON dha.dns_hostname_id = dh.id',
-				'INNER JOIN servers AS s ON dha.server_id = s.id',
-				'INNER JOIN instances AS i ON s.id = i.server_id'
-			],
+	def self.find_all_by_instance_id_and_hostname_id(instance, hostname_id = nil, only_in_use = false)
+    conditions = {
+      :dns_leases => { :instance_id => instance.is_a?(Instance) ? instance.id : instance }
+    }.merge!( (hostname_id.nil? ? {} : {:dns_hostnames => { :id => hostname_id }}) )
+
+    self.all(
+      :select => 'DISTINCT(dns_leases.id), dns_leases.*, dns_hostnames.name as name',
+      :joins => {
+        :dns_hostname_assignment => [
+          :dns_hostname,
+          { :server => :instances }
+        ]
+      },
+      :conditions => conditions,
+			:order => 'name ASC, idx ASC'
+    )
+	end
+	
+	def self.find_all_by_server_id(server, only_in_use = false)
+		self.find_all_by_server_id_and_hostname_id(server, nil, only_in_use)
+	end
+	
+	def self.find_all_by_server_id_and_hostname_id(server, hostname_id = nil, only_in_use = false)
+    server = (server.is_a?(Server) ? server.id : server)
+    conditions = {
+      :servers => { :id => server }
+    }.merge!( (hostname_id.nil? ? {} : { :dns_hostnames => { :id => hostname_id }}) )
+    
+		self.all(
+			:select => 'dns_leases.*, dns_hostnames.name as name',
+			:conditions => conditions,
+      :joins => {
+        :dns_hostname_assignment => [ :dns_hostname, :server ]
+      },
 			:order => 'name ASC, idx ASC'
 		)
 	end
 	
-	def self.find_all_by_server_id(server)
-		self.find_all_by_server_id_and_hostname_id(server, nil)
+	def self.find_all_by_cluster_id(cluster, only_in_use = false)
+		self.find_all_by_cluster_id_and_hostname_id(cluster, nil, only_in_use)
 	end
 	
-	def self.find_all_by_server_id_and_hostname_id(server, hostname_id= nil)
-		self.find(
-			:all,
-			:select => 'dns_leases.*, dh.name as name',
-			:conditions => if hostname_id.nil?
-				[ 's.id = ?', (server.is_a?(Server) ? server.id : server) ]
-			else
-				[ 's.id = ? and dh.id = ?', (server.is_a?(Server) ? server.id : server), hostname_id ]
-			end,
-			:joins => [
-				'INNER JOIN dns_hostname_assignments as dha on dns_leases.dns_hostname_assignment_id = dha.id',
-				'INNER JOIN dns_hostnames AS dh ON dha.dns_hostname_id = dh.id',
-				'INNER JOIN servers AS s ON dha.server_id = s.id',
-			],
-			:order => 'name ASC, idx ASC'
-		)
-	end
-	
-	def self.find_all_by_cluster_id(cluster)
-		self.find_all_by_cluster_id_and_hostname_id(cluster, nil)
-	end
-	
-	def self.find_all_by_cluster_id_and_hostname_id(cluster, hostname_id = nil)
-		self.find(
-			:all,
-			:select => 'dns_leases.*, dh.name as name',
-			:conditions => if hostname_id.nil?
-				[ 'c.id = ?', (cluster.is_a?(Cluster) ? cluster.id : cluster) ]
-			else
-				[ 'c.id = ? and dh.id = ?', (cluster.is_a?(Cluster) ? cluster.id : cluster), hostname_id ]
-			end,
-			:joins => [
-				'INNER JOIN dns_hostname_assignments as dha on dns_leases.dns_hostname_assignment_id = dha.id',
-				'INNER JOIN dns_hostnames AS dh ON dha.dns_hostname_id = dh.id',
-				'INNER JOIN servers AS s ON dha.server_id = s.id',
-				'INNER JOIN clusters AS c ON s.cluster_id = c.id'
-			],
+	def self.find_all_by_cluster_id_and_hostname_id(cluster, hostname_id = nil, only_in_use = false)
+    cluster = (cluster.is_a?(Cluster) ? cluster.id : cluster)
+    conditions = {
+      :clusters => { :id => cluster }
+    }.merge!( (hostname_id.nil? ? {} : { :dns_hostnames => { :id => hostname_id }}) )
+
+		self.all(
+			:select => 'dns_leases.*, dns_hostnames.name as name',
+			:conditions => conditions,
+			:joins => {
+        :dns_hostname_assignment => [
+          :dns_hostname,
+          { :server => :cluster }
+        ]
+      },
 			:order => 'name ASC, idx ASC'
 		)
 	end
@@ -105,21 +135,20 @@ class DnsLease < BaseModel
 	end
 
 	def self.find_all_by_provider_account_id_and_hostname_id(account, hostname_id = nil)
-		self.find(
-			:all,
-			:select => 'dns_leases.*, dh.name as name',
-			:conditions => if hostname_id.nil?
-				[ 'pa.id = ?', (account.is_a?(ProviderAccount) ? account.id : account)]
-			else
-				[ 'pa.id = ? and dh.id = ?', (account.is_a?(ProviderAccount) ? account.id : account), hostname_id ]
-			end,
-			:joins => [
-				'INNER JOIN dns_hostname_assignments AS dha ON dns_leases.dns_hostname_assignment_id = dha.id',
-				'INNER JOIN dns_hostnames AS dh ON dha.dns_hostname_id = dh.id',
-				'INNER JOIN servers AS s ON dha.server_id = s.id',
-				'INNER JOIN clusters AS c ON s.cluster_id = c.id',
-				'INNER JOIN provider_accounts AS pa ON c.provider_account_id = pa.id'
-			],
+    account = (account.is_a?(ProviderAccount) ? account.id : account)
+    conditions = {
+      :provider_accounts => { :id => account }
+    }.merge!( (hostname_id.nil? ? {} : { :dns_hostnames => { :id => hostname_id }}) )
+
+		self.all(
+			:select => 'dns_leases.*, dns_hostnames.name as name',
+			:conditions => conditions,
+			:joins => {
+        :dns_hostname_assignment => [
+          :dns_hostname,
+          { :server => { :cluster => :provider_account } }
+        ]
+      },
 			:order => 'name ASC, idx ASC'
 		)
 	end
@@ -132,19 +161,12 @@ class DnsLease < BaseModel
 		state == INACTIVE
 	end
 	
-	def server
-		self.dns_hostname_assignment.server
-	end
-	
 	def dns_hostname
 		self.dns_hostname_assignment.dns_hostname
 	end
 	
 	def hostname_base
-		begin
-			self.dns_hostname_assignment.dns_hostname.name
-		rescue #nothing
-		end
+		dns_hostname.name rescue 'missing'
 	end
 	
 	def hostname
@@ -174,6 +196,7 @@ class DnsLease < BaseModel
 	def ip
 		active? ? instance.private_ip : '256.0.0.0' # use an invalid ip on purpose!
 	end
+	alias :private_ip :ip
 	
 	def public_ip
 		active? ? instance.public_ip : '256.0.0.0' # use an invalid ip on purpose!

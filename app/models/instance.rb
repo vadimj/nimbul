@@ -1,15 +1,15 @@
 require 'aasm'
 
 class Instance < BaseModel
-    include AASM
-  
-    belongs_to :provider_account
-    belongs_to :zone
-    belongs_to :server, :counter_cache => true
-    belongs_to :user
-    belongs_to :auto_scaling_group
+  include AASM
 
-    has_and_belongs_to_many :security_groups
+  belongs_to :provider_account
+  belongs_to :zone
+  belongs_to :server, :counter_cache => true
+  belongs_to :user
+  belongs_to :auto_scaling_group
+
+  has_and_belongs_to_many :security_groups
 
 	has_many :operations, :dependent => :destroy
 
@@ -30,17 +30,17 @@ class Instance < BaseModel
 
 	alias :hostnames :dns_hostname_assignments
 	
-    attr_accessor :should_destroy
+  attr_accessor :should_destroy
 	attr_accessor :console_timestamp
 	attr_accessor :console_output
 
-    def should_destroy?
-        should_destroy.to_i == 1
-    end
+  def should_destroy?
+    should_destroy.to_i == 1
+  end
 
-    def name
-        self.instance_id
-    end
+  def name
+    self.instance_id
+  end
 
 	def mountee_class_name
 		'instance'
@@ -74,7 +74,7 @@ class Instance < BaseModel
 	def dns_assignable?() dns_active? and running? and is_ready?; end
 	def dns_releasable?() terminating? or dns_inactive?; end
 
-	def dns_active?() dns_active == true; end
+	def dns_active?() !!dns_active; end
 	def dns_inactive?() not dns_active?; end
 
 	def ready?() is_ready == true; end
@@ -149,18 +149,22 @@ class Instance < BaseModel
 	end
 	
 	def has_dns_lease?(hostname_assignment = nil)
-		if not hostname_assignment.nil?
-			hostname_assignment = DnsHostnameAssignment.find(hostname_assignment) if hostname_assignment.is_a? Fixnum
-			return dns_leases.select { |l| l.dns_hostname_assignment == hostname_assignment }.size > 0
+    conditions = { :instance_id => self[:id] }
+		unless hostname_assignment.nil?
+			return DnsLease.count(
+        :conditions => conditions.merge!({
+          :dns_hostname_assignment_id => hostname_assignment[:id]
+        })
+      ) > 0
 		else
-			return true if dns_leases.length > 0
+			return true if DnsLease.count(:conditions => conditions) > 0
 		end
 		return false
 	end
 
 	def unleased_hostnames
 		dns_hostname_assignments.inject([])  do |array,object|
-			array.push object unless has_dns_lease? object.id; array
+			array.push object unless has_dns_lease? object; array
 		end
 	end
 	

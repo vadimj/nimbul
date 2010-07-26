@@ -11,13 +11,14 @@
 			</th>
 			<th class="dns-servers">Servers</th>
 			<th>
-				<span title="Total number of leases accrued for the given hostname, regardless of available/in-use state.">Accrued Leases</span> <%-
-				%><small title="Total number of in-use leases for the given hostname.">(In-Use Leases)</small>
+        Leases<br />
+				<small title="Total number of leases accrued for the given hostname, regardless of available/in-use state.">Accrued </small> <%-
+				%><small title="Total number of in-use leases for the given hostname.">(In-Use)</small>
 			</th>
 		</tr>
 	</thead>
 	<tbody id="dns_hostname_entries">
-		<%= render :partial => 'dns_hostnames/hostname', :collection => @hostnames %>
+		<%= render :partial => 'dns_hostnames/hostname', :collection => @hostnames, :locals => { :host_servers => @host_servers } %>
 	</tbody>
 
 <%# don't allow adding of hostnames to clusters - only allow through server/provider account interfaces %>
