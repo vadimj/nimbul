@@ -7,7 +7,7 @@ module Behaviors::Service
       has_many :service_providers, :through => :service_overrides, :source => :service_provider
       
       class_eval(<<-EOS, __FILE__, __LINE__)
-        @@service_relationships = {:parent => nil, :children => nil}
+        @@service_relationships = {:parent => :none, :children => :none}
       EOS
 
       cattr_accessor :service_relationships
@@ -23,20 +23,24 @@ module Behaviors::Service
   end
 
   module InstanceBehaviors
-    
     def behavior_instance_init
       @none = nil
     end
     
     def service_parent *args
-      rel = (service_relationships[:parent] == :none ? nil : service_relationships[:parent])
-      send(rel, *args) unless rel.nil?
+      unless self.class.service_relationships[:parent] == :none
+        send self.class.service_relationships[:parent], *args
+      end
     end
 
     def service_children *args
-      rel = (service_relationships[:children] == :none ? nil : service_relationships[:children])
-      send(rel, *args) unless rel.nil?
+      unless self.class.service_relationships[:children] == :none
+        send self.class.service_relationships[:children], *args
+      end
     end
+    
+    alias :service_ancestor :service_parent
+    alias :service_descendents :service_children
     
     def has_service_children?() !!service_children rescue false; end
     def has_service_parent?() !!service_parent rescue false; end
@@ -55,12 +59,34 @@ module Behaviors::Service
 
     def service type
       provider = nil
-      while_walking_service_provider_lineage do |ancestor|
-        provider = ancestor.service_override(type).try(:provider)
-        break unless provider.nil?
+      service_ancestors.each do |ancestor|
+        override = ServiceOverride.first(
+          :select => %Q(
+            service_overrides.id,
+            service_overrides.overridable,
+            service_overrides.service_provider_id,
+            st.name
+          ),
+          :joins => [
+            'INNER JOIN service_providers AS sp ON service_overrides.service_provider_id = sp.id',
+            'INNER JOIN service_types AS st on sp.service_type_id = st.id'
+          ],
+          :conditions => {
+            :service_overrides => {
+              :target_type => ancestor.class.name,
+              :target_id   => ancestor[:id]
+            },
+            :st => { :name => type.is_a?(ServiceType) ? type.name.to_s : type.to_s }
+          }
+        )
+
+        unless override.nil?
+          provider = override[:service_provider_id]
+          break unless override.overridable?
+        end
       end
-      
-      provider
+
+      provider.nil? ? nil : ServiceProvider.find(provider)
     end
 
     def service_progenitor
@@ -71,6 +97,13 @@ module Behaviors::Service
       progenitor
     end
     
+    def service_ancestors
+      if @ancestors.empty?
+        @ancestors ||= (service_parent.service_ancestors rescue []) + [self]
+      end
+      @ancestors
+    end
+    
     def service_dns_records=(v); end
     def service_dns_records
       services.values.select{|v| !v.nil?}.collect { |s| s.hostline }.join "\n"
@@ -78,7 +111,7 @@ module Behaviors::Service
     
     
     def services
-      ServiceType.all.inject({}) do |services,stype|
+      @services ||= ServiceType.all.inject({}) do |services,stype|
         services[stype.name] = service stype
         services
       end

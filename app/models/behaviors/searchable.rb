@@ -46,7 +46,7 @@ module Behaviors::Searchable
 			search(options[:search], options[:page], options[:joins], options[:conditions], options[:order], options[:filter], options[:include])
 		end
 
-		def search(search, page, joins, conditions, order=nil, filters=nil, include=nil)
+		def search(search, page, joins, conditions, order=nil, filters=nil, include=nil, group_by=nil)
 			unless search.blank?
 				conditions = [ '' ] if conditions.nil? or conditions.empty?
 				conditions[0] = conditions[0] + " AND " unless conditions[0].blank?
@@ -107,7 +107,8 @@ module Behaviors::Searchable
 				:joins => joins,
 				:conditions => conditions,
 				:order => order,
-				:include => include
+				:include => include,
+				:group => group_by
 		end
 	end # class methods
 end
