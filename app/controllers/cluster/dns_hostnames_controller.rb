@@ -1,21 +1,21 @@
 class Cluster::DnsHostnamesController < ApplicationController
-  before_filter :login_required
+  before_filter :login_required, :setup_data
   require_role  :admin, :unless => "current_user.has_cluster_access?(Cluster.find(params[:cluster_id])) "
 
-  def setup_data hostname_id = nil
+  def setup_data
+    hostname_id ||= params[:id] 
     (@model = Cluster.find(params[:cluster_id])).service_ancestors.each do |ancestor|
       self.instance_variable_set "@#{ancestor.class.table_name.singularize}".to_sym, ancestor
     end
-    
     @host_servers = DnsHostname.hostname_servers(@model)
-    @hostnames = DnsHostname.paginated_model_search(@model, params, hostname_id)  
+    
+    @hostnames = Array(DnsHostname.paginated_model_search(@model, params, hostname_id))
+    @hostname = @hostnames.first
   end
   private :setup_data
-  
+
   # GET /cluster/:cluster_id/dns_hostnames
   def index
-    setup_data()
-    
     respond_to do |format|
       format.html { render :template => 'dns_hostnames/index' }
       format.xml  { render :xml => @hostnames}
@@ -24,8 +24,6 @@ class Cluster::DnsHostnamesController < ApplicationController
   end
   
   def list
-    setup_data()
-    
     respond_to do |format|
       format.html { render :template => 'dns_hostnames/index' }
       format.xml  { render :xml => @hostnames}
@@ -34,33 +32,24 @@ class Cluster::DnsHostnamesController < ApplicationController
   end
 
   def show
-    setup_data params[:id]
-    @hostname = @hostnames.first
-    
     respond_to do |format|
-      format.html { render :partial => 'dns_hostnames/hostname_row', :locals => { :hostname => @hostname } }
+      format.html {
+        render :partial => 'dns_hostnames/hostname_row',
+               :locals => { :hostname => @hostname, :host_servers => @host_servers }
+      }
       format.xml { render :xml => @hostname }
-      format.js { render :partial => 'dns_hostnames/hostname_row', :locals => { :hostname => @hostname }, :layout => false }
+      format.js {
+        render :partial => 'dns_hostnames/hostname_row',
+               :locals => { :hostname => @hostname, :host_servers => @host_servers },
+               :layout => false
+      }
     end
   end
 
-    def acquire
-    @model = @cluster = Cluster.find(params[:cluster_id])
-    @hostname = DnsHostname.find(params[:id])
-    
+  def acquire
     @error_messages = []
     
-    assignments = if @hostname.nil?
-      @cluster.servers.inject([]) { |a,s| a = a | DnsHostnameAssignment.find_all_by_server_id(s); a }
-    else
-      @cluster.servers.inject([]) { |a,s| a = a | DnsHostnameAssignment.find_all_by_server_id_and_dns_hostname_id(s, @hostname); a }
-    end
-    
-    instances = assignments.inject([]) do |array,assignment|
-      array = array | assignment.server.instances.select { |i| not i.has_dns_lease? assignment }; array
-    end
-    
-    instances.each { |i| i.acquire @hostname }
+    DnsHostname.unassigned_hostname_instances(@hostname, @model).each { |i| i.acquire @hostname }
 
     @leases = DnsLease.find_all_by_cluster_id_and_hostname_id(@model, @hostname)
     @error_message = @error_messages.join("\n<br />")
@@ -78,13 +67,10 @@ class Cluster::DnsHostnamesController < ApplicationController
   end
 
   def destroy
-    @model = @cluster = Cluster.find(params[:cluster_id])
-    @hostname = DnsHostname.find(params[:id])        
-
     if @hostname.nil?
       @error_message = "Couldn't locate Hostname [#{params[:dns_hostname][:id]}]"
-    elsif @hostname.has_active_leases? 
-      @error_message = "Can not remove hostname '#{@hostname.name}' while it is in use (active leases: #{@hostname.active_leases.size})"
+    elsif @hostname.leases[:active] > 0
+      @error_message = "Can not remove hostname '#{@hostname.name}' while it is in use (active leases: #{@hostname.leases[:active]})"
     else
       begin
         @hostname.destroy

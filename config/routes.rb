@@ -174,7 +174,7 @@ ActionController::Routing::Routes.draw do |map|
 	end
 
 	map.resources :dns_leases, :member => { :release => :delete }
-	map.resources :dns_hostnames
+	map.resources :dns_hostnames, :collection => { :list => :any }
 
 ########
 	map.hostname_ac '/dns_hostname_ac',

@@ -1,7 +1,8 @@
 <%-
 accrued = hostname.leases[:accrued]
 active  = hostname.leases[:active] 
-instance_total = hostname.instance_totals 
+instance_total = hostname.instance_totals
+host_servers = hostname.host_servers
 has_active = (active > 0)
 -%>
 
@@ -64,5 +65,5 @@ has_active = (active > 0)
 		<% end %>
 	<% end %>
 </td>
-<td><%= accrued %> <small>(<%= active %>)</small>
+<td><%= active %> <small>(<%= accrued %>)</small>
 </td>

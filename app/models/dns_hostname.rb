@@ -11,8 +11,13 @@ class DnsHostname < BaseModel
 	validates_format_of	:name, :with => VALID_HOSTNAME_REGEX, :message => "must begin with a letter, and use only alpha-numeric and dash characters"
 #	validates_columns :name
 
-	attr_accessor :leases, :instance_totals
+	attr_reader :leases, :instance_totals, :host_servers
 
+  def after_initialize
+    @leases = { :accrued => 0, :active => 0 }
+    @instance_totals = 0
+  end
+  
 	def self.find_all_by_server_id(server, search, page, extra_joins, extra_conditions, sort = nil)
 		conditions = [ 's1.id = ? AND c1.provider_account_id = dns_hostnames.provider_account_id ', (server.is_a?(Server) ? server.id : server) ]
 		unless extra_conditions.blank?
@@ -66,7 +71,7 @@ class DnsHostname < BaseModel
           'LEFT JOIN instances  ON dl.instance_id = instances.id'
       ],
       :conditions => { model.class.table_name.to_sym => { :id => model[:id] } },
-      :group => 'servers.id',
+      :group => 'dns_hostnames.id,servers.id',
       :order => 'dns_hostnames.name ASC'
     )
   end
@@ -136,31 +141,41 @@ class DnsHostname < BaseModel
   end
   
   def self.hostname_instances(hostname, model)
-    Instance.all(
-      :joins => {
-        :server => [
-          :dns_hostnames,
-          { :cluster => :provider_account }
-        ]
-      },
-      :conditions => {
-        :dns_hostnames => { :id => normalize_hostname(hostname, model)[:id] },
-        model.class.table_name.to_sym => { :id => model[:id] }
-      }
-    )
+Instance.all(
+  :select => 'DISTINCT(instances.id), instances.*',
+  :joins => [
+    'INNER JOIN servers ON instances.server_id = servers.id',
+    '  INNER JOIN clusters ON servers.cluster_id = clusters.id',
+    '    INNER JOIN provider_accounts ON clusters.provider_account_id = provider_accounts.id',
+    '      INNER JOIN providers ON provider_accounts.provider_id = providers.id',
+    '  INNER JOIN dns_hostname_assignments ON servers.id = dns_hostname_assignments.server_id',
+    '    INNER JOIN dns_hostnames ON dns_hostname_assignments.dns_hostname_id = dns_hostnames.id',
+    '    LEFT JOIN dns_leases ON dns_hostname_assignments.id = dns_leases.dns_hostname_assignment_id',
+  ],
+  :conditions => {
+    :dns_hostnames => { :id => normalize_hostname(hostname, model)[:id] },
+    model.class.table_name.to_sym => { :id => model[:id] }
+  }
+)
   end
 
   def self.unassigned_hostname_instances(hostname, model)
-    DnsLease.all(
-      :joins => {
-        :server => [
-          :dns_hostnames,
-          { :cluster => :provider_account }
-        ]
-      },
+    Instance.all(
+      :select => 'DISTINCT(instances.id), instances.*, dns_leases.instance_id, COUNT(dns_leases.id) AS lease_count',
+      :joins => [
+        'INNER JOIN servers ON instances.server_id = servers.id',
+        '  INNER JOIN dns_hostname_assignments ON servers.id = dns_hostname_assignments.server_id',
+        '    INNER JOIN dns_hostnames ON dns_hostname_assignments.dns_hostname_id = dns_hostnames.id',
+        '    LEFT JOIN dns_leases ON dns_hostname_assignments.id = dns_leases.dns_hostname_assignment_id
+                                AND dns_leases.instance_id = instances.id',
+        '  INNER JOIN clusters ON servers.cluster_id = clusters.id',
+        '    INNER JOIN provider_accounts ON clusters.provider_account_id = provider_accounts.id',
+        '      INNER JOIN providers ON provider_accounts.provider_id = providers.id',
+      ],
       :conditions => {
-        :dns_hostnames => { :id => normalize_hostname(hostname, model)[:id] },
-        model.class.table_name.to_sym => { :id => model[:id] }
+        :dns_hostnames => { :id => hostname[:id] },
+        model.class.table_name.to_sym => { :id => model[:id] },
+        :dns_leases => { :instance_id => nil }
       }
     )
   end
@@ -190,15 +205,13 @@ class DnsHostname < BaseModel
 
   def self.paginated_model_search(model, params = {}, hostname_id = nil)
     params[:sort] = params[:sort].nil? ? 'name' : params[:sort].gsub('dns-hostname', 'name') 
-    include = {
-      :dns_hostname_assignments => [ { :server => { :cluster => :provider_account } }, :dns_leases ]
-    }
+    include = nil
     joins = [
-      'INNER JOIN dns_hostname_assignments AS dha ON dha.dns_hostname_id = dns_hostnames.id',
-      'LEFT JOIN dns_leases AS dl ON dha.id = dl.dns_hostname_assignment_id',
-      'INNER JOIN servers AS s ON dha.server_id = s.id',
-      'INNER JOIN clusters AS c ON s.cluster_id = c.id',
-      'INNER JOIN provider_accounts AS pa ON c.provider_account_id = pa.id',
+      'INNER JOIN provider_accounts ON dns_hostnames.provider_account_id = provider_accounts.id',
+      'LEFT JOIN dns_hostname_assignments ON dns_hostname_assignments.dns_hostname_id = dns_hostnames.id',
+      'LEFT JOIN dns_leases ON dns_hostname_assignments.id = dns_leases.dns_hostname_assignment_id',
+      'LEFT JOIN servers ON dns_hostname_assignments.server_id = servers.id',
+      'LEFT JOIN clusters ON servers.cluster_id = clusters.id',
     ]
     conditions = [''] if conditions.nil? or conditions.empty?
     conditions = [ "#{model.class.table_name}.id = ?", model[:id] ]
@@ -207,19 +220,33 @@ class DnsHostname < BaseModel
       conditions << hostname_id
     end
 
-    hostnames = DnsHostname.search(params[:search], params[:page], joins, conditions, params[:sort], nil, include, 'dns_hostnames.id')
+    hostnames = DnsHostname.search(
+      params[:search], params[:page], joins,
+      conditions, params[:sort], nil, include,
+      'dns_hostnames.id'
+    )
+    
+    decorate_stats(hostnames, model)
+  end
+  
+  def self.decorate_stats hostnames, model
+    return hostnames if hostnames.nil? or hostnames.empty?
+    
+    accrued_leases = accrued_lease_counts(model)
+    active_leases = active_lease_count(model)
+    hostname_instance_totals = hostname_instance_totals(model)
+    hostname_servers = hostname_servers(model)
 
-    accrued_leases = DnsHostname.accrued_lease_counts(model)
-    active_leases = DnsHostname.active_lease_count(model)
-    hostname_instance_totals = DnsHostname.hostname_instance_totals(model)
-        
     hostnames.each do |h|
-      h.leases ||= { :active => 0, :accrued => 0 }
-      h.instance_totals ||= 0
-      h.leases[:active]  = Integer((active_leases.select { |l| l[:id] == h[:id] }[0][:active_leases] rescue nil))
-      h.leases[:accrued] = Integer((accrued_leases.select { |l| l[:id] == h[:id] }[0][:accrued_leases] rescue nil))
-      h.instance_totals  = hostname_instance_totals.select { |l| h[:id] == l[:id] }.count
+      h.instance_eval(<<-EOS, __FILE__, __LINE__) 
+        @leases[:active] = Integer((active_leases.select { |l| l[:id] == h[:id] }[0][:active_leases] rescue nil))
+        @leases[:accrued] = Integer((accrued_leases.select { |l| l[:id] == h[:id] }[0][:accrued_leases] rescue nil))
+        @instance_totals  = hostname_instance_totals.select { |l| h[:id] == l[:id] }.count
+        @host_servers = hostname_servers.select { |host| host[:id] == self[:id] }
+      EOS
     end
+    
+    hostnames
 	end
 
 	def assign instance

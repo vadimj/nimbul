@@ -1,22 +1,17 @@
 class ProviderAccount::DnsHostnamesController < ApplicationController
-  before_filter :login_required
+  before_filter :login_required, :setup_data
   require_role  :admin, :unless => "current_user.has_provider_account_access?(ProviderAccount.find(params[:provider_account_id])) "
-  after_filter :setup_data
   
-  def setup_data 
+  def setup_data
     hostname_id ||= params[:id] 
     (@model = ProviderAccount.find(params[:provider_account_id])).service_ancestors.each do |ancestor|
       puts %Q|self.instance_variable_set "@#{ancestor.class.table_name.singularize}".to_sym, ancestor|
       self.instance_variable_set "@#{ancestor.class.table_name.singularize}".to_sym, ancestor
     end
-    
     @host_servers = DnsHostname.hostname_servers(@model)
-
-    if not hostname_id.nil?
-      @hostname = DnsHostname.paginated_model_search(@model, params, hostname_id)
-    else
-      @hostnames = DnsHostname.paginated_model_search(@model, params)
-    end      
+    
+    @hostnames = Array(DnsHostname.paginated_model_search(@model, params, hostname_id))
+    @hostname = @hostnames.first
   end
   private :setup_data
   
@@ -24,7 +19,7 @@ class ProviderAccount::DnsHostnamesController < ApplicationController
   def index
     respond_to do |format|
       format.html { render :template => 'dns_hostnames/index' }
-      format.xml  { render :xml => @hostnames}
+      format.xml  { render :xml => @hostnames }
       format.js   { render :template => 'dns_hostnames/index', :layout => false }
     end
   end
@@ -39,9 +34,16 @@ class ProviderAccount::DnsHostnamesController < ApplicationController
 
   def show
     respond_to do |format|
-      format.html { render :partial => 'dns_hostnames/hostname_row', :locals => { :hostname => @hostname } }
+      format.html {
+        render :partial => 'dns_hostnames/hostname_row',
+               :locals => { :hostname => @hostname, :host_servers => @host_servers }
+      }
       format.xml { render :xml => @hostname }
-      format.js { render :partial => 'dns_hostnames/hostname_row', :locals => { :hostname => @hostname }, :layout => false }
+      format.js {
+        render :partial => 'dns_hostnames/hostname_row',
+               :locals => { :hostname => @hostname, :host_servers => @host_servers },
+               :layout => false
+      }
     end
   end
   
@@ -64,9 +66,27 @@ class ProviderAccount::DnsHostnamesController < ApplicationController
     render :inline => tags
   end
 
-  def create
-    @model = @provider_account = ProviderAccount.find(params[:provider_account_id])
+  def acquire
+    @error_messages = []
+    
+    DnsHostname.unassigned_hostname_instances(@hostname, @model).each { |i| i.acquire @hostname }
 
+    @leases = DnsLease.find_all_by_provider_account_id_and_hostname_id(@model, @hostname)
+    @error_message = @error_messages.join("\n<br />")
+    
+    respond_to do |format|
+      if @error_message.blank?
+        format.xml  { head :ok }
+        format.js
+      else
+        flash[:error] = @error_message
+        format.xml  { render :xml => @error_messages, :status => :unprocessable_entity }
+        format.js
+      end
+    end
+  end
+
+  def create
     if params[:dns_hostname][:id] == 'Add Hostname'
       return respond_to do |format|
         format.html  { redirect_to @provider_account, :anchor => :dns }
@@ -92,6 +112,8 @@ class ProviderAccount::DnsHostnamesController < ApplicationController
         invalid_hostname = true
         nil
     end
+
+    @hostname = DnsHostname.decorate_stats(Array(@hostname), @model).first
     
     if @hostname.nil?
       if create_attempted
@@ -110,7 +132,7 @@ class ProviderAccount::DnsHostnamesController < ApplicationController
     respond_to do |format|
       if @error_message.blank?
         flash[:notice] = @message
-        format.html { redirect_to @provider_account }
+        format.html { redirect_to @provider_account, :anchor => :dns }
         format.xml  { head :ok }
         format.js
       else
@@ -122,44 +144,11 @@ class ProviderAccount::DnsHostnamesController < ApplicationController
     end
   end
     
-  def acquire
-    @error_messages = []
-    
-    assignments = if @hostname.nil?
-      @model.clusters.inject([]) { |a,cluster| a = a | cluster.servers.inject([]) { |a,s| a = a | DnsHostnameAssignment.find_all_by_server_id(s); a }; a }
-    else
-      @model.clusters.inject([]) { |a,cluster| a = a | cluster.servers.inject([]) { |a,s| a = a | DnsHostnameAssignment.find_all_by_server_id_and_dns_hostname_id(s, @hostname); a }; a }
-    end
-    
-    instances = assignments.inject([]) do |array,assignment|
-      array = array | assignment.server.instances.select { |i| not i.has_dns_lease? assignment }; array
-    end
-    
-    instances.each { |i| i.acquire @hostname }
-
-    @leases = DnsLease.find_all_by_provider_account_id_and_hostname_id(@model, @hostname)
-    @error_message = @error_messages.join("\n<br />")
-    
-    respond_to do |format|
-      if @error_message.blank?
-        format.xml  { head :ok }
-        format.js
-      else
-        flash[:error] = @error_message
-        format.xml  { render :xml => @error_messages, :status => :unprocessable_entity }
-        format.js
-      end
-    end
-  end
-
   def destroy
-    @model = @provider_account = ProviderAccount.find(params[:provider_account_id])
-    @hostname = DnsHostname.find(params[:id])        
-
     if @hostname.nil?
       @error_message = "Couldn't locate Hostname [#{params[:dns_hostname][:id]}]"
-    elsif @hostname.has_active_leases? 
-      @error_message = "Can not remove hostname '#{@hostname.name}' while it is in use (active leases: #{@hostname.active_leases.size})"
+    elsif @hostname.leases[:active] > 0 
+      @error_message = "Can not remove hostname '#{@hostname.name}' while it is in use (active leases: #{@hostname.leases[:active]})"
     else
       begin
         @hostname.destroy
