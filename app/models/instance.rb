@@ -3,6 +3,7 @@ require 'aasm'
 class Instance < BaseModel
   include AASM
 
+  self.inheritance_column = :_none_
   belongs_to :provider_account
   belongs_to :zone
   belongs_to :server, :counter_cache => true

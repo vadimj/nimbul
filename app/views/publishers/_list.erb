@@ -1,6 +1,6 @@
 <%
     publisher_class_types = Dir.glob( File.join( RAILS_ROOT, 'app', 'models', 'publishers', '*.rb') ).map{|path| path[/.+\/(.+).rb/,1] }
-    publisher_options = publisher_class_types.map{ |m| "<option value='#{m.camelize}'>#{('Publishers::'+m.camelize).constantize.label}</option>" }
+    publisher_options = publisher_class_types.map{ |m| "<option value='#{m.camelize}'>#{('Publisher::'+m.camelize).constantize.label}</option>" }
 %>
 <h1>Account Publishers</h1>
 The following Publishers have been configured for this account.<br />

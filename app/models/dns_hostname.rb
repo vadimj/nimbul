@@ -107,7 +107,7 @@ class DnsHostname < BaseModel
     )
   end
 
-  def self.normalize_hostname hostname, model
+  def self.normalize_hostname hostname, model = nil
     case hostname
       when DnsHostname
         hostname

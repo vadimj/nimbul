@@ -282,6 +282,7 @@ ActionController::Routing::Routes.draw do |map|
     map.resources :operations, :has_many => [ :operation_logs ]
 
 	map.show_server_server_user_data '/server/:id/user_data', :controller => 'server/user_data', :action => 'show'
+	map.show_server_server_script_data '/server/:id/user_script', :controller => 'server/user_script', :action => 'show'
 
     # server profiles
     map.resources :server_profiles, :has_many => [ :server_profile_revisions ]

@@ -39,7 +39,7 @@ class PublishersController < ApplicationController
     # GET /publishers/new.xml
     def new
         @provider_account = ProviderAccount.find(params[:provider_account_id])
-        @class_type = 'Publishers::'+params[:class_type] unless params[:class_type].blank?
+        @class_type = 'Publisher::'+params[:class_type] unless params[:class_type].blank?
         @publisher = Publisher.factory(@class_type)
 
         respond_to do |format|

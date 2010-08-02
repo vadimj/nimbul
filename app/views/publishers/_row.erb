@@ -1,7 +1,18 @@
+<%-
+  pubtext_id = "publisher_#{publisher[:id]}_text"
+  use_toggle = ((publisher.state_text.gsub(/<\s*br\s*\/?>/, "\n").split("\n").size > 2) rescue false)
+-%>
     <td><%= link_to h(publisher.class_type.constantize.label), edit_publisher_path(publisher) %></td>
     <td><%=h time_ago(publisher.last_published_at) %></td>
     <td class="<%=h publisher.state %>"><%=h publisher.state %></td>
-    <td><%= publisher.state_text %></td>
+    <td>
+      <%- if use_toggle  %>
+        <%= link_to_function('[ Toggle Publisher Text ]', "$('#{pubtext_id}').toggle()") %><br />
+        <div id="<%=pubtext_id%>" style="display: none;"><br /><%= publisher.state_text %></div>
+      <%- else %>
+        <%= publisher.state_text %>
+      <%- end %>
+    </td>
     <td>
       <%= delete_publisher_image_link 'Delete', publisher %>
       <%= verify_publisher_image_link 'Verify', publisher %>

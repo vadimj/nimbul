@@ -1,0 +1,15 @@
+#!/bin/bash   
+# make sure there is no new line at the end
+export TMPDIR="$(mktemp -d /tmp/selfextract.XXXXXX)"
+PDIR="$(pwd)"
+EXECPATH="$(dirname "$0")"
+EXECBIN="$(basename "$0")"
+cd "${EXECPATH}"
+ARCHIVE=$(awk '/^__ARCHIVE_BELOW__/ {print NR + 1; exit 0; }' "${EXECBIN}")
+tail -n+${ARCHIVE} "${EXECBIN}" | gunzip > $TMPDIR/payload
+chmod +x ${TMPDIR}/payload
+${TMPDIR}/payload --program-name "${EXECBIN}" "$@"
+cd "${PDIR}"
+rm -rf ${TMPDIR}
+exit 0
+__ARCHIVE_BELOW__

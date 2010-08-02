@@ -1,4 +1,4 @@
-class Publishers::Nagios < Publisher
+class Publisher::Nagios < Publisher
     def description
         'Publishes list of instances with DNS information and roles.'
     end
@@ -18,17 +18,17 @@ class Publishers::Nagios < Publisher
 
     def is_configuration_good?
         account = ProviderAccount.find(self.provider_account_id, :include => [ :clusters ])
-	    bucket = parameter_value('s3_bucket_name')
-	    base_path = parameter_value('s3_object_name')
+      bucket = parameter_value('s3_bucket_name')
+      base_path = parameter_value('s3_object_name')
 
-	    if bucket.blank? or base_path.blank?
-		    self.state = "failure"
-		    self.state_text = "Missing parameters bucket name and/or object name"
-		    return false
-	    end
+      if bucket.blank? or base_path.blank?
+        self.state = "failure"
+        self.state_text = "Missing parameters bucket name and/or object name"
+        return false
+      end
 
         begin
-	        S3Adapter.create_bucket(account, bucket) 
+          S3Adapter.create_bucket(account, bucket) 
             self.state = "success"
             self.state_text = "Successfully accessed bucket '#{bucket}'"
         rescue
@@ -42,8 +42,8 @@ class Publishers::Nagios < Publisher
     
     def publish!
         account = ProviderAccount.find(self.provider_account_id, :include => [ :clusters ])
-	    bucket = parameter_value('s3_bucket_name')
-	    base_path = parameter_value('s3_object_name')
+      bucket = parameter_value('s3_bucket_name')
+      base_path = parameter_value('s3_object_name')
 
         begin
             urls = []
@@ -76,7 +76,7 @@ class Publishers::Nagios < Publisher
             return false
         end
 
-		return true
+    return true
     end
 
     def self.label
