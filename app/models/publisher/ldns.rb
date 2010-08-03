@@ -83,10 +83,10 @@ class Publisher::Ldns < Publisher
         :state => 'success',
         :state_text => urls.join('<br />')
       })
-    rescue
+    rescue Exception => e
       update_attributes({
-        :state => 'failure',
-        :state_text => "Error: #{$!}",
+        :state => 'failed',
+        :state_text => "Error: <pre>#{e.message}\n\t#{e.backtrace.join("\n\t")}</pre>",
       })
       return false
     end

@@ -104,6 +104,6 @@ class Publisher::Serverscripts < Publisher
     def script_popup(server, filepath)
       url = "/server/#{server[:id]}/user_script"
       popup_options = "this.href, 'server_server_user_script_#{server[:id]}', 'height=640,width=760'"
-      return %Q[<a href="#{url}" onclick="window.open(#{popup_options}); return false;">#{filepath}</a><br />]
+      return %Q[<a href="#{url}" onclick="window.open(#{popup_options}); return false;">#{filepath}</a>]
     end
 end

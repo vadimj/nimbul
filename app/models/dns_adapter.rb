@@ -196,7 +196,7 @@ EOS
   end
   
   def self.get_host_entries(provider, options={})
-    unless !!options[:include_server_info] or !!options[:format] == :nagios
+    unless !!options[:include_server_info] or options[:format] == :nagios
       render_as_hosts_file(as_hash(provider))
     else
       render_as_nagios_file(as_hash(provider, :only_active => true, :with_static => false))
