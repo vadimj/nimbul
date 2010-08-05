@@ -116,7 +116,9 @@ DEFAULT_ZONE    = '<%= user_script.zone %>'
 AVAILABLE_ZONES = <%= user_script.available_zones.inspect %>
 USER_DATA       = DATA.read
 
-Signal.trap("INT") { exit 2 }
+['INT', 'TERM' ].map do |signal|
+  Signal.trap(signal) { exit! 2 }
+end
 
 class Ec2
   attr_reader :ec2, :instance
@@ -173,13 +175,28 @@ class CommandParser
   def self.instance
     @@parser ||= begin
       command = (ARGV[0] || 'missing').downcase.to_sym
-      unless COMMANDS.include? command
-        command = :missing
-        CommandParser.new(command)
+      command = if command == :help
+       unless ARGV[1].nil? || ARGV[1].empty?
+          ARGV.shift
+          ARGV << '-h'
+          unless COMMANDS.include? ARGV[0].downcase.to_sym
+            puts "Invalid command '#{ARGV[0].to_s}' given..."
+            puts
+            :missing
+          else
+            ARGV[0].downcase.to_sym
+          end
+        else
+          :missing
+        end
+      elsif not COMMANDS.include?(command)
+        puts "Invalid command '#{command.to_s}' given..."
+        puts
+        :missing
       else
-        ARGV.shift
-        CommandParser.const_get(command.to_s.capitalize).new(command)
+        command
       end
+      CommandParser.const_get(command.to_s.capitalize).new(command) rescue CommandParser.new(command)
     end
   end
 
@@ -300,6 +317,8 @@ class CommandParser
   protected :build, :setup
 
 end
+
+class CommandParser::Missing < CommandParser; end
 
 ###############################################################################################################
 ################################################# Commands ####################################################
@@ -557,7 +576,7 @@ class Hosts < ::CommandParser
   def setup
     options.filename = nil
     options.json = false
-    options.subcommand = (ARGV[0]||'missing').downcase.to_sym
+    options.subcommand = (ARGV[1]||'missing').downcase.to_sym
   end
 
   def validate_options
