@@ -20,10 +20,10 @@
 ####################
 #
 # Volumes:
-#<%= user_script.server.volumes.collect { |v| "\t#{v.cloud_resource.cloud_id} -> #{v.mount_point}" }.join "\n#\t" %>
+#<%= user_script.volumes.collect { |mp,d| sprintf("\t%s on %s [type: %s, zone: %s] --- %s", d[:id], mp, d[:type].to_s, d[:zone], d[:name]) }.join("\n#\t") %>
 #
 # Addresses:
-#<%= user_script.server.addresses.collect { |a| sprintf("\t%-16s\t%s", a.cloud_resource.cloud_id, a.cloud_resource.name) }.join "\n#\t" %>
+#<%= user_script.addresses.collect { |a| sprintf("\t%-16s\t%s", *a.zip.flatten) }.join "\n#\t" %>
 #
 
 require 'ostruct'
@@ -104,15 +104,16 @@ COMMANDS = [ :run, :start, :stop, :reboot, :list, :hosts ]
 
 BUILD_DATE      = '<%= Time.now -%>'
 SERVER_NAME     = '<%= user_script.server.name -%>'
-SERVER_ID       = '<%= user_script.server.id -%>'.to_i
+SERVER_ID       = <%= user_script.server.id.inspect %>
 IMAGE_AMI       = '<%= user_script.server.image_id -%>'
 HOSTSFILE_URL   = '<%= user_script.hosts_file_url -%>'
-SECURITY_GROUPS = %w(<%= user_script.security_groups.join(' ') -%>)
+SECURITY_GROUPS = <%= user_script.security_groups.inspect %>
 INSTANCE_TYPE   = '<%= user_script.server.instance_type -%>'
 KEY_NAME        = '<%= user_script.server.key_name -%>'
-VOLUMES         = Hash[*%w(<%= user_script.volumes.join ' ' -%>)]
-ADDRESSES       = %w(<%= user_script.addresses.join ' ' -%>)
-ZONE            = '<%= user_script.server.zones.first.name rescue '' -%>'
+VOLUMES         = <%= user_script.volumes.inspect %>
+ADDRESSES       = <%= user_script.addresses.inspect %>
+DEFAULT_ZONE    = '<%= user_script.zone %>'
+AVAILABLE_ZONES = <%= user_script.available_zones.inspect %>
 USER_DATA       = DATA.read
 
 Signal.trap("INT") { exit 2 }
@@ -122,6 +123,10 @@ class Ec2
   def initialize ec2, instance
     @ec2 = ec2
     @instance = instance
+  end
+  
+  def create_volume_from_snapshot snapshot_id, availability_zone
+    ec2.create_volume_from_snapshot(snapshot_id, availability_zone)
   end
   
   def attach volume_id, mount_point
@@ -136,6 +141,10 @@ class Ec2
     ec2.describe_volumes(volume_id).any? { |v| v[:status] != 'available' } rescue false
   end
 
+  def volume_available? volume_id
+    not attached? volume_id
+  end
+
   def associate address
     ec2.associate_address @instance, address
   end
@@ -147,6 +156,11 @@ class Ec2
   def associated? address
     ec2.describe_addresses(address).any? { |v| !v[:instance_id].nil? } rescue false
   end
+
+  def address_available? address
+    not associated? address
+  end
+  
 end
 
 ###############################################################################################################
@@ -236,13 +250,14 @@ class CommandParser
         puts sprintf("%-20s: \t%s\n", "BUILD_DATE", "#{::BUILD_DATE}")
         puts sprintf("%-20s: \t%s\n", "SERVER_ID", "#{::SERVER_ID}")
         puts sprintf("%-20s: \t%s\n", "SERVER_NAME", "#{::SERVER_NAME}")
-        puts sprintf("%-20s: \t%s\n", "ZONE", "#{::ZONE}")
+        puts sprintf("%-20s: \t%s\n", "DEFAULT_ZONE", "#{::DEFAULT_ZONE}")
+        puts sprintf("%-20s: \t%s\n", "AVAILABLE_ZONES", "#{::AVAILABLE_ZONES.inspect}")
         puts sprintf("%-20s: \t%s\n", "IMAGE_AMI", "#{::IMAGE_AMI}")
         puts sprintf("%-20s: \t%s\n", "INSTANCE_TYPE", "#{::INSTANCE_TYPE}")
         puts sprintf("%-20s: \t%s\n", "SECURITY_GROUPS", "#{::SECURITY_GROUPS.join ', '}")
         puts sprintf("%-20s: \t%s\n", "KEY_NAME", "#{::KEY_NAME}")
         puts sprintf("%-20s: \t%s\n", "VOLUMES", "#{::VOLUMES.inspect}")
-        puts sprintf("%-20s: \t%s\n", "ADDRESSES", "#{::ADDRESSES.join ', '}")
+        puts sprintf("%-20s: \t%s\n", "ADDRESSES", "#{::ADDRESSES.collect { |k,v| k }.join ', '}")
         puts sprintf("%-20s: \t%s\n", "HOSTSFILE_URL", "#{::HOSTSFILE_URL}")
         puts
         exit! 0
@@ -403,7 +418,7 @@ class ServerCommand
 
   def instance_display_list instances, display_keys = [ :state, :ami, :cluster, :server, :dns ]
     instances.values.sort{|a,b| a[:up_since] <=> b[:up_since]}.collect do |data|
-      "#{data[:id]}: #{display_keys.collect { |k| data[k] }.compact.join " - "} (up since: #{data[:up_since]})" 
+      "#{data[:id]}: #{display_keys.collect { |k| data[k] || 'unknown' }.compact.join " - "} (up since: #{data[:up_since]})" 
     end
   end
   
@@ -476,7 +491,7 @@ class ServerCommand::InstanceSpecific < ServerCommand
   
   def setup
     super 
-    unless options.cloud_id
+    unless options.cloud_id and get_instance_list(true)[options.cloud_id]
       puts "Getting list of instances for user selection..."
       @instances = choose_instance
       options.cloud_id = (@instances.size > 1 ? 'all' : @instances.first[:id]) rescue 'missing'
@@ -624,7 +639,7 @@ class ServerCommand::Hosts < ServerCommand
         if options.filename.nil?
           puts hosts_data
         else 
-          puts "Retrieved hosts data for server '<%= user_script.server.name -%>' from '#{::HOSTSFILE_URL}'"
+          puts "Retrieved hosts data for server '#{::SERVER_NAME}' from '#{::HOSTSFILE_URL}'"
           File.open(options.filename, 'w') { |f| f << hosts_data }
         end
     end
@@ -749,12 +764,14 @@ class ServerCommand::Start < ServerCommand
       exit! 2
     end
 
+    startup_zone = have_volumes? ? ::VOLUMES[::VOLUMES.keys.first][:zone] : ::DEFAULT_ZONE
+    
     params = {
       :instance_type => ::INSTANCE_TYPE,
       :security_groups => ::SECURITY_GROUPS,
       :key_name => ::KEY_NAME,
       :user_data => ::USER_DATA,
-      :zone => ::ZONE.empty? ? nil : ::ZONE
+      :zone => startup_zone
     }
     
     response = @ec2.run_instances(::IMAGE_AMI, 1, 1, params)
@@ -779,7 +796,35 @@ class ServerCommand::Start < ServerCommand
         ec2 = Ec2.new(@ec2, requested_id)
         
         unless not have_volumes?
-          ::VOLUMES.each do |volume_id, mount_point|
+          ::VOLUMES.each do |mount_point,volume_data|
+            case volume_data[:type]
+              when :snapshot
+                puts "Generating volume from snapshot with id #{volume_data[:id]}"
+                result = ec2.create_volume_from_snapshot volume_data[:id], startup_zone
+                unless result.nil?
+                  volume_id = result[:volume_id]
+                  begin
+                    Timeout::timeout(300) do |sec|
+                      timeout_at = Time.now.to_i + sec
+                      while (not ec2.volume_available?(volume_id))
+                        puts "Waiting for newly created volume (#{volume_id}) to become available before attaching (timeout in #{timeout_at - Time.now.to_i} seconds)..."
+                        sleep 2
+                      end
+                    end
+                  rescue Timeout::Error
+                    puts "Timed out waiting for volume '#{volume_id}' to become available - please attach manually!"
+                    next
+                  end # unless not force
+                else
+                  puts "Unable to generate volume based on snapshot '#{volume_data[:id]}'"
+                  next
+                end
+              when :volume
+                volume_id = volume_data[:id]
+              else
+                next # no valid type, so skip to next volume
+            end
+            
             unless not ec2.attached? volume_id
               force = options.force_reallocation ||
                       ask("Volume with id '#{volume_id}' is already attached to another instance.\n" +
@@ -804,7 +849,7 @@ class ServerCommand::Start < ServerCommand
         end
         
         unless not have_addresses? 
-          ::ADDRESSES.each do |address|
+          ::ADDRESSES.each do |address,name|
             unless not ec2.associated? address
               force = options.force_reallocation ||
                       ask("Address with id '#{address}' is already associated with another instance.\n" +
