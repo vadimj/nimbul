@@ -71,6 +71,8 @@ class ProviderAccount < BaseModel
       service(:events).first_active_instance.nil?
     rescue ServiceWithoutActiveInstance
       errors.add(:messaging_uri, 'Messaging Service Inactive! No active Events Service instance!')
+    rescue NoMethodError
+      errors.add(:messaging_uri, 'Events Service does not appear to be created. Please go to Admin Controls -> Services and create an Events service, and provider.')
     else
       unless messaging_can_connect?
         errors.add(:messaging_uri, 'Credentials for connecting to the messaging service appear to be invalid')

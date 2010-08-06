@@ -63,7 +63,7 @@ Rails::Initializer.run do |config|
   config.gem 'justinfrench-formtastic', :lib => 'formtastic', :source => 'http://gems.github.com'
   config.gem 'work_queue', :source => 'http://gems.github.com'
   config.gem 'carrot', :source => 'http://gems.ec2.nytimes.com'
-  config.gem 'emissary', :source => 'http://gems.ec2.nytimes.com'
+  config.gem 'emissary'
 
   # Only load the plugins named here, in the order given. By default, all plugins
   # in vendor/plugins are loaded in alphabetical order.

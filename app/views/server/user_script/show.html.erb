@@ -1,0 +1,28 @@
+<% subtitle h(@server.name + ': Full Startup Script') %>
+
+<center><h1>Full Server Control Script</h1></center>
+
+<p>
+  <%= link_to_function 'Close', "window.close();" %>
+</p>
+
+<p>
+  <b>Account:</b> <%=h @server.cluster.provider_account.name %> [<%=h @server.cluster.provider_account.id %>]
+</p>
+<p>
+  <b>Cluster:</b> <%=h @server.cluster.name %> [<%=h @server.cluster.id %>]
+</p>
+<p>
+  <b>Server:</b> <%=h @server.name %> [<%=h @server.id %>]
+</p>
+
+<br />
+
+<%= text_area_tag :server_user_data, @server_script_data, :size=>'95x30', :wrap => :off, :readonly => true %>
+
+<br />
+
+<p>
+  <%= link_to_function 'Close', "window.close();" %>
+</p>
+

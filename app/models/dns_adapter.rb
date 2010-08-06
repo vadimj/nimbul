@@ -1,5 +1,3 @@
-require 'fileutils'
-require 'pp'
 require 'json'
 
 class DNS_Adapter
@@ -14,43 +12,36 @@ class DNS_Adapter
     conditions = { :provider_accounts => { :id => account[:id] } }
     conditions.merge!({ :dns_leases => { :instance_id => (1)..(Instance.last[:id]) } }) if only_active
     
-    DnsLease.all(
+    DnsLease.find_by_model(account,
       :select => %Q(
-        DISTINCT(dns_leases.id)               AS id,
-        providers.id                          AS provider_id,
-        providers.name                        AS provider_name,
-        provider_accounts.id                  AS provider_account_id,
-        provider_accounts.name                AS provider_account_name,
-        clusters.id                           AS cluster_id,
-        clusters.name                         AS cluster_name,
-        servers.id                            AS server_id,
-        servers.name                          AS server_name,
-        instances.id                          AS instance_id,
-        instances.instance_id                 AS cloud_id,
-        dns_hostnames.id                      as hostname_id,
-        dns_hostnames.name                    AS hostname_base,
-        dns_leases.idx                        AS lease_index, 
-        (dns_leases.instance_id IS NOT NULL)  AS state,
-        instances.public_dns                  AS instance_public_dns,
-        instances.private_dns                 AS instance_private_dns,
-        instances.public_ip                   AS instance_public_ip,
-        instances.private_ip                  AS instance_private_ip,
-        sprp.value                            AS roles 
+        DISTINCT(dns_leases.id)                   AS id,
+        providers.id                              AS provider_id,
+        providers.name                            AS provider_name,
+        provider_accounts.id                      AS provider_account_id,
+        provider_accounts.name                    AS provider_account_name,
+        clusters.id                               AS cluster_id,
+        clusters.name                             AS cluster_name,
+        servers.id                                AS server_id,
+        servers.name                              AS server_name,
+        instances.id                              AS instance_id,
+        instances.instance_id                     AS cloud_id,
+        dns_hostnames.id                          as hostname_id,
+        dns_hostnames.name                        AS hostname_base,
+        dns_leases.idx                            AS lease_index, 
+        (dns_leases.instance_id IS NOT NULL)      AS state,
+        instances.public_dns                      AS instance_public_dns,
+        instances.private_dns                     AS instance_private_dns,
+        instances.public_ip                       AS instance_public_ip,
+        instances.private_ip                      AS instance_private_ip,
+        server_profile_revision_parameters.value  AS roles 
       ),
       :joins => [
-        'LEFT OUTER JOIN instances ON dns_leases.instance_id = instances.id',
-        'INNER JOIN dns_hostname_assignments ON dns_hostname_assignments.id = dns_leases.dns_hostname_assignment_id',
-        '  INNER JOIN dns_hostnames ON dns_hostnames.id = dns_hostname_assignments.dns_hostname_id',
-        '    INNER JOIN provider_accounts ON provider_accounts.id = dns_hostnames.provider_account_id',
-        '      INNER JOIN providers ON providers.id = provider_accounts.provider_id',
-        '  INNER JOIN servers ON servers.id = dns_hostname_assignments.server_id',
-        '    INNER JOIN server_profile_revisions AS spr ON spr.id = servers.server_profile_revision_id',
-        '      INNER JOIN server_profile_revision_parameters AS sprp ON sprp.server_profile_revision_id = spr.id AND sprp.name = "ROLES"',
-        '    INNER JOIN clusters ON clusters.id = servers.cluster_id',
+        'INNER JOIN server_profile_revisions ON server_profile_revisions.id = servers.server_profile_revision_id',
+        'INNER JOIN server_profile_revision_parameters ON
+                server_profile_revision_parameters.server_profile_revision_id = server_profile_revisions.id AND
+                server_profile_revision_parameters.name = "ROLES"',
       ],
-      :conditions => conditions,
-      :order => 'dns_leases.dns_hostname_assignment_id ASC, dns_leases.idx',
-      :group => 'dns_leases.id'
+      :order => 'dns_leases.dns_hostname_assignment_id ASC, dns_leases.idx'
     ).collect do |lease|
       lease[:state] = (lease[:state].to_i >= 1 ? DnsLease::ACTIVE : DnsLease::INACTIVE)
       unless lease[:state] == DnsLease::ACTIVE
@@ -68,23 +59,19 @@ class DNS_Adapter
       lease
     end
   end
-  
 
-  def self.static_dns_entries provider, options={}
+  def self.static_dns_entries provider
     static = []
-    unless options[:skip_static_dns]
-      static |= provider.service_dns_records.try(:split, /\r*\n/).to_a unless options[:skip_service_dns_records]
-      static |= provider.static_dns_records.try(:split, /\r*\n/).to_a
-    end
-
+    static |= provider.service_dns_records.try(:split, /\r*\n/).to_a 
+    static |= provider.static_dns_records.try(:split, /\r*\n/).to_a
     static.select { |v| v !~ /^\s*#/ }
   end
 
-  def self.as_json account
-    to_hash(account).to_json
+  def self.as_json model, options = {}
+    as_hash(model, options).to_json
   end
 
-  def self.as_hash(account, options = {})
+  def self.as_hash(model, options = {})
     options = { :only_active => false, :with_static => true }.merge!(options)
     
     leases = {
@@ -95,17 +82,26 @@ class DNS_Adapter
     }
 
     unless not options[:with_static]
-      # only bother with the IP (first column) and hostname in the second column - dump the rest
-      static_entries = static_dns_entries(account).collect{ |e| e.split(/\s+/)[0..1] }
+      # make sure we get the provider account from the model, if available
+      account = unless model.is_a? ProviderAccount
+        model.service_ancestors.select { |a| a.is_a? ProviderAccount }.first if model.respond_to? :service_ancestors
+      else
+        model
+      end
       
-      leases[:__static__] = {
-        :array => static_entries,
-        :text  => static_entries.collect{ |e| sprintf("%-16s   %s", e[0], e[1]) }.join("\n"),
-        :hash  => static_entries.collect{ |e| Hash[[:ip,:fqdn].zip(e)] }
-      }
+      unless account.nil?
+        # only bother with the IP (first column) and hostname in the second column - dump the rest
+        static_entries = static_dns_entries(account).collect{ |e| e.split(/\s+/)[0..1] }
+        
+        leases[:__static__] = {
+          :array => static_entries,
+          :text  => static_entries.collect{ |e| sprintf("%-16s   %s", e[0], e[1]) }.join("\n"),
+          :hash  => static_entries.collect{ |e| Hash[[:ip,:fqdn].zip(e)] }
+        }
+      end
     end
     
-    get_account_leases(account, !!options[:only_active]).each do |lease|
+    get_account_leases(model, !!options[:only_active]).each do |lease|
       cluster_name = lease[:cluster_name].gsub(' ','_').downcase.gsub(/[^\w\d]+/, '-')
       server_name  = lease[:server_name].gsub(' ','_').downcase.gsub(/[^\w\d]+/, '-') 
       hostname     = sprintf("%s-%05d", lease[:hostname_base], lease[:lease_index])
@@ -168,11 +164,16 @@ class DNS_Adapter
   end
 
   def self.render_as_hosts_file leases
-    display = [
-      "\n#### EC2LDNS START ####\n",
-      "# Cluster START: static #\n# Group START: static #\n#{list[:__static__][:text]}\n"
-    ]
-    display[1] << "# Group END: static #\n# Cluster END: static #\n"
+    display = [ "\n#### EC2LDNS START ####\n" ]
+    display += [ <<-EOS
+# Cluster START: static #
+# Group START: static #
+#{leases[:__static__][:text]}
+# Group END: static #
+# Cluster END: static #
+
+EOS
+    ] unless leases[:__static__].nil?
 
     tree = leases[:all].inject({}) do |h,(k,v)|
       v.each { |l| (((h[l[:cluster_raw]] ||= {})[l[:server_raw]] ||= {})[l[:base_name]] ||= []) << l }; h
@@ -190,11 +191,12 @@ class DNS_Adapter
       clusters << "#{clust}# Cluster END: #{cluster} #\n"
     end
 
-    display.join("\n") + "\n#### EC2LDNS END ####\n"
+    display << "\n#### EC2LDNS END ####\n"
+    display.collect { |line| "#{line}\n" }
   end
   
   def self.get_host_entries(provider, options={})
-    unless !!options[:include_server_info] or !!options[:format] == :nagios
+    unless !!options[:include_server_info] or options[:format] == :nagios
       render_as_hosts_file(as_hash(provider))
     else
       render_as_nagios_file(as_hash(provider, :only_active => true, :with_static => false))

@@ -6,7 +6,7 @@ class Server < BaseModel
 
 	belongs_to :cluster, :counter_cache => true, :include => :provider_account
 	belongs_to :server_profile_revision
-
+  
 	has_and_belongs_to_many :security_groups, :order => :name, :uniq => true
 	has_many :instances, :dependent => :nullify
 
@@ -118,8 +118,7 @@ class Server < BaseModel
 
 	def publishable?
 		return false unless startable?
-		return false if ServerImage.find_by_image_id(self.image_id).nil?
-		return false if ServerImage.find_by_image_id(self.image_id).location.nil?
+		return false if ServerImage.find_by_image_id(self.image_id).try(:location).nil?
 		return true
 	end
 	
