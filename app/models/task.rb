@@ -1,16 +1,16 @@
 require 'rubygems'
 require 'chronic'
 
-class ServerTask < BaseModel
+class Task < BaseModel
     belongs_to :server
-    has_many :server_task_parameters, :dependent => :destroy
+    has_many :task_parameters, :dependent => :destroy
     has_many :operations, :dependent => :nullify
 
-	# auditing
-	has_many :audit_logs, :as => :auditable, :dependent => :nullify
+    # auditing
+    has_many :audit_logs, :as => :auditable, :dependent => :nullify
 
     validates_presence_of :name
-    validates_associated :server_task_parameters
+    validates_associated :task_parameters
 
     validate :repeatable_must_have_run_every_value
 
@@ -19,11 +19,11 @@ class ServerTask < BaseModel
     end
 
     before_save  :set_run_at, :set_run_every
-    after_update :save_server_task_parameters
+    after_update :save_task_parameters
 
     attr_accessor :should_destroy, :run_every, :state_text, :scheduler_tag, :new_operations
     
-	include TrackChanges # must follow any before filters
+    include TrackChanges # must follow any before filters
 
     def run_every
         return nil unless is_repeatable?
@@ -47,8 +47,8 @@ class ServerTask < BaseModel
         end
     end
 
-    def save_server_task_parameters
-        server_task_parameters.each do |i|
+    def save_task_parameters
+        task_parameters.each do |i|
             if i.should_destroy?
                 i.destroy
             else
@@ -57,19 +57,19 @@ class ServerTask < BaseModel
         end
     end
 
-    def server_task_parameter_attributes=(server_task_parameter_attributes)
-        server_task_parameter_attributes.each do |attributes|
+    def task_parameter_attributes=(task_parameter_attributes)
+        task_parameter_attributes.each do |attributes|
             if attributes[:id].blank?
-                server_task_parameters.build(attributes)
+                task_parameters.build(attributes)
             else
-                server_task_parameter = server_task_parameters.detect { |c| c.id == attributes[:id].to_i }
-                server_task_parameter.attributes = attributes
+                task_parameter = task_parameters.detect { |c| c.id == attributes[:id].to_i }
+                task_parameter.attributes = attributes
             end
         end
     end
 
     def parameter_value(name)
-        parameter = server_task_parameters.detect{|p| p.name == name}
+        parameter = task_parameters.detect{|p| p.name == name}
         if parameter.nil?
             return nil
         else
