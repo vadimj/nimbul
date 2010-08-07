@@ -141,22 +141,22 @@ class DnsHostname < BaseModel
   end
   
   def self.hostname_instances(hostname, model)
-Instance.all(
-  :select => 'DISTINCT(instances.id), instances.*',
-  :joins => [
-    'INNER JOIN servers ON instances.server_id = servers.id',
-    '  INNER JOIN clusters ON servers.cluster_id = clusters.id',
-    '    INNER JOIN provider_accounts ON clusters.provider_account_id = provider_accounts.id',
-    '      INNER JOIN providers ON provider_accounts.provider_id = providers.id',
-    '  INNER JOIN dns_hostname_assignments ON servers.id = dns_hostname_assignments.server_id',
-    '    INNER JOIN dns_hostnames ON dns_hostname_assignments.dns_hostname_id = dns_hostnames.id',
-    '    LEFT JOIN dns_leases ON dns_hostname_assignments.id = dns_leases.dns_hostname_assignment_id',
-  ],
-  :conditions => {
-    :dns_hostnames => { :id => normalize_hostname(hostname, model)[:id] },
-    model.class.table_name.to_sym => { :id => model[:id] }
-  }
-)
+    Instance.all(
+      :select => 'DISTINCT(instances.id), instances.*',
+      :joins => [
+        'INNER JOIN servers ON instances.server_id = servers.id',
+        '  INNER JOIN clusters ON servers.cluster_id = clusters.id',
+        '    INNER JOIN provider_accounts ON clusters.provider_account_id = provider_accounts.id',
+        '      INNER JOIN providers ON provider_accounts.provider_id = providers.id',
+        '  INNER JOIN dns_hostname_assignments ON servers.id = dns_hostname_assignments.server_id',
+        '    INNER JOIN dns_hostnames ON dns_hostname_assignments.dns_hostname_id = dns_hostnames.id',
+        '    LEFT JOIN dns_leases ON dns_hostname_assignments.id = dns_leases.dns_hostname_assignment_id',
+      ],
+      :conditions => {
+        :dns_hostnames => { :id => normalize_hostname(hostname, model)[:id] },
+        model.class.table_name.to_sym => { :id => model[:id] }
+      }
+    )
   end
 
   def self.unassigned_hostname_instances(hostname, model)
@@ -248,7 +248,8 @@ Instance.all(
     
     hostnames
 	end
-
+  alias :decorate :decorate_stats
+  
 	def assign instance
 		DnsHostnameAssignment.find_by_server_id_and_dns_hostname_id(instance.server, self).acquire instance
 	end
