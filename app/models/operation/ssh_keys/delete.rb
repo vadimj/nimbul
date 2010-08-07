@@ -1,4 +1,4 @@
-require 'operations/ssh_keys'
+require 'operation/ssh_keys'
 
 class Operation::SshKeys::Delete < Operation::SshKeys
   def initiate_failure() super; update_server_user_access(self[:result_message]); end

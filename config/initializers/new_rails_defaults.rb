@@ -80,7 +80,7 @@ class ActiveRecord::Base
     
     def _get_sti_constant type_name
       type_name.split('::').inject(Object) do |object,const|
-        unless object.constants.include? const
+        unless object.constants.include? const.camelize
           klass = "#{object == Object ? '' : "#{object.to_s}::"}#{const}".underscore
           load "#{klass}.rb"
         end
