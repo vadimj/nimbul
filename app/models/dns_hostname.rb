@@ -247,8 +247,7 @@ class DnsHostname < BaseModel
     end
     
     hostnames
-	end
-  alias :decorate :decorate_stats
+  end
   
 	def assign instance
 		DnsHostnameAssignment.find_by_server_id_and_dns_hostname_id(instance.server, self).acquire instance

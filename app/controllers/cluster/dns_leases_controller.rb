@@ -5,7 +5,7 @@ class Cluster::DnsLeasesController < ApplicationController
   # GET /cluster/:id/dns_leases
   def index
     @model = @cluster = Cluster.find(params[:cluster_id])
-    @hostname = DnsHostname.decorate(DnsHostname.find_all_by_id(params[:dns_hostname_id]), @model).first
+    @hostname = DnsHostname.decorate_stats(DnsHostname.find_all_by_id(params[:dns_hostname_id]), @model).first
     @leases = DnsLease.find_all_by_cluster_id_and_hostname_id(@cluster, @hostname)
     
         respond_to do |format|
@@ -22,7 +22,7 @@ class Cluster::DnsLeasesController < ApplicationController
   # DELETE /clusters/:cluster_id/dns_hostnames/:dns_hostname_id/dns_leases/release
   def release
     @model = @cluster = Cluster.find(params[:cluster_id])
-    @hostname = DnsHostname.decorate(DnsHostname.find_all_by_id(params[:dns_hostname_id]), @model).first
+    @hostname = DnsHostname.decorate_stats(DnsHostname.find_all_by_id(params[:dns_hostname_id]), @model).first
     @leases = DnsLease.find_all_by_cluster_id_and_hostname_id(@cluster, @hostname)
     
     @leases.each { |l| l.release };
