@@ -2,7 +2,7 @@ class PasswordGenerator
   DIGITS      = ('0'..'9').to_a
   UPPER_ALPHA = ('A'..'Z').to_a
   LOWER_ALPHA = ('a'..'z').to_a
-  SYMBOLS     = %w(~ ! @ # $ % ^ & * _ - + = [ ] { } | : ; < , > . ?)
+  SYMBOLS     = %w(~ ! @ # % ^ & * _ - + = [ ] { } | : ; < , > . ?)
 
   DIGIT       = 0x01
   ALPHA_UPPER = 0x02
