@@ -122,8 +122,8 @@ class ProviderAccount < BaseModel
     self.update_attribute(:messaging_password, PasswordGenerator.generate)
   end
   
-	def messaging_url()
-    uri = (messaging_uri =~ /^amqps?:\/\// ? messaging_uri : "amqp://#{messaging_uri}")
+	def messaging_url
+    uri = (messaging_uri =~ %r|^amqps?://|i ? messaging_uri : "amqp://#{messaging_uri}")
     uri           = URI.parse(messaging_uri)
     uri.scheme    = (uri.scheme.empty? ? 'amqp' : (uri.scheme.to_sym == :amqps ? 'amqps' : 'amqp'))
     uri.user      = URI.escape(messaging_username)

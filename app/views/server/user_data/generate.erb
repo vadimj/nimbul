@@ -94,7 +94,7 @@ emissary stop
 
 # configure emissary
 mkdir -p /etc/emissary
-cat << 'EOF' >> /etc/emissary/config.ini
+cat << 'EOF' > /etc/emissary/config.ini
 <%= emissary_config -%>
 EOF
 

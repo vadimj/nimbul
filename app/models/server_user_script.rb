@@ -2,9 +2,9 @@
 class ServerUserScript
   attr_accessor :server, :data
 
-  def initialize
-    @server    = nil
-    @data      = nil
+  def initialize(server)
+    @server    = server
+    @data      = Server::UserDataController.generate(server, false)
   end
 
   def security_groups

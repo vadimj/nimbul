@@ -14,9 +14,7 @@ class Server::UserScriptController < ApplicationController
 		@server_script_data = Server::UserScriptController.generate(@server)
 		
 		# remove password values before rendering
-		(@provider_account.provider_account_parameters +
-		 @cluster.cluster_parameters +
-		 @server.server_parameters).each do |p|
+		@server.parameters.each do |p|
 			@server_script_data.sub!(p.value.sub("'","\'"),'[FILTERED]') if p.is_protected? and !p.value.blank?
 		end
 		
@@ -29,10 +27,7 @@ class Server::UserScriptController < ApplicationController
     loader_template  = File.join(SCRIPT_PATH, 'loader')
     payload_template = File.join(SCRIPT_PATH, 'generate.erb')
 
-    user_script = ServerUserScript.new
-    
-    user_script.server    = server
-    user_script.data      = Server::UserDataController.generate(server, false)
+    user_script = ServerUserScript.new(server)
     
     erb = ERB.new(File.read(payload_template), nil, "%-")
     payload = erb.result(binding)
