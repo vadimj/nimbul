@@ -226,7 +226,7 @@ class ProviderAccount < BaseModel
   def send_control_update type, args = {}
     begin
       unless (instance = service(:events).first_active_instance).nil?
-        type = "operations/rabbit_mq/#{type.to_s}".classify
+        type = "operation/rabbit_mq/#{type.to_s}".classify
         options = { :args => args.merge({ :provider_account_id => self.id }) }
         puts "Creating Operation '#{type}' with arguments: #{options.inspect}"
         instance.operations << Operation.factory(type, options)
