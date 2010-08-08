@@ -332,4 +332,36 @@ class Instance < BaseModel
 		# TODO we currently don't do anything on the instance side
 		return true
 	end
+	
+  def with_ssh(user = 'root') 
+    raise InvalidArgument, 'block required!' unless block_given?
+    provider_account.with_ssh_master_key do |keyfile|
+    	begin
+        require 'net/ssh'
+        options = { :keys => [ keyfile ], :paranoid => false }
+        Net::SSH.start(self[:private_dns], user, options) do |session|
+          return yield session
+        end
+    	rescue LoadError
+        warn 'Net/SSH not available - unable to ssh to remote hosts'
+        return false
+    	end
+    end
+  end
+
+  def ssh_execute(command, options = {})
+    user = options.delete(:user) || 'root'
+    as_list = options[:as_list].nil? ? false : options.delete(:as_list)
+    
+    with_ssh(user) do |ssh|
+      ssh.exec! command do |ch, stream, data|
+        case stream
+          when :stdout
+            return (as_list ? data.split(/\n/) : data)
+          when :stderr
+            raise StandardError, data
+        end
+      end
+    end
+  end
 end
