@@ -13,10 +13,6 @@ if [ $(gem sources | grep gems.github.com -c) -eq 0 ]; then
 	gem sources -a http://gems.github.com
 fi
 
-if [ $(gem sources | grep gems.ec2.nytimes.com -c) -eq 0 ]; then
-	gem sources -a http://gems.ec2.nytimes.com
-fi
-
 #yum -y install mysql-shared
 gem install -v=2.2.2 rails
 gem install gem_plugin
@@ -36,7 +32,7 @@ gem install ruby-openid
 
 gem install facter
 gem install work_queue
-gem install carrot --source http://gems.ec2.nytimes.com
+gem install carrot 
 gem install emissary
 
 # messaging active messaging shows debugging output about 
