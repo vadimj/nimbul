@@ -87,8 +87,8 @@ class ProviderAccount < BaseModel
     connect_options = {
       :host  => uri.host,
       :port  => uri.port,
-      :user  => uri.user,
-      :pass  => uri.password,
+      :user  => ::URI.decode(uri.user),
+      :pass  => ::URI.decode(uri.password),
       :vhost => uri.path,
       :ssl   => ssl
     }
