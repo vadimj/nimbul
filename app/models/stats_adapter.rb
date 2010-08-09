@@ -14,7 +14,7 @@ class StatsAdapter
             })
             stat_record.save
             iaRecords = InstanceAllocationRecord.find_by_sql([
-                "select server_id, zone_id, type as instance_type, count(id) as running from instances where provider_account_id=? and state='running' group by server_id, zone_id, type order by zone_id, type",
+                "select server_id, zone_id, instance_type, count(id) as running from instances where provider_account_id=? and state='running' group by server_id, zone_id, instance_type order by zone_id, instance_type",
                 provider_account.id
             ])
             iaRecords.each do |iaRecord|
