@@ -334,14 +334,13 @@ class Instance < BaseModel
 	end
 	
   def with_ssh(user = 'root', options = {})
-    pp options
     raise ArgumentError, 'block required!' unless block_given?
     unless options[:keyfile]
       provider_account.with_ssh_master_key do |keyfile|
-        ssh_session self[:private_dns], user, options { |ssh| return yield }
+        ssh_session(self[:private_dns], user, options) { |ssh| return yield }
       end
     else
-      ssh_session self[:private_dns], user, options { |ssh| return yield ssh }
+      ssh_session(self[:private_dns], user, options) { |ssh| return yield ssh }
     end
   end
 
@@ -374,7 +373,6 @@ class Instance < BaseModel
 private
 
   def ssh_session host, user, options = {}
-    pp options
     keyfile = options.delete(:keyfile) or raise ArgumentError, "Missing 'keyfile' argument!"
     begin
       require 'net/ssh'
