@@ -333,12 +333,12 @@ class Instance < BaseModel
 		return true
 	end
 	
-  def with_ssh(user = 'root') 
+  def with_ssh(user = 'root', options = {}) 
     raise InvalidArgument, 'block required!' unless block_given?
     provider_account.with_ssh_master_key do |keyfile|
     	begin
         require 'net/ssh'
-        options = { :keys => [ keyfile ], :paranoid => false }
+        options = { :keys => [ keyfile ], :paranoid => false }.merge!(options)
         Net::SSH.start(self[:private_dns], user, options) do |session|
           return yield session
         end
@@ -353,7 +353,7 @@ class Instance < BaseModel
     user = options.delete(:user) || 'root'
     as_list = options[:as_list].nil? ? false : options.delete(:as_list)
     
-    with_ssh(user) do |ssh|
+    with_ssh(user, options||{}) do |ssh|
       ssh.exec! command do |ch, stream, data|
         case stream
           when :stdout
