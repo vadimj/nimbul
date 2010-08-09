@@ -50,7 +50,7 @@ class Publisher::Nagios < Publisher
       intro = "# Published by Nagios Publisher on "+Time.now.to_s+"\n"
 
       # collect entries including roles but skip all the down instances
-      hostfile = intro + DNS_Adapter.get_host_entries(provider_account, :format => :nagios)
+      hostfile = intro + DnsAdapter.get_host_entries(provider_account, :format => :nagios)
       S3Adapter.put_object(account, bucket, base_path, hostfile, 'public-read')
 
       urls << base_path

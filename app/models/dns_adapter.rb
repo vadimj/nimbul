@@ -1,6 +1,6 @@
 require 'json'
 
-class DNS_Adapter
+class DnsAdapter
 
   @@registry = {}
 

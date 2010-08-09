@@ -55,8 +55,8 @@ class Publisher::Ldns < Publisher
       urls = []
       intro = "# Published by DNS Publisher on "+Time.now.to_s+"\n"
 
-      hosts_hash = DNS_Adapter.as_hash(provider_account)
-      hostfile = intro + DNS_Adapter.render_as_hosts_file(hosts_hash).join
+      hosts_hash = DnsAdapter.as_hash(provider_account)
+      hostfile = intro + DnsAdapter.render_as_hosts_file(hosts_hash).join
       jsonfile = hosts_hash.to_json
       
       # example: .../provider-1.hosts

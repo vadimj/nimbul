@@ -57,10 +57,10 @@ end
 
 # Seed the /etc/hosts file
 <% account = user_data.server.cluster.provider_account -%>
-<% require 'dns_adapter' -%>
+<% require 'DnsAdapter' -%>
 cat <<'EOL' > /etc/hosts
 127.0.0.1		localhost
-<%= DNS_Adapter.get_host_entries(user_data.server.cluster.provider_account).join -%>
+<%= DnsAdapter.get_host_entries(user_data.server.cluster.provider_account).join -%>
 EOL
 
 <%= user_data.cloudrc %>
