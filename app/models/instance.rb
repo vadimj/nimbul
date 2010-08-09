@@ -359,14 +359,16 @@ class Instance < BaseModel
     result_as_list = options[:result_as_list].nil? ? false : options.delete(:result_as_list)
     
     with_ssh(user, options) do |ssh|
+      output = ''
       ssh.exec! command do |ch, stream, data|
         case stream
           when :stdout
-            return (result_as_list ? data.split(/\n/) : data)
+            output += data
           when :stderr
             raise StandardError, data
         end
       end
+      (result_as_list ? output.split(/\n/) : output)
     end
   end
 
