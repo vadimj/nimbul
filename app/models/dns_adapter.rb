@@ -176,17 +176,18 @@ EOS
     ] unless leases[:__static__].nil?
 
     tree = leases[:all].inject({}) do |h,(k,v)|
-      v.each { |l| (((h[l[:cluster_raw]] ||= {})[l[:server_raw]] ||= {})[l[:base_name]] ||= []) << l }; h
+      v.each { |l| ((h[l[:cluster_raw]] ||= {})[l[:base_name]] ||= []) << l }; h
     end
     
-    display += tree.sort.inject([]) do |clusters,(cluster,servers)|
+    display += tree.sort.inject([]) do |clusters,(cluster,hosts)|
       clust = "# Cluster START: #{cluster} #\n"
-      clust << servers.sort.inject([]) do |groups,(server,leases)| 
-        group = "# Group START: #{server} #\n"
-        leases.sort.inject([]) { |a,(k,v)| a |= v}.each do |lease|
-          group << sprintf("%-16s   %s %s %s\n", lease[:private_ip], lease[:nimbul_fqdn], lease[:state], lease[:cloud_id])
+      clust << hosts.sort{|a,b| a[0] <=> b[0]}.inject([]) do |groups,(host,leases)| 
+        group = "# Group START: #{host} #\n"
+        leases.each do |lease|
+          group << sprintf("%-16s   %s %-6s %s\n", lease[:private_ip], lease[:nimbul_fqdn], lease[:state], lease[:cloud_id])
         end
-        groups << "#{group}# Group END: #{server} #\n"
+        group << "# Group END: #{host} #\n"
+        groups << group 
       end.join("\n")
       clusters << "#{clust}# Cluster END: #{cluster} #\n"
     end
