@@ -23,7 +23,7 @@ TRAP_SIGNALS.each do |sig|
   Signal.trap(sig) { $manager.shutdown!; exit 1 }
 end
 
-$options = OpenStruct.new( :use_logfiles => true, :erb_file => nil, :timeout => 10 )
+$options = OpenStruct.new( :use_logfiles => true, :erb_file => nil, :timeout => 60 )
 OptionParser.new do |parser|
   parser.banner = "Usage: #{File.basename($0, '.rb')} -e <erb file> --[no-]log-to-file"
   
@@ -49,8 +49,8 @@ OptionParser.new do |parser|
     $options.use_logfiles = !!v
   end
 
-  parser.on('-t', '--timeout NUMBER', 'How long to wait (in seconds) for a command', 'to finish before timing out [default: 10]') do |v|
-    $options.timeout = (Integer(v) > 0 ? Integer(v) : 10)
+  parser.on('-t', '--timeout NUMBER', 'How long to wait (in seconds) for a command', 'to finish before timing out [default: 60]') do |v|
+    $options.timeout = (Integer(v) > 0 ? Integer(v) : 60)
   end
   
   parser.on('--max-workers NUMBER', 'How many worker processes to spawn','[default: # of CPUs + 1]') do |v|
@@ -163,7 +163,7 @@ begin
             file = File.basename(path)
             pa.with_ssh_master_key do |keyfile|
               send_output = instance.send_file(path, file, :keyfile => keyfile)
-              Timeout.timeout(10) do 
+              Timeout.timeout($options.timeout || 60) do 
                 command_output = instance.ssh_execute("./#{file}; rm -f ./#{file}", :keyfile => keyfile)
               end
             end
