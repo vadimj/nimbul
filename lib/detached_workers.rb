@@ -26,7 +26,8 @@ module DetachedWorkers
     def initialize
       @pid   = nil
       @tasks = []
-      @work_queue = WorkQueue.new(10, nil, 60) # Maximum of ten worker threads per worker process
+      # Maximum of ten worker threads per worker process
+      @work_queue = WorkQueue.new(ENV['DETACHED_WORKER_THREADS'] || 10, nil, 60) 
     end
     
     def perform_tasks
@@ -71,11 +72,11 @@ module DetachedWorkers
   class Manager
     include ::Singleton
     
-    MAX_WORKERS = Facter.processor_count + 1
+    MAX_WORKERS = ENV['DETACHED_WORKER_MAX'] || Facter.processor_count + 1
     
     attr_reader :workers
     def initialize
-      at_exit { shutdown }
+      at_exit { shutdown! }
       @workers = (1..MAX_WORKERS).to_a.collect { Worker.new }
     end
   

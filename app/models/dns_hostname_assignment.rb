@@ -1,13 +1,12 @@
-
 class DnsHostnameAssignment < BaseModel
-	belongs_to :dns_hostname
-	belongs_to :server
+	belongs_to :dns_hostname, :include => :provider_account
+	belongs_to :server, :include => :cluster
 	
 	has_many :dns_leases, :dependent => :destroy
 	has_many :dns_requests, :dependent => :destroy
 	
 	validates_presence_of :dns_hostname_id, :server_id
-        validates_uniqueness_of :dns_hostname_id, :message => 'This host name is already assigned to another server. Please choose a different host name.'
+  validates_uniqueness_of :dns_hostname_id, :message => 'This host name is already assigned to another server. Please choose a different host name.'
 
 	attr_accessor :should_destroy
 	
@@ -46,12 +45,12 @@ class DnsHostnameAssignment < BaseModel
 	end
 	
 	def acquire instance
-		return if instance.has_dns_lease?(self[:id]) or have_request?(:acquire, instance) 
+		return if instance.has_dns_lease?(self) or have_request?(:acquire, instance) 
 		dns_requests << DnsRequest.new(:instance_id => instance.id, :request_type => :acquire)
 	end
 	
 	def release instance
-		return if not instance.has_dns_lease?(self[:id]) or have_request?(:release, instance)
+		return if not instance.has_dns_lease?(self) or have_request?(:release, instance)
 		dns_requests << DnsRequest.new(:instance_id => instance.id, :request_type => :release)
 	end
 

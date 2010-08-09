@@ -6,7 +6,6 @@ require 'rubygems'
 
 # You might want to change this
 ENV["RAILS_ENV"] ||= "production"
-ENV['DAEMON_SCRIPTLET'] = 'true'
 
 require File.dirname(__FILE__) + "/../../config/environment"
 load File.join(RAILS_ROOT, 'lib', 'detached_workers.rb')

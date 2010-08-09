@@ -1,34 +1,34 @@
 module DnsHostnamesHelper
-    def add_dns_hostname_link(name)
-        link_to_function name do |page|
-            page.insert_html :top, :dns_hostname_records, :partial => "hostname", :object => @provider_account.dns_hostnames.build
-        end
+  def add_dns_hostname_link(name)
+    link_to_function name do |page|
+      page.insert_html :top, :dns_hostname_records, :partial => "hostname", :object => @provider_account.dns_hostnames.build
     end
+  end
 
 	# sorting helpers
 	def dns_hostname_sort_link(text, param)
 		sort_link(text, param, :dns_hostname_data, nil, :list)
 	end
 
-    def dns_hostname_description(hostname, search = nil)
-        return '' if hostname.nil?
-        result = ''
-        result << (''+ h(hostname.name)) unless hostname.name.blank?
-        result.gsub!(search, '<strong class="highlight">' + search + '</strong>') unless search.blank?
-        result << ( ' <span class="dns_hostname_id" style="display: none;">' + hostname.id.to_s + '</span>' )
-        return result
-    end
+  def dns_hostname_description(hostname, search = nil)
+    return '' if hostname.nil?
+    result = ''
+    result << (''+ h(hostname.name)) unless hostname.name.blank?
+    result.gsub!(search, '<strong class="highlight">' + search + '</strong>') unless search.blank?
+    result << ( ' <span class="dns_hostname_id" style="display: none;">' + hostname.id.to_s + '</span>' )
+    return result
+  end
 
 	def delete_dns_hostname_link(link_text, model, hostname)
 		url = polymorphic_url([model, hostname])
     	options = {
-            :url => url,
-            :method => :delete,
+        :url => url,
+        :method => :delete,
 		}
 		html_options = {
 			:title => "Delete Hostname '#{hostname.name}'",
-            :href => url,
-            :method => :delete,
+        :href => url,
+        :method => :delete,
 		}
 		link_to_function link_text, "if (confirm_delete_hostname('#{hostname.name}')) { #{remote_function options } } else { return false; }", html_options
 	end
@@ -205,18 +205,5 @@ module DnsHostnamesHelper
 				:width => 16, :height => 16
 			), hostname
 		)
-	end
-
-	def hostname_instances_total(model, hostname)
-		case model
-		when Server:
-			model.instances.select { |i| i.dns_assignable? }.size
-		when Cluster:
-			model.servers.select { |s| s.dns_hostnames.include? hostname }.inject(0) { |n,s| n = n + s.instances.select { |i| i.dns_assignable? }.size; n }
-		when ProviderAccount:
-			model.clusters.inject(0) do |n,c|
-				n = n + c.servers.select { |s| s.dns_hostnames.include? hostname }.inject(0) { |x,s| x = x + s.instances.select { |i| i.dns_assignable? }.size; }; n
-			end
-		end
 	end
 end

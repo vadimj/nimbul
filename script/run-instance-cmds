@@ -1,0 +1,209 @@
+#!/usr/bin/env ruby
+require 'rubygems'
+require "daemons"
+require 'yaml'
+require 'erb'
+require 'net/ssh'
+require 'fileutils'
+require 'ostruct'
+require 'optparse'
+
+TRAP_SIGNALS = [ :int, :term ].collect{ |s| s.to_s.upcase.freeze }
+
+RAILS_ROOT = File.expand_path(File.join(File.dirname(__FILE__), '..'))
+
+CONF_PATH = File.join(RAILS_ROOT, 'config')
+LIB_PATH  = File.join(RAILS_ROOT, 'lib')
+AS_FILE   = File.join(RAILS_ROOT, 'vendor', 'rails', 'activesupport', 'lib', 'active_support.rb')
+LOG_PATH  = File.join(RAILS_ROOT, 'log', 'instance-commands')
+
+FileUtils.mkdir_p LOG_PATH unless test ?d, LOG_PATH
+
+TRAP_SIGNALS.each do |sig|
+  Signal.trap(sig) { $manager.shutdown!; exit 1 }
+end
+
+$options = OpenStruct.new( :use_logfiles => true, :erb_file => nil, :timeout => 10 )
+OptionParser.new do |parser|
+  parser.banner = "Usage: #{File.basename($0, '.rb')} -e <erb file> --[no-]log-to-file"
+  
+  parser.separator ""
+  parser.separator "  Compiles the given ERB template with bindings containing @instance "
+  parser.separator "and @provider_account. The template is compiled once per instance, and "
+  parser.separator "then the compiled template is uploaded to the instance and run as a"
+  parser.separator "command. Resultant output is directed to either STDOUT or log files"
+  parser.separator "named after the given instance's EC2 identifier."
+  parser.separator ""
+  parser.separator "Note: Logs are placed under:"
+  parser.separator "  #{LOG_PATH}"
+  parser.separator ""
+  
+  parser.on('-e', '--erb-file FILE', 'ERB script file to parse') do |f|
+    $options.erb_file = File.expand_path f
+    unless test ?e, f
+      puts "File '#{f}' does not exist!"
+    end
+  end
+
+  parser.on('--[no-]log-to-file', 'Whether or not to log all output to','log files [default: true]') do |v|
+    $options.use_logfiles = !!v
+  end
+
+  parser.on('-t', '--timeout NUMBER', 'How long to wait (in seconds) for a command', 'to finish before timing out [default: 10]') do |v|
+    $options.timeout = (Integer(v) > 0 ? Integer(v) : 10)
+  end
+  
+  parser.on('--max-workers NUMBER', 'How many worker processes to spawn','[default: # of CPUs + 1]') do |v|
+    ENV['DETACHED_WORKER_MAX'] = (Integer(v) > 0 ? Integer(v) : nil)
+  end
+  
+  parser.on('--max-threads NUMBER', 'How many threads each worker has ','for processing tasks [default: 10]') do |v|
+    ENV['DETACHED_WORKER_THREADS'] = (Integer(v) > 0 ? Integer(v) : nil)
+  end
+
+
+  parser.on_tail('-h', '--help', 'Show this message') do
+    puts parser.help
+    exit
+  end
+
+  result = parser.parse!
+  
+  if $options.erb_file.nil? or $options.erb_file.empty?
+    puts "Missing ERB File option!"
+    puts parser.help
+    exit
+  end
+  result
+end
+
+puts "Loading Rails Environment..."
+if(File.exists?(AS_FILE))
+  require AS_FILE
+else
+  rails_version = File.new(File.join(CONF_PATH, 'environment.rb')).read.scan(/^ *RAILS_GEM_VERSION.*=.*['|"](.*)['|"]/)[0].to_s
+  gem 'activesupport', rails_version
+  require 'active_support'
+end
+
+require File.join(CONF_PATH, 'environment')
+require File.join(LIB_PATH, 'detached_workers.rb')
+
+puts "Done Loading Rails..."
+puts
+
+DetachedWorkers.post_fork { ActiveRecord::Base.connection.reconnect! }
+DetachedWorkers.adjust_worker_priority 15
+
+$running = true
+$manager = DetachedWorkers::Manager.instance
+
+def log logfile, text
+  logfile_path = File.join(LOG_PATH, logfile)
+  FileUtils.mkdir_p File.dirname(logfile_path) unless File.exists?(File.dirname(logfile_path))
+  File.open(logfile_path, 'w') { |f| f << text }
+end
+
+def generate_command_file(requested_binding = binding)
+  raise ArgumentError, 'Missing block!' unless block_given?
+  f = Tempfile.new('.tmp-io-')
+  begin
+    f.chmod 0750 
+    f.write <<-EOF
+#!/usr/bin/env bash
+
+# make sure to remove this file when we're done
+trap 'rm -f $0; trap - EXIT; exit' EXIT
+
+    EOF
+    
+    f.write ERB.new(IO.read($options.erb_file), nil, '%-').result(requested_binding)
+    f.flush
+    yield f.path
+  ensure
+    f.close!
+  end
+end
+
+begin
+  puts "Loading Provider Accounts..."
+  ProviderAccount.find(:all, :include => { :clusters => {:servers => :instances } }).each do |pa|
+    next if (ec2 = Ec2Adapter.get_ec2(pa)).nil? or pa.ssh_master_key.blank?
+    
+    ids = Ec2Adapter.get_ec2(pa).describe_instances.select do |i| 
+      i[:groups].include? 'flock-managed' 
+    end.collect do |i|
+      i[:instances].select do |inst|
+        inst[:state] == 'running'
+      end.collect { |inst| inst[:id] }
+    end.flatten
+
+    next unless ids.size > 0
+    puts "Adding Tasks for Account: #{pa[:name]} - total tasks: #{ids.size}"
+
+    # only bother with instances that actually have a server/cluster associated with them
+    instances = Instance.find_all_by_instance_id(
+      ids,
+      :joins => [
+        'INNER JOIN servers ON instances.server_id = servers.id',
+        'INNER JOIN clusters ON servers.cluster_id = clusters.id'
+      ]
+    )
+
+    instances.each do |instance|
+      $manager.add_task do
+        send_output = command_output = ''
+        begin
+          @provider_account = pa
+          @instance = instance
+          @server = @instance.server
+          @cluster = @server.try(:cluster)
+
+          generate_command_file(binding) do |path|
+            file = File.basename(path)
+            pa.with_ssh_master_key do |keyfile|
+              send_output = instance.send_file(path, file, :keyfile => keyfile)
+              Timeout.timeout(10) do 
+                command_output = instance.ssh_execute("./#{file}; rm -f ./#{file}", :keyfile => keyfile)
+              end
+            end
+          end
+          
+        rescue Timeout::Error
+          command_output = "Error: timed out!"
+        rescue Net::SSH::AuthenticationFailed, Errno::EHOSTUNREACH
+          command_output = "Error :unable to connect!"
+        rescue Exception => e
+          command_output = "#{e.class.name}: #{e.message}\n\t#{e.backtrace.join("\n\t")}"
+          command_output = "SCP:\n#{send_output}\nSSH:\n#{command_output}\n"
+          puts "#{command_output}"
+        end
+        
+        unless $options.use_logfiles
+          puts "#{instance[:instance_id]} OUTPUT:\n\t#{command_output}"
+        else
+          begin
+            logfile_path = File.join(
+              pa.name,
+              (@cluster.name rescue 'unknown-cluster'),
+              (@server.name rescue 'unknown-server'),
+              @instance[:instance_id]
+            )
+            
+            log logfile_path, command_output
+            puts "#{instance[:instance_id]}: logged output to log/instance-commands/#{logfile_path}"
+          rescue Exception => e
+            puts "Exception on Logging:\n#{e.class.name}: #{e.message}\n\t#{e.backtrace.join("\n\t")}"
+          end
+        end
+      end
+    end
+  end
+
+  # wait for all publishers to finish
+  $manager.complete_tasks
+  
+rescue Exception => e
+  puts "Exception: #{e.class}: #{e.message}\n\t#{e.backtrace.join("\n\t")}"
+  exit 1
+end
