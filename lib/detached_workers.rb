@@ -75,7 +75,7 @@ module DetachedWorkers
     
     attr_reader :workers
     def initialize
-      at_exit { shutdown }
+      at_exit { shutdown! }
       @workers = (1..MAX_WORKERS).to_a.collect { Worker.new }
     end
   

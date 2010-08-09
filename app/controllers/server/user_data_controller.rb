@@ -40,9 +40,8 @@ class Server::UserDataController < ApplicationController
     
     user_data.cloudrc = cloudrc_setup(server)
     emissary_config = ERB.new(File.read(emissary_template), nil, '%-').result(binding)
+    payload = ERB.new(File.read(payload_template), nil, "%-").result(binding)
 
-    erb = ERB.new(File.read(payload_template), nil, "%-")
-    payload = erb.result(binding)
     if compress
       loader = File.read(loader_template)
       StringIO.open(loader, 'ab') do |f|

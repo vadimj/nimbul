@@ -333,35 +333,59 @@ class Instance < BaseModel
 		return true
 	end
 	
-  def with_ssh(user = 'root', options = {}) 
-    raise InvalidArgument, 'block required!' unless block_given?
-    provider_account.with_ssh_master_key do |keyfile|
-    	begin
-        require 'net/ssh'
-        options = { :keys => [ keyfile ], :paranoid => false }.merge!(options)
-        Net::SSH.start(self[:private_dns], user, options) do |session|
-          return yield session
-        end
-    	rescue LoadError
-        warn 'Net/SSH not available - unable to ssh to remote hosts'
-        return false
-    	end
+  def with_ssh(user = 'root', options = {})
+    pp options
+    raise ArgumentError, 'block required!' unless block_given?
+    unless options[:keyfile]
+      provider_account.with_ssh_master_key do |keyfile|
+        ssh_session self[:private_dns], user, options { |ssh| return yield }
+      end
+    else
+      ssh_session self[:private_dns], user, options { |ssh| return yield ssh }
     end
   end
 
+  def send_file src_path, dest_path, options = {}
+    require 'escape'
+    keyfile = options[:keyfile] or raise ArgumentError, "Missing 'keyfile' argument!"
+
+    user = options.delete(:user) || 'root'
+    host = options.delete(:host) || self[:private_dns]
+    dest_path = "#{user}@#{host}:#{dest_path}"
+    %x[ scp -q -i #{keyfile} -o StrictHostKeyChecking=no -o ConnectTimeout=5 #{Escape.shell_command([src_path, dest_path])} 2>&1 ]
+  end
+  
   def ssh_execute(command, options = {})
     user = options.delete(:user) || 'root'
-    as_list = options[:as_list].nil? ? false : options.delete(:as_list)
+    result_as_list = options[:result_as_list].nil? ? false : options.delete(:result_as_list)
     
-    with_ssh(user, options||{}) do |ssh|
+    with_ssh(user, options) do |ssh|
       ssh.exec! command do |ch, stream, data|
         case stream
           when :stdout
-            return (as_list ? data.split(/\n/) : data)
+            return (result_as_list ? data.split(/\n/) : data)
           when :stderr
             raise StandardError, data
         end
       end
     end
   end
+
+private
+
+  def ssh_session host, user, options = {}
+    pp options
+    keyfile = options.delete(:keyfile) or raise ArgumentError, "Missing 'keyfile' argument!"
+    begin
+      require 'net/ssh'
+      options = { :keys => [ keyfile ], :paranoid => false }.merge!(options)
+      Net::SSH.start(host, user, options) do |session|
+        return yield session
+      end
+    rescue LoadError
+      warn 'Net/SSH not available - unable to ssh to remote hosts'
+      return false
+    end
+  end
+  
 end
