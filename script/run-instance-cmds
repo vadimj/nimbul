@@ -19,6 +19,64 @@ LOG_PATH  = File.join(RAILS_ROOT, 'log', 'instance-commands')
 
 FileUtils.mkdir_p LOG_PATH unless test ?d, LOG_PATH
 
+TRAP_SIGNALS.each do |sig|
+  Signal.trap(sig) { $manager.shutdown!; exit 1 }
+end
+
+$options = OpenStruct.new( :use_logfiles => true, :erb_file => nil, :timeout => 10 )
+OptionParser.new do |parser|
+  parser.banner = "Usage: #{File.basename($0, '.rb')} -e <erb file> --[no-]log-to-file"
+  
+  parser.separator ""
+  parser.separator "  Compiles the given ERB template with bindings containing @instance "
+  parser.separator "and @provider_account. The template is compiled once per instance, and "
+  parser.separator "then the compiled template is uploaded to the instance and run as a"
+  parser.separator "command. Resultant output is directed to either STDOUT or log files"
+  parser.separator "named after the given instance's EC2 identifier."
+  parser.separator ""
+  parser.separator "Note: Logs are placed under:"
+  parser.separator "  #{LOG_PATH}"
+  parser.separator ""
+  
+  parser.on('-e', '--erb-file FILE', 'ERB script file to parse') do |f|
+    $options.erb_file = File.expand_path f
+    unless test ?e, f
+      puts "File '#{f}' does not exist!"
+    end
+  end
+
+  parser.on('--[no-]log-to-file', 'Whether or not to log all output to','log files [default: true]') do |v|
+    $options.use_logfiles = !!v
+  end
+
+  parser.on('-t', '--timeout NUMBER', 'How long to wait (in seconds) for a command', 'to finish before timing out [default: 10]') do |v|
+    $options.timeout = (Integer(v) > 0 ? Integer(v) : 10)
+  end
+  
+  parser.on('--max-workers NUMBER', 'How many worker processes to spawn','[default: # of CPUs + 1]') do |v|
+    ENV['DETACHED_WORKER_MAX'] = (Integer(v) > 0 ? Integer(v) : nil)
+  end
+  
+  parser.on('--max-threads NUMBER', 'How many threads each worker has ','for processing tasks [default: 10]') do |v|
+    ENV['DETACHED_WORKER_THREADS'] = (Integer(v) > 0 ? Integer(v) : nil)
+  end
+
+
+  parser.on_tail('-h', '--help', 'Show this message') do
+    puts parser.help
+    exit
+  end
+
+  result = parser.parse!
+  
+  if $options.erb_file.nil? or $options.erb_file.empty?
+    puts "Missing ERB File option!"
+    puts parser.help
+    exit
+  end
+  result
+end
+
 puts "Loading Rails Environment..."
 if(File.exists?(AS_FILE))
   require AS_FILE
@@ -40,47 +98,6 @@ DetachedWorkers.adjust_worker_priority 15
 $running = true
 $manager = DetachedWorkers::Manager.instance
 
-TRAP_SIGNALS.each do |sig|
-  Signal.trap(sig) { $manager.shutdown!; exit 1 }
-end
-
-$options = OpenStruct.new( :use_logfiles => true, :erb_file => nil )
-
-OptionParser.new do |parser|
-  parser.banner = "Usage: #{File.basename($0, '.rb')} -e <erb file> --[no-]log-to-file"
-  
-  parser.separator ""
-  parser.separator "  Compiles the given ERB template with bindings containing @instance "
-  parser.separator "and @provider_account. The template is compiled once per instance, and "
-  parser.separator "then the compiled template is uploaded to the instance and run as a"
-  parser.separator "command. Resultant output is directed to either STDOUT or log files"
-  parser.separator "named after the given instance's EC2 identifier."
-  parser.separator ""
-  
-  parser.on('-e', '--erb-file FILE', 'ERB file containing commands to parse') do |f|
-    $options.erb_file = File.expand_path f
-    unless test ?e, f
-      puts "File '#{f}' does not exist!"
-    end
-  end
-  parser.on('--[no-]log-to-file', 'Whether or not to log all output to log files [default: true]') do |v|
-    $options.use_logfiles = !!v
-  end
-
-  parser.on_tail('-h', '--help', 'Show this message') do
-    self.help!
-  end
-
-  result = parser.parse!
-  
-  unless not $options.erb_file.blank?
-    puts "Missing ERB File option!"
-    puts parser.help
-    exit
-  end
-  result
-end
-
 def log logfile, text
   logfile_path = File.join(LOG_PATH, logfile)
   FileUtils.mkdir_p File.dirname(logfile_path) unless File.exists?(File.dirname(logfile_path))
@@ -92,7 +109,14 @@ def generate_command_file(requested_binding = binding)
   f = Tempfile.new('.tmp-io-')
   begin
     f.chmod 0750 
-    f.write "#!/usr/bin/env bash\n\n"
+    f.write <<-EOF
+#!/usr/bin/env bash
+
+# make sure to remove this file when we're done
+trap 'rm -f $0; trap - EXIT; exit' EXIT
+
+    EOF
+    
     f.write ERB.new(IO.read($options.erb_file), nil, '%-').result(requested_binding)
     f.flush
     yield f.path
