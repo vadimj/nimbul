@@ -67,9 +67,7 @@ class ProviderAccount < BaseModel
 	include TrackChanges # must follow any before filters
 
   def messaging_valid?
-    begin
-      service(:events).first_active_instance.nil?
-    rescue ServiceWithoutActiveInstance
+	if service(:events).nil? or service(:events).first_active_instance.nil?
       errors.add(:messaging_uri, 'Messaging Service Inactive! No active Events Service instance!')
     else
       unless messaging_can_connect?

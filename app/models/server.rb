@@ -16,7 +16,7 @@ class Server < BaseModel
 	has_and_belongs_to_many :dns_hostnames, :join_table => :dns_hostname_assignments, :select => 'dns_hostnames.*'
 	has_many :dns_hostname_assignments, :dependent => :destroy
 	
-	has_many :server_tasks, :dependent => :destroy
+	has_many :server_tasks, :as => :taskable, :dependent => :destroy
 	has_one :default_resource_bundle, :class_name => 'ResourceBundle', :conditions => { :is_default => true }, :include => [ :zone, :server_resources, :addresses, :volumes, :instance ]
 	has_many :resource_bundles, :dependent => :destroy, :order => 'position', :include => [ :zone, :server_resources, :addresses, :volumes, :instance ]
 	has_many :zones, :through => :resource_bundles, :order => :name, :uniq => true, :readonly => true

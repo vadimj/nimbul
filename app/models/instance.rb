@@ -148,6 +148,14 @@ class Instance < BaseModel
 		end
 	end
 	
+	def unlock!
+		update_attribute(:is_locked, false)
+	end
+	
+	def lock!
+		update_attribute(:is_locked, true)
+	end
+	
 	def has_dns_lease?(hostname_assignment = nil)
 		if not hostname_assignment.nil?
 			hostname_assignment = DnsHostnameAssignment.find(hostname_assignment) if hostname_assignment.is_a? Fixnum

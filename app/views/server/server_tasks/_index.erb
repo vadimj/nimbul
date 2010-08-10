@@ -1,7 +1,7 @@
 <%
-  op_fpath = File.join(RAILS_ROOT, 'app', 'models', 'operations')
-  operation_options  = Dir.glob( File.join( op_fpath, '**','*.rb') ).map do |path|
-    "operations/#{path[/#{op_fpath}\/(.*)\.rb/,1]}".camelize
+  op_fpath = File.join(RAILS_ROOT, 'app', 'models', 'operation')
+  operation_options = Dir.glob( File.join( op_fpath, '**','*.rb') ).map do |path|
+    "operation/#{path[/#{op_fpath}\/(.*)\.rb/,1]}".camelize
   end.sort.select do |ocp|
     (ocp.constantize).is_schedulable?
   end.map do |o|

@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100722002618) do
+ActiveRecord::Schema.define(:version => 20100806145353) do
 
   create_table "addresses", :force => true do |t|
     t.integer  "provider_account_id"
@@ -639,7 +639,7 @@ ActiveRecord::Schema.define(:version => 20100722002618) do
     t.datetime "updated_at"
     t.datetime "timeout_at"
     t.string   "parameter"
-    t.integer  "server_task_id"
+    t.integer  "task_id"
   end
 
   add_index "operations", ["state"], :name => "index_operations_on_state"
@@ -945,40 +945,6 @@ ActiveRecord::Schema.define(:version => 20100722002618) do
   add_index "server_resources", ["resource_bundle_id"], :name => "index_server_resources_on_resource_bundle_id"
   add_index "server_resources", ["type"], :name => "index_server_resources_on_server_id_and_type"
 
-  create_table "server_task_parameters", :force => true do |t|
-    t.integer  "server_task_id"
-    t.string   "type"
-    t.string   "name"
-    t.string   "description"
-    t.string   "value"
-    t.string   "control_type"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "server_tasks", :force => true do |t|
-    t.integer  "server_id"
-    t.string   "name"
-    t.string   "description"
-    t.string   "operation"
-    t.datetime "active_from"
-    t.datetime "active_to"
-    t.boolean  "is_active"
-    t.boolean  "is_scheduled"
-    t.boolean  "is_repeatable"
-    t.integer  "run_every_value"
-    t.string   "run_every_units"
-    t.datetime "run_at"
-    t.integer  "run_in_value"
-    t.string   "run_in_units"
-    t.string   "run_cron"
-    t.integer  "timeout"
-    t.string   "state"
-    t.text     "state_text"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
   create_table "server_user_accesses", :force => true do |t|
     t.integer  "server_id"
     t.integer  "user_id"
@@ -1094,6 +1060,44 @@ ActiveRecord::Schema.define(:version => 20100722002618) do
   end
 
   add_index "stat_records", ["provider_account_id", "taken_at"], :name => "index_stat_records_on_provider_account_id_and_taken_at"
+
+  create_table "task_parameters", :force => true do |t|
+    t.integer  "task_id"
+    t.string   "type"
+    t.string   "name"
+    t.string   "description"
+    t.string   "value"
+    t.string   "control_type"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "tasks", :force => true do |t|
+    t.integer  "taskable_id"
+    t.string   "name"
+    t.string   "description"
+    t.string   "operation"
+    t.datetime "active_from"
+    t.datetime "active_to"
+    t.boolean  "is_active"
+    t.boolean  "is_scheduled"
+    t.boolean  "is_repeatable"
+    t.integer  "run_every_value"
+    t.string   "run_every_units"
+    t.datetime "run_at"
+    t.integer  "run_in_value"
+    t.string   "run_in_units"
+    t.string   "run_cron"
+    t.integer  "timeout"
+    t.string   "state"
+    t.text     "state_text"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "type",            :default => "ServerTask"
+    t.string   "parent_type"
+    t.integer  "parent_id"
+    t.string   "taskable_type",   :default => "Server"
+  end
 
   create_table "user_failures", :force => true do |t|
     t.string   "remote_ip"

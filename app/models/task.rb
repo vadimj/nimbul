@@ -2,9 +2,11 @@ require 'rubygems'
 require 'chronic'
 
 class Task < BaseModel
-    belongs_to :server
+    belongs_to :parent, :polymorphic => true
+    belongs_to :taskable, :polymorphic => true
     has_many :task_parameters, :dependent => :destroy
     has_many :operations, :dependent => :nullify
+    has_many :server_tasks, :as => :parent, :dependent => :destroy
 
     # auditing
     has_many :audit_logs, :as => :auditable, :dependent => :nullify
@@ -86,7 +88,7 @@ class Task < BaseModel
     end
 
     def scheduler_tag
-        "server_task_#{self.id}"
+        "task_#{self.id}"
     end
     
     def call(job)
@@ -95,7 +97,7 @@ class Task < BaseModel
 
 	def get_operation
 		op = Operation.factory(self.operation)
-		op.server_task_id = self.id
+		op.task_id = self.id
 		return op
 	end
 
@@ -103,20 +105,6 @@ class Task < BaseModel
 		send("find_all_by_#{ parent.class.to_s.underscore }", parent, search, page, extra_joins, extra_conditions, sort, filter)
 	end
 
-    def self.find_all_by_server(server, search, page, extra_joins, extra_conditions, sort=nil, filter=nil)
-	    joins = []
-	    joins = joins + extra_joins unless extra_joins.blank?
-
-        conditions = [ 'server_id = ?', (server.is_a?(Server) ? server.id : server) ]
-	    unless extra_conditions.blank?
-		    extra_conditions = [ extra_conditions ] if not extra_conditions.is_a? Array
-		    conditions[0] << ' AND ' + extra_conditions[0];
-		    conditions << extra_conditions[1..-1]
-	    end
-		
-	    self.search(search, page, joins, conditions, sort, filter)
-    end
-  
     # sort, search and paginate parameters
     def self.per_page
         10
@@ -130,24 +118,7 @@ class Task < BaseModel
         %w(name)
     end
     
-	def self.filter_fields
-		%w(status owner_id)
-	end
-
-    def run!
-        begin
-            server.instances.each do |instance|
-                next if not instance.running?
-                operation = get_operation
-                instance.operations << operation
-                # store to return to the ui
-                self.new_operations = [] if self.new_operations.nil?
-                self.new_operations << operation
-            end
-        rescue
-            self.state_text = "Task failed: #{$!}"
-            return false
-        end
-        return true
+    def self.filter_fields
+        %w(status owner_id)
     end
 end

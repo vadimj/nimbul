@@ -1,4 +1,4 @@
-require "models/volume"
+require "models/cloud_volume"
 
 class Operation::Snapshot::Purge < Operation
 
