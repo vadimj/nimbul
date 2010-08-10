@@ -69,6 +69,8 @@ class ProviderAccount < BaseModel
   def messaging_valid?
 	if service(:events).nil? or service(:events).first_active_instance.nil?
       errors.add(:messaging_uri, 'Messaging Service Inactive! No active Events Service instance!')
+    rescue NoMethodError
+      errors.add(:messaging_uri, 'Events Service does not appear to be created. Please go to Admin Controls -> Services and create an Events service, and provider.')
     else
       unless messaging_can_connect?
         errors.add(:messaging_uri, 'Credentials for connecting to the messaging service appear to be invalid')
@@ -83,8 +85,8 @@ class ProviderAccount < BaseModel
     connect_options = {
       :host  => uri.host,
       :port  => uri.port,
-      :user  => uri.user,
-      :pass  => uri.password,
+      :user  => ::URI.decode(uri.user),
+      :pass  => ::URI.decode(uri.password),
       :vhost => uri.path,
       :ssl   => ssl
     }
@@ -118,8 +120,8 @@ class ProviderAccount < BaseModel
     self.update_attribute(:messaging_password, PasswordGenerator.generate)
   end
   
-	def messaging_url()
-    uri = (messaging_uri =~ /^amqps?:\/\// ? messaging_uri : "amqp://#{messaging_uri}")
+	def messaging_url
+    uri = (messaging_uri =~ %r|^amqps?://|i ? messaging_uri : "amqp://#{messaging_uri}")
     uri           = URI.parse(messaging_uri)
     uri.scheme    = (uri.scheme.empty? ? 'amqp' : (uri.scheme.to_sym == :amqps ? 'amqps' : 'amqp'))
     uri.user      = URI.escape(messaging_username)
@@ -222,7 +224,7 @@ class ProviderAccount < BaseModel
   def send_control_update type, args = {}
     begin
       unless (instance = service(:events).first_active_instance).nil?
-        type = "operations/rabbit_mq/#{type.to_s}".classify
+        type = "operation/rabbit_mq/#{type.to_s}".classify
         options = { :args => args.merge({ :provider_account_id => self.id }) }
         puts "Creating Operation '#{type}' with arguments: #{options.inspect}"
         instance.operations << Operation.factory(type, options)

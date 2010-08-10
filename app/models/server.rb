@@ -1,4 +1,10 @@
 class Server < BaseModel
+  PARAMETER_PRIORITY = [
+    ServerProfileRevisionParameter,
+    ClusterParameter,
+    ProviderAccountParameter
+  ]
+      
 	behavior :service
 
 	service_parent_relationship :cluster
@@ -6,7 +12,7 @@ class Server < BaseModel
 
 	belongs_to :cluster, :counter_cache => true, :include => :provider_account
 	belongs_to :server_profile_revision
-
+  
 	has_and_belongs_to_many :security_groups, :order => :name, :uniq => true
 	has_many :instances, :dependent => :nullify
 
@@ -118,8 +124,7 @@ class Server < BaseModel
 
 	def publishable?
 		return false unless startable?
-		return false if ServerImage.find_by_image_id(self.image_id).nil?
-		return false if ServerImage.find_by_image_id(self.image_id).location.nil?
+		return false if ServerImage.find_by_image_id(self.image_id).try(:location).nil?
 		return true
 	end
 	
@@ -191,6 +196,39 @@ class Server < BaseModel
 		return parameter.value
 	end
 
+  def get_parameter(name)
+    parameters[name].value rescue nil
+  end
+  
+  #
+  # Retreives the combined parameter list of the Provider Account, Cluster and this Server
+  # and provides a [] access method which retreives keys based on Parameter Class Priority
+  #
+  def parameters
+    _parameters = (
+      self.cluster.provider_account.provider_account_parameters +
+      self.cluster.cluster_parameters +
+      self.server_parameters
+    )
+    _parameters.class_eval(<<-EOS, __FILE__, __LINE__)
+      # order of priority (highest to lowest): server -> cluster -> provider account
+      alias :__array_access_orig :[]
+      def [](key)
+        return self.__array_access_orig(key) if key.is_a? Integer
+        matches = self.select { |p| p.name == key }
+        return case matches.size
+          when 0
+            nil
+          when 1
+            matches.first
+          else
+            matches.sort_by {|m| Server::PARAMETER_PRIORITY.index(m.class) }.first
+        end
+      end
+    EOS
+    _parameters
+  end
+  
 	def save_server_user_accesses
 		server_user_accesses.each do |c|
 			if c.should_destroy?

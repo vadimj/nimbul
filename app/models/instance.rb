@@ -1,15 +1,16 @@
 require 'aasm'
 
 class Instance < BaseModel
-    include AASM
-  
-    belongs_to :provider_account
-    belongs_to :zone
-    belongs_to :server, :counter_cache => true
-    belongs_to :user
-    belongs_to :auto_scaling_group
+  include AASM
 
-    has_and_belongs_to_many :security_groups
+  self.inheritance_column = :_none_
+  belongs_to :provider_account
+  belongs_to :zone
+  belongs_to :server, :counter_cache => true
+  belongs_to :user
+  belongs_to :auto_scaling_group
+
+  has_and_belongs_to_many :security_groups
 
 	has_many :operations, :dependent => :destroy
 
@@ -30,17 +31,17 @@ class Instance < BaseModel
 
 	alias :hostnames :dns_hostname_assignments
 	
-    attr_accessor :should_destroy
+  attr_accessor :should_destroy
 	attr_accessor :console_timestamp
 	attr_accessor :console_output
 
-    def should_destroy?
-        should_destroy.to_i == 1
-    end
+  def should_destroy?
+    should_destroy.to_i == 1
+  end
 
-    def name
-        self.instance_id
-    end
+  def name
+    self.instance_id
+  end
 
 	def mountee_class_name
 		'instance'
@@ -74,7 +75,7 @@ class Instance < BaseModel
 	def dns_assignable?() dns_active? and running? and is_ready?; end
 	def dns_releasable?() terminating? or dns_inactive?; end
 
-	def dns_active?() dns_active == true; end
+	def dns_active?() !!dns_active; end
 	def dns_inactive?() not dns_active?; end
 
 	def ready?() is_ready == true; end
@@ -157,18 +158,22 @@ class Instance < BaseModel
 	end
 	
 	def has_dns_lease?(hostname_assignment = nil)
-		if not hostname_assignment.nil?
-			hostname_assignment = DnsHostnameAssignment.find(hostname_assignment) if hostname_assignment.is_a? Fixnum
-			return dns_leases.select { |l| l.dns_hostname_assignment == hostname_assignment }.size > 0
+    conditions = { :instance_id => self[:id] }
+		unless hostname_assignment.nil?
+			return DnsLease.count(
+        :conditions => conditions.merge!({
+          :dns_hostname_assignment_id => hostname_assignment[:id]
+        })
+      ) > 0
 		else
-			return true if dns_leases.length > 0
+			return true if DnsLease.count(:conditions => conditions) > 0
 		end
 		return false
 	end
 
 	def unleased_hostnames
 		dns_hostname_assignments.inject([])  do |array,object|
-			array.push object unless has_dns_lease? object.id; array
+			array.push object unless has_dns_lease? object; array
 		end
 	end
 	
@@ -335,4 +340,60 @@ class Instance < BaseModel
 		# TODO we currently don't do anything on the instance side
 		return true
 	end
+	
+  def with_ssh(user = 'root', options = {})
+    raise ArgumentError, 'block required!' unless block_given?
+    unless options[:keyfile]
+      provider_account.with_ssh_master_key do |keyfile|
+        ssh_session(self[:private_dns], user, options) { |ssh| return yield }
+      end
+    else
+      ssh_session(self[:private_dns], user, options) { |ssh| return yield ssh }
+    end
+  end
+
+  def send_file src_path, dest_path, options = {}
+    require 'escape'
+    keyfile = options[:keyfile] or raise ArgumentError, "Missing 'keyfile' argument!"
+
+    user = options.delete(:user) || 'root'
+    host = options.delete(:host) || self[:private_dns]
+    dest_path = "#{user}@#{host}:#{dest_path}"
+    %x[ scp -q -i #{keyfile} -o StrictHostKeyChecking=no -o ConnectTimeout=5 #{Escape.shell_command([src_path, dest_path])} 2>&1 ]
+  end
+  
+  def ssh_execute(command, options = {})
+    user = options.delete(:user) || 'root'
+    result_as_list = options[:result_as_list].nil? ? false : options.delete(:result_as_list)
+    
+    with_ssh(user, options) do |ssh|
+      output = ''
+      ssh.exec! command do |ch, stream, data|
+        case stream
+          when :stdout
+            output += data
+          when :stderr
+            raise StandardError, data
+        end
+      end
+      (result_as_list ? output.split(/\n/) : output)
+    end
+  end
+
+private
+
+  def ssh_session host, user, options = {}
+    keyfile = options.delete(:keyfile) or raise ArgumentError, "Missing 'keyfile' argument!"
+    begin
+      require 'net/ssh'
+      options = { :keys => [ keyfile ], :paranoid => false }.merge!(options)
+      Net::SSH.start(host, user, options) do |session|
+        return yield session
+      end
+    rescue LoadError
+      warn 'Net/SSH not available - unable to ssh to remote hosts'
+      return false
+    end
+  end
+  
 end

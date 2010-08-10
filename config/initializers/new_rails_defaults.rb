@@ -82,7 +82,7 @@ class ActiveRecord::Base
       type_name.split('::').inject(Object) do |object,const|
         unless object.constants.include? const.camelize
           klass = "#{object == Object ? '' : "#{object.to_s}::"}#{const}".underscore
-          load "#{klass}.rb"
+          load "#{klass}.rb" rescue nil
         end
         object = object.const_get(const); object
       end

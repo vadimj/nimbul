@@ -174,7 +174,7 @@ ActionController::Routing::Routes.draw do |map|
 	end
 
 	map.resources :dns_leases, :member => { :release => :delete }
-	map.resources :dns_hostnames
+	map.resources :dns_hostnames, :collection => { :list => :any }
 
 ########
 	map.hostname_ac '/dns_hostname_ac',
@@ -282,6 +282,7 @@ ActionController::Routing::Routes.draw do |map|
     map.resources :operations, :has_many => [ :operation_logs ]
 
 	map.show_server_server_user_data '/server/:id/user_data', :controller => 'server/user_data', :action => 'show'
+	map.show_server_server_script_data '/server/:id/user_script', :controller => 'server/user_script', :action => 'show'
 
     # server profiles
     map.resources :server_profiles, :has_many => [ :server_profile_revisions ]
