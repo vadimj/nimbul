@@ -1,7 +1,5 @@
 require 'operation/rabbit_mq'
 class Operation::RabbitMq::ChangePassword < Operation::RabbitMq
-	USERDATA_PATH = File.join(RAILS_ROOT, 'app', 'views', 'server', 'user_data')
-
 	def steps
     steps = super
     
@@ -108,12 +106,15 @@ private
 				@cluster = @server.try(:cluster)
 				
 				commands = <<-EOS
+<%-
+emissary_template = File.join(RAILS_ROOT, 'app', 'views', 'server', 'user_data', 'emissary.erb')
+-%>
 emissary stop
 
 # configure emissary
 mkdir -p /etc/emissary
 cat << 'EOF' > /etc/emissary/config.ini
-<%= ERB.new(IO.read(File.join(USERDATA_PATH, 'emissary.erb')), nil, '%-').result(binding) %>
+<%= ERB.new(IO.read(emissary_template), nil, '%-').result(binding) %>
 EOF
 
 # restart emissary with the updated events configuration
