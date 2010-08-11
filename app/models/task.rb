@@ -112,7 +112,7 @@ class Task < BaseModel
         joins = []
         joins = joins + extra_joins unless extra_joins.blank?
 
-        conditions = [ 'taskable_id = ? AND taskable_type = ?', (taskable.is_a?(Integer) ? taskable : taskable.id), parent.class.to_s ]
+        conditions = [ 'taskable_id = ? AND taskable_type = ?', (taskable.is_a?(Integer) ? taskable : taskable.id), taskable.class.to_s ]
         unless extra_conditions.blank?
             extra_conditions = [ extra_conditions ] if not extra_conditions.is_a? Array
             conditions[0] << ' AND ' + extra_conditions[0];
@@ -121,7 +121,7 @@ class Task < BaseModel
 
         search(search, page, joins, conditions, sort, filter, include)
     end
-
+    
     # sort, search and paginate parameters
     def self.per_page
         10
