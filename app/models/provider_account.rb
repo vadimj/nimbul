@@ -7,7 +7,7 @@ class ProviderAccount < BaseModel
 	behaviors :service, :associated_attributes
 
 	service_parent_relationship :provider
-	service_child_relationship :none
+	service_child_relationship :clusters
 	
 	belongs_to :provider
 	has_many :instances, :dependent => :destroy
