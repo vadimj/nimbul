@@ -25,6 +25,11 @@ class Operation::RabbitMq::ChangePassword < Operation::RabbitMq
         :result_code => self[:result_code],
         :result_message => self[:result_message],
       } )
+
+      unless success
+        fail! && next
+      end
+      proceed! if not failed?
     end
     
     steps << Operation::Step.new('update_configurations') do
@@ -61,6 +66,11 @@ class Operation::RabbitMq::ChangePassword < Operation::RabbitMq
 				:result_code => self[:result_code],
 				:result_message => self[:result_message],
 			})
+
+      unless success
+        fail! && next
+      end
+      proceed! if not failed?
     end
     
     return steps
