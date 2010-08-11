@@ -2,6 +2,17 @@ class TasksController < ApplicationController
 	before_filter :login_required
 	require_role  :admin, :unless => "current_user.has_task_access?(Task.find(params[:id])) "
 
+    def edit
+        @task = Task.find(params[:id])
+        parent = @task.taskable
+        parent_type = @task.taskable_type.underscore
+
+        respond_to do |format|
+            format.html
+            format.json { render :json => @task }
+        end
+    end
+
     def update
         @task = Task.find(params[:id])
         parent = @task.taskable
@@ -11,7 +22,7 @@ class TasksController < ApplicationController
             :search => params[:search],
             :sort => params[:sort],
             :page => params[:page],
-            :anchor => :operations,
+            :anchor => :tasks,
         }
 	    redirect_url = send("#{ parent_type }_url", parent, options)
         
@@ -22,7 +33,7 @@ class TasksController < ApplicationController
 	            if @task.update_attributes(params[:task])
 	                flash[:notice] = 'Task was successfully updated.'
 					o = @task
-					parent = o.server
+					parent = o.taskable
 					AuditLog.create_for_parent(
 						:parent => parent,
 						:auditable_id => o.id,
@@ -58,7 +69,7 @@ class TasksController < ApplicationController
             :search => params[:search],
             :sort => params[:sort],
             :page => params[:page],
-            :anchor => :storage,
+            :anchor => :tasks,
         }
 	    redirect_url = send("#{ parent_type }_url", parent, options)
 

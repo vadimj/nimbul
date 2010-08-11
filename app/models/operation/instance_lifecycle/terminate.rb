@@ -1,6 +1,4 @@
-require "models/instance"
-
-class Operation::Instance::Terminate < Operation
+class Operation::InstanceLifecycle::Terminate < Operation::InstanceLifecycle
   def timeout
     5.minutes
   end
@@ -30,33 +28,34 @@ class Operation::Instance::Terminate < Operation
     ps = {}
     unless self.task.nil?
       self.task.task_parameters.each do |tp|
-        ps[tp.name.to_sym] = tp.value
+        value = tp.value
+        value = value.to_i if tp.value_type == 'Integer'
+        ps[tp.name.to_sym] = value
       end
     end
     return ps
   end
 
   def steps()
+    keep_instances = operation_parameters[:keep_instances]
+    
     steps = super || []
 
     steps << Operation::Step.new('terminate_instances') do
       success = false
       instances = Instance.find_all_by_server_id_and_state(server.id, 'running')
 
-      if instances.length <= keep_instances
+      if instances.length <= operation_parameters[:keep_instances]
         success = true 
         self[:result_code] = 'Success'
-        self[:result_message] = "Already running no more than #{keep_instances} instances."
+        self[:result_message] = "Already running no more than #{keep_instances} instance(s)."
       else
-        terminate_instances = instances[0, instances.length - keep_instances]
         begin
-          terminate_instances.each do |i|
-            i.unlock!
-            i.terminate!
-          end
+          instance.unlock!
+          instance.terminate!
           success = true 
           self[:result_code] = 'Success'
-          self[:result_message] = "Terminated #{terminate_instances.length} instances and kept #{keep_instances} instances running."
+          self[:result_message] = "Terminated by #{self.task.name}. Keeping at least #{keep_instances} instance(s) running."
         rescue
           success = false
           self[:result_code] = 'ClientError'

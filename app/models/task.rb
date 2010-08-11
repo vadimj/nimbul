@@ -121,7 +121,7 @@ class Task < BaseModel
 
         search(search, page, joins, conditions, sort, filter, include)
     end
-
+    
     # sort, search and paginate parameters
     def self.per_page
         10

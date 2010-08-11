@@ -154,6 +154,10 @@ class Operation < BaseModel
   def task_verify_message
     ''
   end
+  
+  def initialize_parameters
+    []
+  end
     
 protected
   

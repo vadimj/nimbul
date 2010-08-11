@@ -8,8 +8,12 @@ class TaskParameter < BaseModel
     validates_presence_of :custom_value, :if => :custom_value_and_value_provider_are_blank?,
         :message => 'please choose existing parameter or specify a value manually'
         
-    attr_accessor :value, :is_protected
+    attr_accessor :value, :is_protected, :should_destroy
         
+    def should_destroy?
+        should_destroy.to_i == 1
+    end
+
     def custom_value_and_value_provider_are_blank?
         self.custom_value.blank? and self.value_provider.nil?
     end
