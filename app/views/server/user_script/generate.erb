@@ -317,7 +317,7 @@ class CommandParser
   end
 
   def age_check
-    time_since_build = Time.now.to_i - Time.at(BUILD_DATE).to_i
+    time_since_build = Time.now.to_i - Time.parse(BUILD_DATE).to_i
     unless time_since_build <= 30.minutes
       puts "This server control script is #{time_since_build.time_text :fuzzy} old"
       puts "Please refresh this script from S3 unless you are certain that it is ok."
