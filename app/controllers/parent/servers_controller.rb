@@ -16,7 +16,7 @@ class Parent::ServersController < ApplicationController
 
         joins = nil
 	    conditions = nil
-	    @servers  = Server.find_all_by_parent(parent, params[:search], params[:page], joins, conditions, params[:sort], params[:filter], [ :instances, :resource_bundles, :default_resource_bundle, :server_profile_revision, :security_groups, :zones, :addresses, :volumes ])
+	    @servers  = Server.search_by_parent(parent, params[:search], params[:page], joins, conditions, params[:sort], params[:filter], [ :instances, :resource_bundles, :default_resource_bundle, :server_profile_revision, :security_groups, :zones, :addresses, :volumes ])
 
         @parent_type = parent_type
         @parent = parent

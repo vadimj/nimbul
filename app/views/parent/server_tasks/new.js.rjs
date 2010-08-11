@@ -1,2 +1,0 @@
-page['small_redbox'].replace_html :partial => 'cloud_server_tasks/fields', :object => Volume.new
-page['small_redbox'].appear

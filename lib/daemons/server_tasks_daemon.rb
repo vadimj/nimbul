@@ -9,7 +9,7 @@ require 'rubygems'
 require 'rufus/scheduler'
 
 # Mark all active task 'unscheduled', in case there was a crash
-ServerTask.update_all( ['is_scheduled=?', 0], { :is_active => 1, :is_scheduled => 1 } )
+Task.update_all( ['is_scheduled=?', 0], { :is_active => 1, :is_scheduled => 1 } )
 
 # Initialize the Scheduler
 $scheduler = Rufus::Scheduler.start_new
@@ -21,7 +21,7 @@ Signal.trap("TERM") do
         job.unschedule
     end
     # Mark all active task 'unscheduled' before terminating the daemon
-    ServerTask.update_all( ['is_scheduled=?', 0], { :is_active => 1, :is_scheduled => 1 } )
+    Task.update_all( ['is_scheduled=?', 0], { :is_active => 1, :is_scheduled => 1 } )
     $running = false
 end
 
@@ -30,7 +30,7 @@ while($running) do
     #Rails.logger.info File.basename(__FILE__).sub('.rb','')+" daemon is still running at #{Time.now}.\n"
 
     # unschedule all non-active tasks
-    unschedule_tasks = ServerTask.find_all_by_is_active_and_is_scheduled( false, true )
+    unschedule_tasks = Task.find_all_by_is_active_and_is_scheduled( false, true )
     unschedule_tasks.each do |t|
         $scheduler.find_by_tag(t.scheduler_tag).each do |job|
             job.unschedule
@@ -41,7 +41,7 @@ while($running) do
     end
 
     # unschedule all one-time tasks with run_at in the past
-    unschedule_tasks = ServerTask.find_all_by_is_active_and_is_scheduled_and_is_repeatable( true, true, false )
+    unschedule_tasks = Task.find_all_by_is_active_and_is_scheduled_and_is_repeatable( true, true, false )
     unschedule_tasks.each do |t|
         if t.run_at < Time.now.utc
             $scheduler.find_by_tag(t.scheduler_tag).each do |job|
@@ -54,7 +54,7 @@ while($running) do
     end
 
     # schedule all active tasks
-    schedule_tasks = ServerTask.find_all_by_is_active_and_is_scheduled( true, false )
+    schedule_tasks = Task.find_all_by_is_active_and_is_scheduled( true, false )
     schedule_tasks.each do |t|
         # make sure we haven't scheduled the task already
         if $scheduler.find_by_tag(t.scheduler_tag).length == 0

@@ -1,5 +1,5 @@
 class Parent::OperationsController < ApplicationController
-  parent_resources :server, :server_task
+  parent_resources :server, :task
   before_filter :login_required
   require_role  :admin, :unless => "current_user.has_access?(parent)"
 
@@ -10,7 +10,7 @@ class Parent::OperationsController < ApplicationController
 		conditions = nil
     params[:sort] = 'created_at_reverse' if params[:sort].blank?
 
-    @operations = Operation.find_all_by_parent(parent, params[:search], params[:page], joins, conditions, params[:sort], params[:filter])
+    @operations = Operation.search_by_parent(parent, params[:search], params[:page], joins, conditions, params[:sort], params[:filter])
     @parent_type = parent_type
     @parent = parent
 

@@ -9,7 +9,7 @@ class Operation < BaseModel
   serialize :args, Hash
   
   belongs_to :instance
-  belongs_to :server_task
+  belongs_to :task
   
   has_many :messages
   has_many :operation_logs, :dependent => :destroy
@@ -106,11 +106,7 @@ class Operation < BaseModel
     10
   end
   
-  def self.find_all_by_parent(parent, search, page, extra_joins, extra_conditions, sort=nil, filter=nil)
-    send("find_all_by_#{ parent.class.to_s.underscore }", parent, search, page, extra_joins, extra_conditions, sort, filter)
-  end
-  
-  def self.find_all_by_server(server, search, page, extra_joins, extra_conditions, sort=nil, filter=nil)
+  def self.search_by_server(server, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
     joins = [
       'INNER JOIN instances ON instances.id = operations.instance_id',
     ] + [extra_joins].flatten.compact
@@ -122,21 +118,21 @@ class Operation < BaseModel
       conditions << extra_conditions[1..-1]
     end
   
-    self.search(search, page, joins, conditions, sort, filter)
+    self.search(search, page, joins, conditions, sort, filter, include)
   end
   
-  def self.find_all_by_server_task(server_task, search, page, extra_joins, extra_conditions, sort=nil, filter=nil)
+  def self.search_by_task(task, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
     joins = []
     joins = joins + extra_joins unless extra_joins.blank?
   
-      conditions = [ 'server_task_id = ?', (server_task.is_a?(ServerTask) ? server_task.id : server_task) ]
+      conditions = [ 'task_id = ?', (task.is_a?(Task) ? task.id : task) ]
     unless extra_conditions.blank?
       extra_conditions = [ extra_conditions ] if not extra_conditions.is_a? Array
       conditions[0] << ' AND ' + extra_conditions[0];
       conditions << extra_conditions[1..-1]
     end
   
-    self.search(search, page, joins, conditions, sort, filter)
+    search(search, page, joins, conditions, sort, filter, include)
   end
   
   def self.sort_fields
@@ -153,11 +149,11 @@ class Operation < BaseModel
   
   def self.is_schedulable?
     true 
-    end
+  end
   
-    def task_verify_message
-        ''
-    end
+  def task_verify_message
+    ''
+  end
     
 protected
   

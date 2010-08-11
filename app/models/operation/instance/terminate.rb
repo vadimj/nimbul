@@ -11,14 +11,25 @@ class Operation::Instance::Terminate < Operation
 
   def self.is_schedulable?
     true 
-  end  
+  end
 
+  def initialize_parameters
+    parameters = []
+    parameters << TaskParameter.new({
+      :name => 'keep_instances',
+      :description => 'Specifies the maximum number of instances to keep'
+    })
+    return parameters
+  end
+  
   def operation_parameters
-    s = server
-    keep_instances = s.get_server_parameter('KEEP_INSTANCES') || 0
-    return {
-        :keep_instances => keep_instances.to_i
-    }
+    ps = {}
+    unless self.task.nil?
+      self.task.task_parameters.each do |tp|
+        ps[tp.name.to_sym] = tp.value
+      end
+    end
+    return ps
   end
 
   def steps()

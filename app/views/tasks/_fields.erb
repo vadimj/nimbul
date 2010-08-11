@@ -1,23 +1,23 @@
 <%= f.error_messages %>
 
 <%
-if @server_task.server_task_parameters.size == 0
-    @parameters = @server_task.initialize_parameters
+if @task.task_parameters.size == 0
+    @parameters = @task.initialize_parameters
 else
-    @parameters = @server_task.server_task_parameters
+    @parameters = @task.task_parameters
 end
 %>
 
 <table>
     <tr>
         <th><%= f.label :is_active, "Active?" %></th>
-        <td class="<%= @server_task.is_active? %>"><%= f.check_box :is_active %></td>
+        <td class="<%= @task.is_active? %>"><%= f.check_box :is_active %></td>
     </tr>
     <tr>
         <th><%= f.label :is_scheduled, "Scheduled?" %></th>
-        <td class="<%= @server_task.is_scheduled? %>">
-            <%= @server_task.is_scheduled? ? 'Yes' : (@server_task.is_active? ? 'Pending' : 'No' ) %>
-            <%= hidden_field_tag 'server_task[is_scheduled]', 0 %>
+        <td class="<%= @task.is_scheduled? %>">
+            <%= @task.is_scheduled? ? 'Yes' : (@task.is_active? ? 'Pending' : 'No' ) %>
+            <%= hidden_field_tag 'task[is_scheduled]', 0 %>
         </td>
     </tr>
     <tr>
@@ -30,7 +30,7 @@ end
     </tr>
     <tr>
         <th>Operation</th>
-        <td><%= h @server_task.operation %></td>
+        <td><%= h @task.operation %></td>
         <%= f.hidden_field :operation %>
     </tr>
     <tr>
@@ -41,19 +41,19 @@ end
         <th><%= f.label :is_repeatable, 'Repeat' %>
             <%= f.check_box :is_repeatable, :onclick => "
             if (!$(this).checked) {
-                $('server_task_run_every_value').value = '';
+                $('task_run_every_value').value = '';
             }
-            $('server_task_run_every_value').disabled = !$(this).checked;
-            $('server_task_run_every_units').disabled = !$(this).checked;
+            $('task_run_every_value').disabled = !$(this).checked;
+            $('task_run_every_units').disabled = !$(this).checked;
             " %>
         </th>
         <td>
-            <%= f.text_field :run_every_value, :class => 'tiny', :disabled => !@server_task.is_repeatable? %>
-            <%= f.select :run_every_units, RUN_EVERY_UNITS, { :disabled => !@server_task.is_repeatable? } %>
+            <%= f.text_field :run_every_value, :class => 'tiny', :disabled => !@task.is_repeatable? %>
+            <%= f.select :run_every_units, RUN_EVERY_UNITS, { :disabled => !@task.is_repeatable? } %>
         </td>
     </tr>
     <% @parameters.each do |p| %>
-        <% fields_for "server_task[server_task_parameter_attributes][]", p do |p_form| %>
+        <% fields_for "task[task_parameter_attributes][]", p do |p_form| %>
             <tr>
                 <th>
                     <%=h p.name.titleize %>

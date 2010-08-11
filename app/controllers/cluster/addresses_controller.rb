@@ -7,7 +7,7 @@ class Cluster::AddressesController < ApplicationController
     
     joins = nil
     conditions = nil
-	@addresses  = CloudAddress.find_all_by_cluster(@cluster, params[:search], params[:page], joins, conditions, params[:sort])
+	@addresses  = CloudAddress.search_by_cluster(@cluster, params[:search], params[:page], joins, conditions, params[:sort])
 
     respond_to do |format|
       format.html

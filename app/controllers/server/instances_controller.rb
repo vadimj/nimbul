@@ -8,7 +8,7 @@ class Server::InstancesController < ApplicationController
 
         joins = nil
 	    conditions = nil
-	    @instances  = Instance.find_all_by_server(@server, params[:search], params[:page], joins, conditions, params[:sort])
+	    @instances  = Instance.search_by_server(@server, params[:search], params[:page], joins, conditions, params[:sort])
 
 	    @skip_server_column = true
 	    respond_to do |format|

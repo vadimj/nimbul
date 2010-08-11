@@ -118,11 +118,7 @@ class ServerImage < BaseModel
 		return options        
 	end
 
-	def self.find_all_by_parent(parent, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
-		send("find_all_by_#{ parent.class.to_s.underscore }", parent, search, page, extra_joins, extra_conditions, sort, filter, include)
-	end
-
-    def self.find_all_by_provider_account(provider_account, search, page, extra_joins, extra_conditions, sort = nil, filter=nil, include=nil)
+    def self.search_by_provider_account(provider_account, search, page, extra_joins, extra_conditions, sort = nil, filter=nil, include=nil)
 	    joins = []
 	    joins = joins + extra_joins unless extra_joins.blank?
 

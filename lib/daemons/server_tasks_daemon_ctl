@@ -22,4 +22,4 @@ options = YAML.load(
   )).result).with_indifferent_access
 options[:dir_mode] = options[:dir_mode].to_sym
 
-Daemons.run File.dirname(__FILE__) + '/server_tasks_daemon.rb', options
+Daemons.run File.dirname(__FILE__) + '/tasks_daemon.rb', options

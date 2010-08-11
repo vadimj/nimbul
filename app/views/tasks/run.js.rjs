@@ -1,0 +1,3 @@
+page["task_#{@task.id}"].hide
+page["task_#{@task.id}"].replace_html :partial => "tasks/row", :locals => { :task => @task }
+page["task_#{@task.id}"].appear

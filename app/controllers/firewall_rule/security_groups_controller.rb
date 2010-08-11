@@ -9,7 +9,7 @@ class FirewallRule::SecurityGroupsController < ApplicationController
 		
 		joins = nil
 		conditions = nil
-	    @security_groups = SecurityGroup.find_all_by_firewall_rule(@firewall_rule, params[:search], params[:page], joins, conditions, params[:sort])
+	    @security_groups = SecurityGroup.search_by_firewall_rule(@firewall_rule, params[:search], params[:page], joins, conditions, params[:sort])
 
 		@partial ||= 'security_groups/index'
         respond_to do |format|

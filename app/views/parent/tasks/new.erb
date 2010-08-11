@@ -4,9 +4,9 @@
 
 <br />
 
-<% form_for :server_task,
-    :url => server_server_tasks_path(@server) do |f| %>
-    <%= render :partial => 'fields', :locals => { :f => f } %>
+<% form_for :task,
+    :url => server_tasks_path(@server) do |f| %>
+    <%= render :partial => 'tasks/fields', :locals => { :f => f } %>
     <%= submit_tag 'Create Task', :disable_with => "Creating&hellip;" %>
     <%= submit_tag 'Cancel', :name => 'cancel_button' %>
 <% end %>

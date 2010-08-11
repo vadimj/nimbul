@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100806145353) do
+ActiveRecord::Schema.define(:version => 20100810205540) do
 
   create_table "addresses", :force => true do |t|
     t.integer  "provider_account_id"
@@ -210,6 +210,7 @@ ActiveRecord::Schema.define(:version => 20100806145353) do
   end
 
   add_index "dns_hostname_assignments", ["dns_hostname_id"], :name => "unique_dns_hostname_id_idx", :unique => true
+  add_index "dns_hostname_assignments", ["server_id"], :name => "index_dns_hostname_assignments_on_server_id"
 
   create_table "dns_hostnames", :force => true do |t|
     t.string   "name",                :limit => 64, :null => false
@@ -218,6 +219,7 @@ ActiveRecord::Schema.define(:version => 20100806145353) do
     t.integer  "provider_account_id",               :null => false
   end
 
+  add_index "dns_hostnames", ["name"], :name => "index_dns_hostnames_on_name"
   add_index "dns_hostnames", ["provider_account_id", "name"], :name => "unique_provider_account_hostname", :unique => true
 
   create_table "dns_leases", :force => true do |t|
@@ -228,6 +230,7 @@ ActiveRecord::Schema.define(:version => 20100806145353) do
     t.datetime "updated_at"
   end
 
+  add_index "dns_leases", ["dns_hostname_assignment_id", "idx"], :name => "index_dns_leases_on_dns_hostname_assignment_id_and_idx"
   add_index "dns_leases", ["instance_id", "dns_hostname_assignment_id"], :name => "unique_instance_hostname_assignment_idx", :unique => true
 
   create_table "dns_requests", :force => true do |t|
@@ -239,6 +242,8 @@ ActiveRecord::Schema.define(:version => 20100806145353) do
   end
 
   add_index "dns_requests", ["dns_hostname_assignment_id", "request_type", "instance_id"], :name => "hostname_assignment_request_instance_idx"
+  add_index "dns_requests", ["instance_id"], :name => "index_dns_requests_on_instance_id"
+  add_index "dns_requests", ["request_type"], :name => "index_dns_requests_on_request_type"
 
   create_table "events", :force => true do |t|
     t.integer  "provider_account_id"
@@ -895,6 +900,8 @@ ActiveRecord::Schema.define(:version => 20100806145353) do
     t.datetime "updated_at"
   end
 
+  add_index "server_profile_revision_parameters", ["server_profile_revision_id"], :name => "index_sprp_spr_id"
+
   create_table "server_profile_revisions", :force => true do |t|
     t.integer  "server_profile_id"
     t.integer  "revision",          :default => 0
@@ -1004,6 +1011,7 @@ ActiveRecord::Schema.define(:version => 20100806145353) do
 
   add_index "service_overrides", ["service_provider_id", "target_type", "target_id"], :name => "idx_spid_ttype_tid", :unique => true
   add_index "service_overrides", ["service_provider_id"], :name => "index_service_overrides_on_service_provider_id"
+  add_index "service_overrides", ["target_id", "target_type"], :name => "index_service_overrides_on_target_id_and_target_type"
 
   create_table "service_providers", :force => true do |t|
     t.integer  "service_type_id",               :null => false
@@ -1014,6 +1022,7 @@ ActiveRecord::Schema.define(:version => 20100806145353) do
     t.text     "description"
   end
 
+  add_index "service_providers", ["server_id"], :name => "index_service_providers_on_server_id"
   add_index "service_providers", ["service_type_id", "server_id"], :name => "idx_sp_service_type_server_id", :unique => true
 
   create_table "service_types", :force => true do |t|
@@ -1026,6 +1035,16 @@ ActiveRecord::Schema.define(:version => 20100806145353) do
 
   add_index "service_types", ["fqdn"], :name => "index_service_types_on_fqdn", :unique => true
   add_index "service_types", ["name"], :name => "index_service_types_on_name", :unique => true
+
+  create_table "sessions", :force => true do |t|
+    t.string   "session_id", :null => false
+    t.text     "data"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "sessions", ["session_id"], :name => "index_sessions_on_session_id"
+  add_index "sessions", ["updated_at"], :name => "index_sessions_on_updated_at"
 
   create_table "snapshots", :force => true do |t|
     t.integer  "provider_account_id"
@@ -1063,14 +1082,16 @@ ActiveRecord::Schema.define(:version => 20100806145353) do
 
   create_table "task_parameters", :force => true do |t|
     t.integer  "task_id"
-    t.string   "type"
     t.string   "name"
-    t.string   "description"
-    t.string   "value"
-    t.string   "control_type"
+    t.string   "custom_value"
+    t.string   "value_provider_type"
+    t.integer  "value_provider_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "task_parameters", ["task_id"], :name => "index_task_parameters_on_task_id"
+  add_index "task_parameters", ["value_provider_type", "value_provider_id"], :name => "index_task_parameters_on_vp_type_and_vp_id"
 
   create_table "tasks", :force => true do |t|
     t.integer  "taskable_id"

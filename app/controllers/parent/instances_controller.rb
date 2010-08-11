@@ -9,7 +9,7 @@ class Parent::InstancesController < ApplicationController
 	    
         joins = nil
 	    conditions = nil
-	    @instances  = Instance.find_all_by_parent(parent, params[:search], params[:page], joins, conditions, params[:sort], params[:filter], [ :zone, :server, :user, :security_groups, :provider_account ])
+	    @instances  = Instance.search_by_parent(parent, params[:search], params[:page], joins, conditions, params[:sort], params[:filter], [ :zone, :server, :user, :security_groups, :provider_account ])
 
         @parent_type = parent_type
         @parent = parent

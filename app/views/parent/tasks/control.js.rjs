@@ -1,13 +1,13 @@
 @operations ||= []
-@server_tasks ||= []
+@tasks ||= []
 if @error_message.blank?
     @operations.each do |s|
         page.insert_html :bottom, 'operation_records', :partial => 'operations/operation', :object => s
         page["operation_#{s.id}"].visual_effect :highlight
     end
-    @server_tasks.each do |v|
-        page["server_task_#{v.id}"].replace_html :partial => "server_tasks/row", :object => v
-        page["server_task_#{v.id}"].visual_effect :highlight
+    @tasks.each do |v|
+        page["task_#{v.id}"].replace_html :partial => "tasks/row", :object => v
+        page["task_#{v.id}"].visual_effect :highlight
     end
 else
     page['error_redbox'].replace_html :partial => 'shared/error_redbox'

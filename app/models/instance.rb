@@ -216,54 +216,50 @@ class Instance < BaseModel
 		return false
 	end
 
-	def self.find_all_by_parent(parent, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
-		send("find_all_by_#{ parent.class.to_s.underscore }", parent, search, page, extra_joins, extra_conditions, sort, filter, include)
+	def self.search_by_provider_account(provider_account, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
+	    joins = []
+	    joins = joins + extra_joins unless extra_joins.blank?
+
+		conditions = [ 'provider_account_id = ?', (provider_account.is_a?(ProviderAccount) ? provider_account.id : provider_account) ]
+		unless extra_conditions.blank?
+			extra_conditions = [ extra_conditions ] if not extra_conditions.is_a? Array
+			conditions[0] << ' AND ' + extra_conditions[0];
+			conditions << extra_conditions[1..-1]
+		end
+  
+		search(search, page, joins, conditions, sort, filter, include)
 	end
 
-  def self.find_all_by_provider_account(provider_account, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
-    joins = []
-    joins = joins + extra_joins unless extra_joins.blank?
+	def self.search_by_security_group(security_group, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
+	    joins = [
+	        'INNER JOIN instances_security_groups ON instances_security_groups.instance_id = instances.id',
+	    ] + [extra_joins].flatten.compact
 
-      conditions = [ 'provider_account_id = ?', (provider_account.is_a?(ProviderAccount) ? provider_account.id : provider_account) ]
-    unless extra_conditions.blank?
-      extra_conditions = [ extra_conditions ] if not extra_conditions.is_a? Array
-      conditions[0] << ' AND ' + extra_conditions[0];
-      conditions << extra_conditions[1..-1]
-    end
+		conditions = [ 'instances_security_groups.security_group_id = ?', (security_group.is_a?(SecurityGroup) ? security_group.id : security_group) ]
+		unless extra_conditions.blank?
+			extra_conditions = [ extra_conditions ].flatten
+			conditions[0] << ' AND ' + extra_conditions[0];
+			conditions << extra_conditions[1..-1]
+		end
   
-    self.search(search, page, joins, conditions, sort, filter, include)
-  end
+		search(search, page, joins, conditions, sort, filter, include)
+	end
 
-  def self.find_all_by_security_group(security_group, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
-    joins = [
-        'INNER JOIN instances_security_groups ON instances_security_groups.instance_id = instances.id',
-    ] + [extra_joins].flatten.compact
+	def self.search_by_cluster(cluster, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
+		joins = [
+		    'INNER JOIN servers ON servers.id = instances.server_id',
+		] + [extra_joins].flatten.compact
 
-    conditions = [ 'instances_security_groups.security_group_id = ?', (security_group.is_a?(SecurityGroup) ? security_group.id : security_group) ]
-    unless extra_conditions.blank?
-      extra_conditions = [ extra_conditions ].flatten
-      conditions[0] << ' AND ' + extra_conditions[0];
-      conditions << extra_conditions[1..-1]
-    end
-  
-      self.search(search, page, joins, conditions, sort, filter, include)
-  end
+		conditions = [ 'servers.cluster_id = ?', (cluster.is_a?(Cluster) ? cluster.id : cluster) ]
+		unless extra_conditions.blank?
+			extra_conditions = [ extra_conditions ].flatten
+			conditions[0] << ' AND ' + extra_conditions[0];
+			conditions << extra_conditions[1..-1]
+	    end
+	    search(search, page, joins, conditions, sort, filter, include)
+	end
 
-  def self.find_all_by_cluster(cluster, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
-    joins = [
-        'INNER JOIN servers ON servers.id = instances.server_id',
-    ] + [extra_joins].flatten.compact
-
-    conditions = [ 'servers.cluster_id = ?', (cluster.is_a?(Cluster) ? cluster.id : cluster) ]
-    unless extra_conditions.blank?
-      extra_conditions = [ extra_conditions ].flatten
-      conditions[0] << ' AND ' + extra_conditions[0];
-      conditions << extra_conditions[1..-1]
-    end
-    self.search(search, page, joins, conditions, sort, filter, include)
-  end
-
-	def self.find_all_by_server(server, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
+	def self.search_by_server(server, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
 		joins = [extra_joins].flatten.compact unless extra_joins.blank?
 
 		conditions = [ 'server_id = ?', (server.is_a?(Server) ? server.id : server) ]
@@ -272,10 +268,10 @@ class Instance < BaseModel
 			conditions[0] << ' AND ' + extra_conditions[0];
 			conditions << extra_conditions[1..-1]
 	    end
-	    self.search(search, page, joins, conditions, sort, filter, include)
+	    search(search, page, joins, conditions, sort, filter, include)
 	end
 
-	def self.find_all_by_auto_scaling_group(auto_scaling_group, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
+	def self.search_by_auto_scaling_group(auto_scaling_group, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
 		joins = [extra_joins].flatten.compact unless extra_joins.blank?
 
 		conditions = [ table_name()+'.auto_scaling_group_id = ?', (auto_scaling_group.is_a?(AutoScalingGroup) ? auto_scaling_group.id : auto_scaling_group) ]

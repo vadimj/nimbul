@@ -1,10 +1,10 @@
 class ServerTasksController < ApplicationController
 	before_filter :login_required
-	require_role  :admin, :unless => "current_user.has_server_task_access?(ServerTask.find(params[:id])) "
+	require_role  :admin, :unless => "current_user.has_task_access?(Task.find(params[:id])) "
 
     def update
-        @server_task = ServerTask.find(params[:id])
-        @server = @server_task.server
+        @task = Task.find(params[:id])
+        @server = @task.server
         
         parent_type = 'server'
         parent = @server
@@ -21,9 +21,9 @@ class ServerTasksController < ApplicationController
             redirect_back_or_default(redirect_url)
         else
 			respond_to do |format|
-	            if @server_task.update_attributes(params[:server_task])
+	            if @task.update_attributes(params[:task])
 	                flash[:notice] = 'Task was successfully updated.'
-					o = @server_task
+					o = @task
 					parent = o.server
 					AuditLog.create_for_parent(
 						:parent => parent,
@@ -39,13 +39,13 @@ class ServerTasksController < ApplicationController
 	                format.html { redirect_to redirect_url }
 	                format.xml  { head :ok }
 	                format.js
-	                format.json { render :json => @server_task }
+	                format.json { render :json => @task }
 	            else
 	                flash[:error] = 'There was a problem updating this task.'
 	                format.html { render :action => "edit" }
-	                format.xml  { render :xml => @server_task.errors, :status => :unprocessable_entity }
+	                format.xml  { render :xml => @task.errors, :status => :unprocessable_entity }
 	                format.js
-	                format.json { render :json => @server_task }
+	                format.json { render :json => @task }
 	            end
 	        end
         end

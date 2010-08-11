@@ -76,7 +76,7 @@ class CloudResource::ClustersController < ApplicationController
 		@cloud_resource = CloudResource.find(params[:cloud_resource_id])
         @provider_account = @cloud_resource.provider_account
         @search = params[:cluster_search]
-        @clusters = Cluster.find_all_by_provider_account(@provider_account, params[:cluster_search], nil, nil, nil, 'name')
+        @clusters = Cluster.search_by_provider_account(@provider_account, params[:cluster_search], nil, nil, nil, 'name')
 
         tags = "<%= content_tag(:ul, @clusters.map{ |cluster| content_tag(:li, cluster_description(cluster, @search)) }) %>"
         render :inline => tags

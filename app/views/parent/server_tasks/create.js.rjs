@@ -1,7 +1,0 @@
-if @error_message.blank? and @server_task
-    page.insert_html :bottom, 'server_task_records', :partial => 'cloud_server_tasks/server_task', :object => @server_task
-    page['small_redbox'].hide
-else
-    page['error_redbox'].replace_html :partial => 'shared/error_redbox'
-    page['error_redbox'].appear
-end

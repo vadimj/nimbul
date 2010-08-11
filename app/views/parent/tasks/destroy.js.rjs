@@ -1,5 +1,5 @@
-if @error_message.blank? and @server_task
-    page["server_task_#{@server_task.id}"].remove
+if @error_message.blank? and @task
+    page["task_#{@task.id}"].remove
 else
     page['error_redbox'].replace_html :partial => 'shared/error_redbox'
     page['error_redbox'].appear

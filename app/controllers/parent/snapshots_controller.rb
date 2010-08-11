@@ -8,7 +8,7 @@ class Parent::SnapshotsController < ApplicationController
 
         joins = nil
 	    conditions = nil
-	    @snapshots  = CloudSnapshot.find_all_by_parent(parent, params[:search], params[:page], joins, conditions, params[:sort], params[:filter])
+	    @snapshots  = CloudSnapshot.search_by_parent(parent, params[:search], params[:page], joins, conditions, params[:sort], params[:filter])
 
         @parent_type = parent_type
         @parent = parent
@@ -57,7 +57,7 @@ class Parent::SnapshotsController < ApplicationController
     def control
         joins = nil
 	    conditions = nil
-	    @snapshots  = CloudSnapshot.find_all_by_parent(parent, params[:snapshot_ids], params[:page], joins, conditions, params[:sort], nil, :clusters)
+	    @snapshots  = CloudSnapshot.search_by_parent(parent, params[:snapshot_ids], params[:page], joins, conditions, params[:sort], nil, :clusters)
 	    
         options = {
             :search => params[:search],

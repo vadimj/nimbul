@@ -45,7 +45,7 @@ class Cluster < BaseModel
 		should_destroy.to_i == 1
 	end
 
-	def self.find_all_by_provider_account(provider_account, search, page, extra_joins, extra_conditions, sort=nil, filter=nil)
+	def self.search_by_provider_account(provider_account, search, page, extra_joins, extra_conditions, sort=nil, filter=nil)
 		joins = []
 		joins = joins + extra_joins unless extra_joins.blank?
 

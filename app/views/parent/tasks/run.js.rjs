@@ -1,8 +1,8 @@
 @operations ||= []
-if @error_message.blank? and @server_task
-    page["server_task_#{@server_task.id}"].hide
-    page["server_task_#{@server_task.id}"].replace_html :partial => "server_tasks/row", :object => @server_task
-    page["server_task_#{@server_task.id}"].appear
+if @error_message.blank? and @task
+    page["task_#{@task.id}"].hide
+    page["task_#{@task.id}"].replace_html :partial => "tasks/row", :object => @task
+    page["task_#{@task.id}"].appear
     @operations.each do |operation|
         page.insert_html :top, 'operation_records', :partial => 'operations/operation', :object => operation
         page["operation_#{operation.id}"].highlight

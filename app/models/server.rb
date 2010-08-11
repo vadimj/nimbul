@@ -22,7 +22,7 @@ class Server < BaseModel
 	has_and_belongs_to_many :dns_hostnames, :join_table => :dns_hostname_assignments, :select => 'dns_hostnames.*'
 	has_many :dns_hostname_assignments, :dependent => :destroy
 	
-	has_many :server_tasks, :as => :taskable, :dependent => :destroy
+	has_many :tasks, :as => :taskable, :dependent => :destroy
 	has_one :default_resource_bundle, :class_name => 'ResourceBundle', :conditions => { :is_default => true }, :include => [ :zone, :server_resources, :addresses, :volumes, :instance ]
 	has_many :resource_bundles, :dependent => :destroy, :order => 'position', :include => [ :zone, :server_resources, :addresses, :volumes, :instance ]
 	has_many :zones, :through => :resource_bundles, :order => :name, :uniq => true, :readonly => true
@@ -239,11 +239,7 @@ class Server < BaseModel
 		end
 	end
   
-	def self.find_all_by_parent(parent, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
-		send("find_all_by_#{ parent.class.to_s.underscore }", parent, search, page, extra_joins, extra_conditions, sort, filter, include)
-	end
-
-	def self.find_all_by_provider_account(provider_account, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
+	def self.search_by_provider_account(provider_account, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
 		joins = [
 			'INNER JOIN clusters ON clusters.id = servers.cluster_id',
 		] + [extra_joins].flatten.compact
@@ -258,7 +254,7 @@ class Server < BaseModel
 		search(search, page, joins, conditions, sort, filter, include)
 	end
 
-	def self.find_all_by_cluster(cluster, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
+	def self.search_by_cluster(cluster, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
 		joins = [] + [extra_joins].flatten.compact
 		
 		conditions = [ 'cluster_id = ?', (cluster.is_a?(Cluster) ? cluster.id : cluster) ]
@@ -271,7 +267,7 @@ class Server < BaseModel
 		search(search, page, joins, conditions, sort, filter, include)
 	end
   
-	def self.find_all_by_security_group(security_group, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
+	def self.search_by_security_group(security_group, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
 		joins = [
 			'INNER JOIN security_groups_servers ON security_groups_servers.server_id = servers.id',
 		] + [extra_joins].flatten.compact

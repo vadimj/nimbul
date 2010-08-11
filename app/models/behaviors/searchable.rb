@@ -24,11 +24,9 @@
 # end
 module Behaviors::Searchable
 	module ClassBehaviors
-	    def search_by_parent(parent, options={})
+		def find_all_by_parent(parent, options={})
 			parent_type = parent.class.to_s.underscore
-			# handle SiteUser and LdapUser subclasses
-			parent_type = 'user' if parent.is_a?(User)
-			send("search_by_#{ parent_type }", parent, options)
+			send("find_all_by_#{ parent_type }", parent, options)
 		end
 
 		def find_all_by_user(user, options={})
@@ -39,6 +37,13 @@ module Behaviors::Searchable
 		def count_all_by_user(user, options={})
 			options = options_for_find_by_user(user, options)
 			count(:all, options)
+		end
+
+		def search_by_parent(parent, search, page=nil, extra_joins=nil, extra_conditions=nil, sort=nil, filter=nil, include=nil)
+			parent_type = parent.class.to_s.underscore
+			# handle SiteUser and LdapUser subclasses
+			parent_type = 'user' if parent.is_a?(User)
+			send("search_by_#{ parent_type }", parent, search, page, extra_joins, extra_conditions, sort, filter, include)
 		end
 
 		def search_by_user(user, options={})

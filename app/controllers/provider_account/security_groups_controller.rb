@@ -9,8 +9,7 @@ class ProviderAccount::SecurityGroupsController < ApplicationController
 		
 		joins = nil
 		conditions = nil
-#	    @security_groups = SecurityGroup.find_all_by_provider_account(@provider_account, params[:search], params[:page], joins, conditions, params[:sort])
-	    @security_groups = SecurityGroup.find_all_by_provider_account(@provider_account, params[:search], params[:page], joins, conditions, params[:sort], nil, [:servers, :instances, :provider_account])
+	    @security_groups = SecurityGroup.search_by_provider_account(@provider_account, params[:search], params[:page], joins, conditions, params[:sort], nil, [:servers, :instances, :provider_account])
 
 		@partial ||= 'security_groups/index'
 		@controls_enabled = true

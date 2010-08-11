@@ -171,9 +171,9 @@ class User < BaseModel
         return false
 	end
 
-	def has_server_task_access?(server_task)
+	def has_task_access?(task)
 		return true if has_role?("admin")
-		return true if has_server_access?(server_task.server)
+		return true if has_server_access?(task.server)
         return false
 	end
 

@@ -8,7 +8,7 @@ class Parent::VolumesController < ApplicationController
 
         joins = nil
 	    conditions = nil
-	    @volumes  = CloudVolume.find_all_by_parent(parent, params[:search], params[:page], joins, conditions, params[:sort], params[:filter], [ :clusters, :instance, :zone ])
+	    @volumes  = CloudVolume.search_by_parent(parent, params[:search], params[:page], joins, conditions, params[:sort], params[:filter], [ :clusters, :instance, :zone ])
 
         @parent_type = parent_type
         @parent = parent
@@ -117,7 +117,7 @@ class Parent::VolumesController < ApplicationController
     def control
         joins = nil
 	    conditions = nil
-	    @volumes  = CloudVolume.find_all_by_parent(parent, params[:volume_ids], params[:page], joins, conditions, params[:sort], nil, :clusters)
+	    @volumes  = CloudVolume.search_by_parent(parent, params[:volume_ids], params[:page], joins, conditions, params[:sort], nil, :clusters)
 	    
         options = {
             :search => params[:search],

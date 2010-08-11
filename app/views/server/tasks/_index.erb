@@ -14,12 +14,12 @@ To add a new Task, select a type from the drop-down list. Then click the plus si
 <br />
 
 <% form_for :server,
-    :url => new_server_server_task_path(@server),
+    :url => new_server_task_path(@server),
     :html => { :method => :get } do |f| -%>
 
-<%= will_paginate_search_field "server_#{@server.id}_server_task_search", nil, nil, :list %>
+<%= will_paginate_search_field "server_#{@server.id}_task_search", nil, nil, :list %>
 
-<%= refresh_image 'Refresh', 'server_tasks', nil, :list, nil %>
+<%= refresh_image 'Refresh', 'tasks', nil, :list, nil %>
 
 <span class="vr">&nbsp;</span>
 
@@ -29,10 +29,10 @@ To add a new Task, select a type from the drop-down list. Then click the plus si
 
 <span class="vr">&nbsp;</span>
 
-<b>Total: <span id="server_<%= @server.id %>_server_tasks_total"><%= @server_tasks.total_entries %></span></b>
+<b>Total: <span id="server_<%= @server.id %>_tasks_total"><%= @tasks.total_entries %></span></b>
 
 <% end -%>
         
 <hr>
 
-<%= render :partial => 'server/server_tasks/list' %>
+<%= render :partial => 'server/tasks/list' %>

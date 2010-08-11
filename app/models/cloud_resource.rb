@@ -62,11 +62,7 @@ class CloudResource < BaseModel
         should_destroy.to_i == 1
     end
     
-    def self.find_all_by_parent(parent, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
-		send("find_all_by_#{ parent.class.to_s.underscore }", parent, search, page, extra_joins, extra_conditions, sort, filter, include)
-	end
-
-    def self.find_all_by_provider_account(provider_account, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
+    def self.search_by_provider_account(provider_account, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
 	    joins = []
 	    joins = joins + extra_joins unless extra_joins.blank?
 
@@ -77,10 +73,10 @@ class CloudResource < BaseModel
 		    conditions << extra_conditions[1..-1]
 	    end
 		
-	    self.search(search, page, joins, conditions, sort, filter, include)
+	    search(search, page, joins, conditions, sort, filter, include)
     end
   
-    def self.find_all_by_cluster(cluster, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
+    def self.search_by_cluster(cluster, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
 	    joins = [
 	  	    'INNER JOIN cloud_resources_clusters ON cloud_resources_clusters.cloud_resource_id = cloud_resources.id',
 	    ]
@@ -93,7 +89,7 @@ class CloudResource < BaseModel
 		    conditions << extra_conditions[1..-1]
 	    end
 		
-        self.search(search, page, joins, conditions, sort, filter, include)
+        search(search, page, joins, conditions, sort, filter, include)
     end
   
 	# by default - find all resources visible to user through clusters

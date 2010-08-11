@@ -121,7 +121,7 @@ Rails::Initializer.run do |config|
 
   # Helper type for select boxes with groups and filter
   GroupLabelValueFilter = Struct.new(:group, :label, :value, :filter)
-
+  
   # Helper type to JSON Error handling
   ModelError = Struct.new(:model,:error)
 

@@ -8,7 +8,7 @@ class ProviderAccount::FirewallRulesController < ApplicationController
 
 		joins = nil
 		conditions = nil
-		@firewall_rules = FirewallRule.find_all_by_provider_account(@provider_account, params[:search], params[:page], joins, conditions, params[:sort], nil, [ :security_groups, :provider_account ] )
+		@firewall_rules = FirewallRule.search_by_provider_account(@provider_account, params[:search], params[:page], joins, conditions, params[:sort], nil, [ :security_groups, :provider_account ] )
 
 		@partial ||= 'firewall_rules/index'
         respond_to do |format|

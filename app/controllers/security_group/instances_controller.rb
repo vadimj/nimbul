@@ -8,7 +8,7 @@ class SecurityGroup::InstancesController < ApplicationController
 
         joins = nil
 	    conditions = nil
-	    @instances  = Instance.find_all_by_security_group(@security_group, params[:search], params[:page], joins, conditions, params[:sort])
+	    @instances  = Instance.search_by_security_group(@security_group, params[:search], params[:page], joins, conditions, params[:sort])
 
 	    @skip_server_column = true
 	    respond_to do |format|

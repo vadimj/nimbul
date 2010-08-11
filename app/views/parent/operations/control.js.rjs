@@ -1,9 +1,9 @@
-@server_tasks ||= []
+@tasks ||= []
 @operations ||= []
 if @error_message.blank?
-    @server_tasks.each do |v|
-        page.insert_html :bottom, 'server_task_records', :partial => 'server_tasks/server_task', :object => v
-        page["server_task_#{v.id}"].visual_effect :highlight
+    @tasks.each do |v|
+        page.insert_html :bottom, 'task_records', :partial => 'tasks/task', :object => v
+        page["task_#{v.id}"].visual_effect :highlight
     end
     @operations.each do |s|
         page["operation_#{s.id}"].replace_html :partial => "operations/row", :object => s

@@ -1,5 +1,5 @@
 <td><%= link_to row.class, server_operation_path(@server, row) %></td>
-<td><% if row.server_task_id.blank? or row.server_task.nil? %>N/A<% else %><%= link_to row.server_task.name, edit_server_server_task_path(@server, row.server_task) %><% end %></td>
+<td><% if row.task_id.blank? or row.task.nil? %>N/A<% else %><%= link_to row.task.name, edit_server_task_path(@server, row.task) %><% end %></td>
 <td><%=h row.instance.instance_id %></td>
 <td class="<%=h row.state %>"><%=h row.state %></td>
 <td><%=h row.attempts %></td>

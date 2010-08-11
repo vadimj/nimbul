@@ -6,7 +6,6 @@ class Task < BaseModel
     belongs_to :taskable, :polymorphic => true
     has_many :task_parameters, :dependent => :destroy
     has_many :operations, :dependent => :nullify
-    has_many :server_tasks, :as => :parent, :dependent => :destroy
 
     # auditing
     has_many :audit_logs, :as => :auditable, :dependent => :nullify
@@ -70,6 +69,10 @@ class Task < BaseModel
         end
     end
 
+    def get_parameter(name)
+		self.initialize_parameters.detect{|p| p.name == name}
+    end
+
     def parameter_value(name)
         parameter = task_parameters.detect{|p| p.name == name}
         if parameter.nil?
@@ -80,9 +83,9 @@ class Task < BaseModel
     end
 
     def initialize_parameters
-        []
+        return self.get_operation.initialize_parameters
     end
-
+    
     def options(name)
         []
     end
@@ -101,9 +104,23 @@ class Task < BaseModel
 		return op
 	end
 
-    def self.find_all_by_parent(parent, search, page, extra_joins, extra_conditions, sort=nil, filter=nil)
-		send("find_all_by_#{ parent.class.to_s.underscore }", parent, search, page, extra_joins, extra_conditions, sort, filter)
-	end
+    def self.search_by_server(server, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
+        search_by_taskable(server, search, page, extra_joins, extra_conditions, sort, filter, include)
+    end
+
+    def self.search_by_taskable(taskable, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
+        joins = []
+        joins = joins + extra_joins unless extra_joins.blank?
+
+        conditions = [ 'taskable_id = ? AND taskable_type = ?', (taskable.is_a?(Integer) ? taskable : taskable.id), parent.class.to_s ]
+        unless extra_conditions.blank?
+            extra_conditions = [ extra_conditions ] if not extra_conditions.is_a? Array
+            conditions[0] << ' AND ' + extra_conditions[0];
+            conditions << extra_conditions[1..-1]
+        end
+
+        search(search, page, joins, conditions, sort, filter, include)
+    end
 
     # sort, search and paginate parameters
     def self.per_page
@@ -120,5 +137,24 @@ class Task < BaseModel
     
     def self.filter_fields
         %w(status owner_id)
+    end
+    
+    def run!
+		instances = Instance.find_all_by_parent(self.taskable)
+		
+        begin
+            instances.each do |instance|
+                next if not instance.running?
+                operation = get_operation
+                instance.operations << operation
+                # store to return to the ui
+                self.new_operations = [] if self.new_operations.nil?
+                self.new_operations << operation
+            end
+        rescue
+            self.state_text = "Task failed: #{$!}"
+            return false
+        end
+        return true
     end
 end
