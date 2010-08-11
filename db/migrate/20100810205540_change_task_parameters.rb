@@ -4,6 +4,10 @@ class ChangeTaskParameters < ActiveRecord::Migration
     create_table :task_parameters do |t|
       t.integer :task_id
       t.string :name
+      t.string :description
+      t.string :value_type
+      t.string :regex
+      t.boolean :is_required
       t.string :custom_value
       t.string :value_provider_type
       t.integer :value_provider_id

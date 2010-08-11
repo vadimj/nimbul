@@ -2,7 +2,7 @@ module TasksHelper
 	def remove_task_link(text, task)
 		link_text = image_tag('trash.png', :class => 'control-icon', :alt => text)
 		if current_user.has_task_access?(task)
-			url = server_task_url(task.server, task)
+			url = task_url(task)
 	    	options = {
 	            :url => url,
 	            :method => :delete,
@@ -19,7 +19,7 @@ module TasksHelper
 
     def run_task_link(text, task)
 		link_text = image_tag('start.png', :class => 'control-icon', :alt => text)
-        url = run_server_task_url(task.server, task)
+        url = run_task_url(task)
 
         options = {
 			:url => url,

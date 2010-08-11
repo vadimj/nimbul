@@ -17,7 +17,11 @@ class Operation::Instance::Terminate < Operation
     parameters = []
     parameters << TaskParameter.new({
       :name => 'keep_instances',
-      :description => 'Specifies the maximum number of instances to keep'
+      :description => 'Specifies the maximum (per server) number of instances to keep. Any extra instances will be terminated when the task is run.',
+      :value_type => 'Integer',
+      :regex => '/\d+/',
+      :is_required => true,
+      :custom_value => '0',
     })
     return parameters
   end

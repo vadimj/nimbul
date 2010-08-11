@@ -257,7 +257,6 @@ ActionController::Routing::Routes.draw do |map|
 		server.resources :dns_leases, :controller => 'server/dns_leases',
 			:collection => { :release => :delete, :list => :any }, :except => [ :destroy, :edit, :new, :update, :create ]
 		server.resources :tasks, :controller => 'parent/tasks',
-			:member => { :run => :get },
 			:collection => { :list => :any }
 		server.resources :operations, :controller => 'parent/operations',
 			:collection => { :list => :any, :control => :any },
@@ -266,7 +265,9 @@ ActionController::Routing::Routes.draw do |map|
 	end
 		
 	# tasks
-	map.resources :tasks, :controller => 'tasks', :only => [ :update ]
+	map.resources :tasks, :controller => 'tasks',
+		:member => { :run => :get },
+		:only => [ :update, :destroy ]
 
 	# resource_bundles
 	map.resources :resource_bundles do |resource_bundle|

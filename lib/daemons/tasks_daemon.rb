@@ -36,8 +36,8 @@ while($running) do
             job.unschedule
         end
         t.update_attribute( :is_scheduled, false )
-        ActiveRecord::Base.logger.info "Unscheduled Server Task #{t.name} [#{t.id}]\n"
-        # Rails.logger.info "Unscheduled Server Task #{t.name} [#{t.id}]\n"
+        ActiveRecord::Base.logger.info "Unscheduled Task #{t.name} [#{t.id}]\n"
+        # Rails.logger.info "Unscheduled Task #{t.name} [#{t.id}]\n"
     end
 
     # unschedule all one-time tasks with run_at in the past
@@ -48,8 +48,8 @@ while($running) do
                 job.unschedule
             end
             t.update_attributes( { :is_active => false, :is_scheduled => false } )
-            ActiveRecord::Base.logger.info "Unscheduled Server Task #{t.name} [#{t.id}]\n"
-            # Rails.logger.info "Unscheduled Server Task #{t.name} [#{t.id}]\n"
+            ActiveRecord::Base.logger.info "Unscheduled Task #{t.name} [#{t.id}]\n"
+            # Rails.logger.info "Unscheduled Task #{t.name} [#{t.id}]\n"
         end
     end
 
@@ -79,8 +79,8 @@ while($running) do
         end
         # mark the task as scheduled
         t.update_attribute( :is_scheduled, true )
-        ActiveRecord::Base.logger.info "Scheduled Server Task #{t.name} [#{t.id}]\n"
-        #Rails.logger.info "Scheduled Server Task #{t.name} [#{t.id}]\n"
+        ActiveRecord::Base.logger.info "Scheduled Task #{t.name} [#{t.id}]\n"
+        #Rails.logger.info "Scheduled Task #{t.name} [#{t.id}]\n"
     end
 
     sleep 10

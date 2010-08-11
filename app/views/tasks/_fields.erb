@@ -8,17 +8,13 @@ else
 end
 %>
 
+<strong>Task:</strong>
+<br/>
+<br/>
 <table>
     <tr>
         <th><%= f.label :is_active, "Active?" %></th>
         <td class="<%= @task.is_active? %>"><%= f.check_box :is_active %></td>
-    </tr>
-    <tr>
-        <th><%= f.label :is_scheduled, "Scheduled?" %></th>
-        <td class="<%= @task.is_scheduled? %>">
-            <%= @task.is_scheduled? ? 'Yes' : (@task.is_active? ? 'Pending' : 'No' ) %>
-            <%= hidden_field_tag 'task[is_scheduled]', 0 %>
-        </td>
     </tr>
     <tr>
         <th><%= f.label :name %></th>
@@ -29,9 +25,63 @@ end
         <td><%= f.text_area :description, :size => '60x6', :warp => 'soft' %></td>
     </tr>
     <tr>
-        <th>Operation</th>
-        <td><%= h @task.operation %></td>
-        <%= f.hidden_field :operation %>
+        <th><%= f.label :Operation %></th>
+        <td>
+            <%= f.hidden_field :operation %>
+            <%= h @task.operation %>
+        </td>
+    </tr>
+</table>
+
+<% if @parameters.size > 0 %>
+<strong>Parameters:</strong>
+<br/>
+<br/>
+<table>
+    <tr>
+    <th>Required?</th>
+    <th>Name</th>
+    <th>Value</th>
+    </tr>
+    <% @parameters.each do |p| %>
+        <% fields_for "task[task_parameter_attributes][]", p do |p_form| %>
+            <% unless p.new_record? %>
+                <%= p_form.hidden_field :id, :index => nil %>
+            <% end %>
+            <%= p_form.hidden_field :is_required, :index => nil %>
+            <%= p_form.hidden_field :name, :index => nil %>
+            <%= p_form.hidden_field :description, :index => nil %>
+            <%= p_form.hidden_field :value_type, :index => nil %>
+            <%= p_form.hidden_field :regex, :index => nil %>
+            <tr>
+                <td>
+                    [ <% if p.is_required? %>required<% else %>optional<% end %> ]
+                </td>
+                <td>
+                    <%=h p.name.titleize %>
+                    <% unless p.description.blank? %>
+                        <small><br /><%=h p.description %> </small>
+                    <% end %>
+                </td>
+                <td>
+                    <%= p_form.text_field :custom_value, :index => nil %>
+                </td>
+            </tr>
+        <% end %>
+    <% end %>
+</table>
+<% end %>
+
+<strong>Schedule:</strong>
+<br/>
+<br/>
+<table>
+    <tr>
+        <th><%= f.label :is_scheduled, "Scheduled?" %></th>
+        <td class="<%= @task.is_scheduled? %>">
+            <%= @task.is_scheduled? ? 'Yes' : (@task.is_active? ? 'Pending' : 'No' ) %>
+            <%= hidden_field_tag 'task[is_scheduled]', 0 %>
+        </td>
     </tr>
     <tr>
         <th><%= f.label :ran_at, 'First Run' %></th>
@@ -52,25 +102,5 @@ end
             <%= f.select :run_every_units, RUN_EVERY_UNITS, { :disabled => !@task.is_repeatable? } %>
         </td>
     </tr>
-    <% @parameters.each do |p| %>
-        <% fields_for "task[task_parameter_attributes][]", p do |p_form| %>
-            <tr>
-                <th>
-                    <%=h p.name.titleize %>
-                    <% unless p.description.blank? %>
-                        <small><br /><%=h p.description %> </small>
-                    <% end %>
-                </th>
-                <% unless p.new_record? %>
-                    <%= p_form.hidden_field :id, :index => nil %>
-                <% end %>
-                <%= p_form.hidden_field :name, :index => nil %>
-                <%= p_form.hidden_field :description, :index => nil %>
-                <%= p_form.hidden_field :control_type, :index => nil %>
-                <td>
-                    <%= p_form.text_field :value, :index => nil %>
-                </td>
-            </td>
-        <% end %>
-    <% end %>
 </table>
+<br/>

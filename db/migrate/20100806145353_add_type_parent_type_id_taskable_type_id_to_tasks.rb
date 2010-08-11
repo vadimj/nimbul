@@ -1,6 +1,5 @@
 class AddTypeParentTypeIdTaskableTypeIdToTasks < ActiveRecord::Migration
   def self.up
-    add_column :tasks, :type, :string, :default => 'ServerTask'
     add_column :tasks, :parent_type, :string
     add_column :tasks, :parent_id, :integer
     add_column :tasks, :taskable_type, :string, :default => 'Server'
@@ -12,6 +11,5 @@ class AddTypeParentTypeIdTaskableTypeIdToTasks < ActiveRecord::Migration
     remove_column :tasks, :taskable_type
     remove_column :tasks, :parent_id
     remove_column :tasks, :parent_type
-    remove_column :tasks, :type
   end
 end

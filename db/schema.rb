@@ -1083,6 +1083,10 @@ ActiveRecord::Schema.define(:version => 20100810205540) do
   create_table "task_parameters", :force => true do |t|
     t.integer  "task_id"
     t.string   "name"
+    t.string   "description"
+    t.string   "value_type"
+    t.string   "regex"
+    t.boolean  "is_required"
     t.string   "custom_value"
     t.string   "value_provider_type"
     t.integer  "value_provider_id"
@@ -1114,7 +1118,6 @@ ActiveRecord::Schema.define(:version => 20100810205540) do
     t.text     "state_text"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "type",            :default => "ServerTask"
     t.string   "parent_type"
     t.integer  "parent_id"
     t.string   "taskable_type",   :default => "Server"
