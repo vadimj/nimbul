@@ -275,7 +275,19 @@ class Parent::ServersController < ApplicationController
 					end
 					@error_messages += server.errors.collect{ |attr,msg| attr.humanize+' - '+msg } unless server.errors.empty?
 					@instances += server_instances
-				end
+
+					AuditLog.create_for_parent(
+						:parent => server.cluster,
+						:auditable_id => server.id,
+						:auditable_type => server.class.to_s,
+						:auditable_name => server.name,
+						:author_login => current_user.login,
+						:author_id => current_user.id,
+						:summary => "started #{server_instances.count} instance(s) of '#{server.name}'",
+						:changes => server.tracked_changes,
+						:force => true
+					) unless server_instances.empty?
+                end
 	        end
 			@message = "Starting server(s) "+@servers.collect{ |s| "'"+s.name+"'" }.join(', ')
 			# TODO - disable for now
@@ -286,21 +298,6 @@ class Parent::ServersController < ApplicationController
         respond_to do |format|
             if @error_messages.empty?
                 flash[:notice] = @message
-                @servers.each do |s|
-	                p = s.cluster
-					o = s
-					AuditLog.create_for_parent(
-						:parent => p,
-						:auditable_id => o.id,
-						:auditable_type => o.class.to_s,
-						:auditable_name => o.name,
-						:author_login => current_user.login,
-						:author_id => current_user.id,
-						:summary => "started #{count} instance(s) of '#{o.name}'",
-						:changes => o.tracked_changes,
-						:force => true
-					)
-                end
                 format.html { redirect_to redirect_url }
                 format.xml  { head :ok }
                 format.js
