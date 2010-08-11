@@ -41,9 +41,14 @@ class Operation::RabbitMq::ChangePassword < Operation::RabbitMq
 			
 			unless instances.empty?
 				results = update_configuration instances
-				success = !!results.match(/error/)
-				self[:result_code] = success ? 'Success' : 'Failure'
-				self[:result_message] = results
+				errors = :none
+				if results.values.any? { |r| !!r.match(/ERROR/) }
+					errors = :partial
+					errors = unless results.values.all? {|r| !!r.match(/ERROR/) }; :all else; :partial; end
+				end
+				success = (errors == :none)
+				self[:result_code] = success ? 'Success' : (errros == :partial ? 'Partial Failure' : 'Failure')
+				self[:result_message] = results.map { |id,result| "<div><h2>#{id}:</h2>#{results}<div>" }.join "<br />\n<hr>"
 			else
 				success = true
 				self[:result_code] = success ? 'Success' : 'Failure'
@@ -85,7 +90,7 @@ private
 	end
 	
 	def update_configuration instances
-		instances.each do |instance|
+		instances.inject({}) do |results, instance|
 			begin
 				@instance = instance
 				@provider_account = @instance.provider_account
@@ -106,18 +111,26 @@ emissary start -d
 
 exit 0
 				EOS
+				
+				id = instance[:instance_id]
+
 				with_command_file(commands, binding) do |command_file_path|
 					filename = File.basename(command_file_path)
 					@provider_account.with_ssh_master_key do |keyfile|
 						@instance.send_file(command_file_path, filename, :keyfile => keyfile)
 						Timeout.timeout(60) do 
-							@instance.ssh_execute("./#{filename}; rm -f ./#{filename}", :keyfile => keyfile)
+							results[id] = @instance.ssh_execute("./#{filename}; rm -f ./#{filename}", :keyfile => keyfile)
 						end
 					end
 				end
 			rescue Timeout::Error
-			rescue Net::SSH::AuthenticationFailed, Errno::EHOSTUNREACH
+				results[id] = 'ERROR: timed out...'
+			rescue Net::SSH::AuthenticationFailed
+				results[id] = 'ERROR: authentication failed...'
+			rescue Errno::EHOSTUNREACH
+				results[id] = 'ERROR: host unreachable...'
 			rescue Exception => e
+				results[id] = "ERROR: #{e.class.name}: #{e.message} (for full details, see logs)"
 				Rails.logger.error "#{e.class.name}: #{e.message}\n\t#{e.backtrace.join("\n\t")}"
 			end
 		end
