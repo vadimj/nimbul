@@ -17,7 +17,7 @@ class Operation::RabbitMq::ChangePassword < Operation::RabbitMq
       
       success = true
       self[:result_code] = 'Success'
-      self[:result_message] = "Request to change messaging user password for account '#{account.name}'"
+      self[:result_message] = "Request to change messaging user password for account '#{provider_account.name}'"
     
       operation_logs << OperationLog.new( {
         :step_name => 'change_password',
