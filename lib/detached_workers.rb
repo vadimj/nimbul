@@ -6,7 +6,7 @@ require 'work_queue'
 load File.join(File.dirname(File.expand_path(__FILE__)), 'facter_fixes.rb')
 
 module DetachedWorkers
-
+  
   class Task
     attr_reader :args
     def initialize *args, &block
@@ -21,13 +21,16 @@ module DetachedWorkers
 
   
   class Worker
+    # Maximum of ten worker threads per worker process
+    MAX_THREADS = (ENV['DETACHED_WORKER_THREADS'].to_i rescue 0) > 0 ? ENV['DETACHED_WORKER_THREADS'].to_i : 10
+    
     attr_accessor :pid
     attr_reader :tasks
+    
     def initialize
       @pid   = nil
       @tasks = []
-      # Maximum of ten worker threads per worker process
-      @work_queue = WorkQueue.new(ENV['DETACHED_WORKER_THREADS'] || 10, nil, 60) 
+      @work_queue = WorkQueue.new(MAX_THREADS, nil, 60) 
     end
     
     def perform_tasks
@@ -72,8 +75,8 @@ module DetachedWorkers
   class Manager
     include ::Singleton
     
-    MAX_WORKERS = ENV['DETACHED_WORKER_MAX'] || Facter.processor_count + 1
-    
+    MAX_WORKERS = (ENV['DETACHED_WORKER_MAX'].to_i rescue 0) > 0 ? ENV['DETACHED_WORKER_MAX'].to_i : Facter.processor_count + 1
+
     attr_reader :workers
     def initialize
       at_exit { shutdown! }

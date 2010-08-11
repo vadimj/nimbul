@@ -26,11 +26,18 @@
 #<%= user_script.addresses.collect { |a| sprintf("\t%-16s\t%s", *a.zip.flatten) }.join "\n#\t" %>
 #
 
+require 'rubygems'
 require 'ostruct'
 require 'optparse'
 require 'readline'
 require 'fcntl'
-require 'json'
+
+begin
+  require 'json'
+rescue LoadError
+  puts "Please install the json and json-pure gems to use this script: sudo gem install json json-pure"
+  exit! 1
+end
 
 def update_program_name
   # allow setting of program name if using a tar/gzip loader
@@ -97,6 +104,100 @@ class Hash
   
   def symbolize_keys!
     self.replace(self.symbolize_keys)
+  end
+end
+
+class Integer
+  SECOND =  1 
+  MINUTE = 60 * SECOND
+  HOUR   = 60 * MINUTE
+  DAY    = 24 * HOUR
+  WEEK   =  7 * DAY
+  MONTH  = 30 * DAY
+  YEAR   = 52 * WEEK
+  INFINITY = (1.0/0)
+  
+  def to_years()   self.to_i >= YEAR   ? self.to_i / YEAR   : 0 ; end
+  def to_months()  self.to_i >= MONTH  ? self.to_i / MONTH  : 0 ; end
+  def to_weeks()   self.to_i >= WEEK   ? self.to_i / WEEK   : 0 ; end
+  def to_days()    self.to_i >= DAY    ? self.to_i / DAY    : 0 ; end
+  def to_hours()   self.to_i >= HOUR   ? self.to_i / HOUR   : 0 ; end
+  def to_minutes() self.to_i >= MINUTE ? self.to_i / MINUTE : 0 ; end
+  
+  def years()   self.to_i * YEAR; end
+  def months()  self.to_i * MONTH; end
+  def weeks()   self.to_i * WEEK; end
+  def days()    self.to_i * DAY; end
+  def hours()   self.to_i * HOUR; end
+  def minutes() self.to_i * MINUTE; end
+  def seconds() self.to_i ; end
+  
+  alias :year   :years
+  alias :month  :months
+  alias :week   :weeks
+  alias :day    :days
+  alias :hour   :hours
+  alias :minute :minutes
+  alias :second :seconds
+
+  def time_hash
+    total = {}
+    total[:seconds] = self.to_i
+    total[:seconds] -= (total[:years]   = total[:seconds] / 1.year).years
+    total[:seconds] -= (total[:months]  = total[:seconds] / 1.month).months
+    total[:seconds] -= (total[:weeks]   = total[:seconds] / 1.week).weeks
+    total[:seconds] -= (total[:days]    = total[:seconds] / 1.day).days
+    total[:seconds] -= (total[:hours]   = total[:seconds] / 1.hour).hours
+    total[:seconds] -= (total[:minutes] = total[:seconds] / 1.minute).minutes
+    total
+  end
+  
+  def time_text type = :accurate
+    total = time_hash
+    
+    unless not type == :accurate
+      [:years, :months, :weeks, :days, :hours, :minutes, :seconds].inject([]) do |a, timepart|
+        timepart_name = total[timepart] > 1 ? timepart.to_s : timepart.to_s[0..-2]
+        a << "#{total[timepart]} #{timepart_name}" unless total[timepart] <= 0; a
+      end.join ', ' 
+    else
+      case self.to_i
+        when (0.seconds)..(30.seconds):
+          'less than a minute'
+        when (31.seconds)..(59.seconds):
+          'about a minute'
+        when (1.minute)..(1.minute + 14.seconds):
+          'a minute'
+        when (1.minute + 15.seconds)..( 2.minutes - 1.second):
+          'more than a minute'
+        when (2.minutes)..(30.minutes - 1.second):
+          'less than half an hour'
+        when (30.minutes)..(30.minutes + 59.seconds):
+          'half an hour'
+        when (31.minutes)..(59.minutes + 59.seconds):
+          'more than half an hour'
+        when (1.hour)..(1.hour + 14.minutes + 59.seconds):
+          'one hour'
+        when (1.hour + 15.minutes)..( 2.hours - 1.second):
+          'around an hour'
+        when (2.hours)..( 5.hours - 1.second):
+          'a few hours'
+        when (5.hours)..(12.hours - 1.second):
+          'less than half a day'
+        when (12.hours)..(12.hours + 14.minutes + 59.seconds):
+          'half a day'
+        when (12.hours + 15.minutes)..(24.hours - 1.second):
+          'more than half a day'
+        when (1.day)..(1.week - 1.second):
+          "about #{total[:days]} #{total[:days] > 1 ? 'days' : 'day'}"
+        when (1.week)..(1.month - 1.second):
+          "about #{total[:weeks]} #{total[:weeks] > 1 ? 'weeks' : 'week'}"
+        when (1.month)..(1.year - 1.second):
+          "about #{total[:months]} #{total[:months] > 1 ? 'months' : 'month'}"
+        when (1.year)..(INFINITY):
+          "about #{total[:years]} #{total[:years] > 1 ? 'years' : 'year'}"
+      end
+    end
   end
 end
 
@@ -211,8 +312,22 @@ class CommandParser
     options.trace   = false
     options.command = command
     options.showinfo = false
-
+    options.skip_age_check = false
     setup unless not respond_to? :setup
+  end
+
+  def age_check
+    time_since_build = Time.now.to_i - Time.parse(BUILD_DATE).to_i
+    unless time_since_build <= 30.minutes
+      puts "This server control script is #{time_since_build.time_text :fuzzy} old"
+      puts "Please refresh this script from S3 unless you are certain that it is ok."
+      puts 
+      puts "If you are sure that this script has not changed, you can bypass this by"
+      puts "using the --skip-age-check argument."
+      puts 
+      exit 1
+    end
+    return true
   end
 
   def help!
@@ -280,6 +395,10 @@ class CommandParser
         exit! 0
       end
       
+      parser.on('--skip-age-check') do |v|
+        @options.skip_age_check = true
+      end
+      
       parser.on_tail('-h', '--help', 'Show this message') do
         self.help!
       end
@@ -288,13 +407,15 @@ class CommandParser
         puts "This script built on: #{BUILD_DATE.to_s}"
         exit!
       end
-      
+
       result = parser.parse!
-      
+
       unless not options.exit
         puts parser.help if options.help
         exit
       end
+
+      age_check unless @options.skip_age_check
 
       result 
     end
@@ -315,7 +436,6 @@ class CommandParser
   def setup; end
   def validate_options; end
   protected :build, :setup
-
 end
 
 class CommandParser::Missing < CommandParser; end
@@ -412,7 +532,7 @@ class ServerCommand
             :cluster  => hostinfo.try(:[], :cluster_name),
             :account  => hostinfo.try(:[], :account_name),
             :provider => hostinfo.try(:[], :provider_name),
-            :up_since => Time.parse(i[:launch_time]).getlocal
+            :up_since => (Time.now.getlocal - Time.parse(i[:launch_time]).getlocal).to_i.time_text(:fuzzy)
           } unless (!!only_active && i[:state] != 'running')
         end
       end
@@ -437,7 +557,7 @@ class ServerCommand
 
   def instance_display_list instances, display_keys = [ :state, :ami, :cluster, :server, :dns ]
     instances.values.sort{|a,b| a[:up_since] <=> b[:up_since]}.collect do |data|
-      "#{data[:id]}: #{display_keys.collect { |k| data[k] || 'unknown' }.compact.join " - "} (up since: #{data[:up_since]})" 
+      "#{data[:id]}: #{display_keys.collect { |k| data[k] || 'unknown' }.compact.join " - "} (running for #{data[:up_since]})" 
     end
   end
   
