@@ -1,4 +1,4 @@
-class Parent::ServerTasksController < ApplicationController
+class Parent::TasksController < ApplicationController
     parent_resources :server
     before_filter :login_required
     require_role  :admin, :unless => "current_user.has_access?(parent)"

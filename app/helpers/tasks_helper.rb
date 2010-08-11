@@ -1,4 +1,4 @@
-module ServerTasksHelper
+module TasksHelper
 	def remove_task_link(text, task)
 		link_text = image_tag('trash.png', :class => 'control-icon', :alt => text)
 		if current_user.has_task_access?(task)

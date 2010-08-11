@@ -1,4 +1,4 @@
-class ServerTasksController < ApplicationController
+class TasksController < ApplicationController
 	before_filter :login_required
 	require_role  :admin, :unless => "current_user.has_task_access?(Task.find(params[:id])) "
 
