@@ -388,7 +388,7 @@ private
       
       Net::SSH.start(host, user, options) do |session|
 				unless upload.nil? or upload[:src].nil? or upload[:dest].nil?
-					ssh.sftp.upload!(upload[:src], upload[:dest])
+					session.sftp.upload!(upload[:src], upload[:dest])
 				end
         return yield session
       end
