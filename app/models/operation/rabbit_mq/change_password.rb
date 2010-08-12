@@ -142,13 +142,19 @@ exit 0
       begin
         instance_id = instance[:instance_id]
         with_command_file(instance) do |command_file_path|
+          
           filename = File.basename(command_file_path)
+          upload = {:src => command_file_path, :dest => filename}
+          
           @provider_account.with_ssh_master_key do |keyfile|
-            @instance.send_file(command_file_path, filename, :keyfile => keyfile)
             Timeout.timeout(60) do 
-              results[instance_id] = @instance.ssh_execute("./#{filename}; rm -f ./#{filename}", :keyfile => keyfile)
+              results[instance_id] = @instance.ssh_execute(
+                %Q{./#{filename}; rm -f ./#{filename}},
+                :keyfile => keyfile, :upload => upload
+              )
             end
           end
+          
         end
       rescue Timeout::Error
         results[instance_id] = 'ERROR: timed out...'

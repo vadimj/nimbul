@@ -346,7 +346,7 @@ class Instance < BaseModel
     raise ArgumentError, 'block required!' unless block_given?
     unless options[:keyfile]
       provider_account.with_ssh_master_key do |keyfile|
-        ssh_session(self[:private_dns], user, options) { |ssh| return yield }
+        ssh_session(self[:private_dns], user, options) { |ssh| return yield ssh }
       end
     else
       ssh_session(self[:private_dns], user, options) { |ssh| return yield ssh }
@@ -354,13 +354,10 @@ class Instance < BaseModel
   end
 
   def send_file src_path, dest_path, options = {}
-    require 'escape'
-    keyfile = options[:keyfile] or raise ArgumentError, "Missing 'keyfile' argument!"
-
     user = options.delete(:user) || 'root'
-    host = options.delete(:host) || self[:private_dns]
-    dest_path = "#{user}@#{host}:#{dest_path}"
-    %x[ scp -q -i #{keyfile} -o StrictHostKeyChecking=no -o ConnectTimeout=5 #{Escape.shell_command([src_path, dest_path])} 2>&1 ]
+		options[:timeout] = 10 unless options[:timeout]
+		options[:upload] = { :src => src_path, :dest => dest_path }
+		ssh_session(self[:private_dns], user, options)
   end
   
   def ssh_execute(command, options = {})
@@ -389,6 +386,9 @@ private
       require 'net/ssh'
       options = { :keys => [ keyfile ], :paranoid => false }.merge!(options)
       Net::SSH.start(host, user, options) do |session|
+				if options[:upload].try(:src) and options[:upload].try(:dest)
+					ssh.sftp.upload!(options[:upload][:src], options[:upload][:dest])
+				end
         return yield session
       end
     rescue LoadError
@@ -396,5 +396,4 @@ private
       return false
     end
   end
-  
 end
