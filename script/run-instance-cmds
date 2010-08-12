@@ -158,7 +158,7 @@ begin
             pa.with_ssh_master_key do |keyfile|
               Timeout.timeout($options.timeout || 60) do 
                 command_output = instance.ssh_execute(
-                  "./#{file}; rm -f ./#{file}", :keyfile => keyfile,
+                  "chmod +x ./#{file}; ./#{file}; rm -f ./#{file}", :keyfile => keyfile,
                   :upload => { :src => path, :dest => file }
                 )
               end
