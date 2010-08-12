@@ -144,13 +144,12 @@ exit 0
         with_command_file(instance) do |command_file_path|
           
           filename = File.basename(command_file_path)
-          upload = {:src => command_file_path, :dest => filename}
-          
+
           @provider_account.with_ssh_master_key do |keyfile|
             Timeout.timeout(60) do 
               results[instance_id] = @instance.ssh_execute(
-                %Q{./#{filename}; rm -f ./#{filename}},
-                :keyfile => keyfile, :upload => upload
+                %Q|chmod +x ./#{filename}; ./#{filename}; rm -f ./#{filename}|,
+                :keyfile => keyfile, :upload => {:src => command_file_path, :dest => filename}
               )
             end
           end
