@@ -383,11 +383,12 @@ private
   def ssh_session host, user, options = {}
     keyfile = options.delete(:keyfile) or raise ArgumentError, "Missing 'keyfile' argument!"
     begin
-      require 'net/ssh'
       options = { :keys => [ keyfile ], :paranoid => false }.merge!(options)
+      upload = options.delete(:upload) || {}
+      
       Net::SSH.start(host, user, options) do |session|
-				if options[:upload].try(:src) and options[:upload].try(:dest)
-					ssh.sftp.upload!(options[:upload][:src], options[:upload][:dest])
+				unless upload.nil? or upload[:src].nil? or upload[:dest].nil?
+					ssh.sftp.upload!(upload[:src], upload[:dest])
 				end
         return yield session
       end
