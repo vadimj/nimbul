@@ -83,8 +83,8 @@ class ProviderAccount < BaseModel
     connect_options = {
       :host  => uri.host,
       :port  => uri.port,
-      :user  => ::URI.decode(uri.user),
-      :pass  => ::URI.decode(uri.password),
+      :user  => ::URI.decode(uri.user || ''),
+      :pass  => ::URI.decode(uri.password || ''),
       :vhost => uri.path,
       :ssl   => ssl
     }
@@ -103,8 +103,9 @@ class ProviderAccount < BaseModel
         return false
       end
     end
-    
     true
+  rescue Exception => e
+    false
   end
   
 	def messaging_username=(v); end
