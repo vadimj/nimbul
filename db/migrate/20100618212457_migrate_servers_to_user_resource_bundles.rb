@@ -6,7 +6,7 @@ class MigrateServersToUserResourceBundles < ActiveRecord::Migration
 						CloudAddress.create_from(a)
 				rescue Exception => e
 						# duplicate key errors aren't actually a problem even if they happen
-						raise e unless e.message =~ /duplicate.key/i
+						raise e unless e.message =~ /duplicate.entry/i
 				end
 		end
 		
@@ -16,7 +16,7 @@ class MigrateServersToUserResourceBundles < ActiveRecord::Migration
 						CloudVolume.create_from(v)
 				rescue Exception => e
 						# duplicate key errors aren't actually a problem even if they happen
-						raise e unless e.message =~ /duplicate.key/i
+						raise e unless e.message =~ /duplicate.entry/i
 				end
 		end
 		
@@ -26,7 +26,7 @@ class MigrateServersToUserResourceBundles < ActiveRecord::Migration
 						CloudSnapshot.create_from(s)
 				rescue Exception => e
 						# duplicate key errors aren't actually a problem even if they happen
-						raise e unless e.message =~ /duplicate.key/i
+						raise e unless e.message =~ /duplicate.entry/i
 				end
 		end
 		
