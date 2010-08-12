@@ -58,7 +58,7 @@ module Behaviors::Operating
       end
       
       self[:result_code]    = 'Error_StepExecutionFailure'
-      self[:result_message] = e.message + "\n\t" + bt_sample.join("\n\t")
+      self[:result_message] = "#{e.class.name}: #{e.message}\n\t#{bt_sample.join("\n\t")}"
       fail!
 
       self.update_attribute(:current_step, (self.current_step - 1))

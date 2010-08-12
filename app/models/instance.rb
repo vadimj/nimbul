@@ -1,4 +1,5 @@
 require 'aasm'
+require 'net/ssh'
 
 class Instance < BaseModel
   include AASM
