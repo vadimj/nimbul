@@ -131,8 +131,7 @@ begin
     next if (ec2 = Ec2Adapter.get_ec2(pa)).nil? or pa.ssh_master_key.blank?
     
     # only bother with instances that actually have a server/cluster associated with them
-    instances = Instance.find_all_by_instance_id(
-      ids,
+    instances = Instance.all(
       :joins => [
         'INNER JOIN servers ON instances.server_id = servers.id',
         'INNER JOIN clusters ON servers.cluster_id = clusters.id',
@@ -157,9 +156,11 @@ begin
           generate_command_file(binding) do |path|
             file = File.basename(path)
             pa.with_ssh_master_key do |keyfile|
-              send_output = instance.send_file(path, file, :keyfile => keyfile)
               Timeout.timeout($options.timeout || 60) do 
-                command_output = instance.ssh_execute("./#{file}; rm -f ./#{file}", :keyfile => keyfile)
+                command_output = instance.ssh_execute(
+                  "./#{file}; rm -f ./#{file}", :keyfile => keyfile,
+                  :upload => { :src => path, :dest => file }
+                )
               end
             end
           end
