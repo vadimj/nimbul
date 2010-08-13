@@ -22,7 +22,7 @@ class RestoreLatestSnapshotMountType < RestoreSnapshotMountType
     end
     
     def self.cloud_resource_types
-        ['CloudVolume']
+        ['CloudSnapshot', 'CloudVolume']
     end
 
     def self.care_about_zone?
