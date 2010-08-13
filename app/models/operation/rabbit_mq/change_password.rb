@@ -55,8 +55,9 @@ class Operation::RabbitMq::ChangePassword < Operation::RabbitMq
         end
 
         success = (errors == :none)
+        Rails.logger.warn results.map { |id,results| "#{id}: #{results}" }.join("\n")
         self[:result_code] = success ? 'Success' : (errors == :partial ? 'Partial Failure' : 'Failure')
-        self[:result_message] = results.map { |id,result| "<div><h2>#{id}:</h2>#{results}<div>" }.join "<br />\n<hr>"
+        self[:result_message] = "see logs for more info..."
       else
         success = true
         self[:result_code] = 'Success'
