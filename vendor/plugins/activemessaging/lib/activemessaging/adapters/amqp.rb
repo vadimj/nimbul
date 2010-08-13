@@ -38,11 +38,11 @@ module ActiveMessaging
         
         def initialize config = {}
           @connect_options = {
-            :user  => config[:user]  || 'guest',
+            :user  => config[:user]  || 'nimbul',
             :pass  => config[:pass]  || 'guest',
             :host  => config[:host]  || 'localhost',
             :port  => config[:port]  || (config[:ssl] ? 5671 : 5672),
-            :vhost => config[:vhost] || nil,
+            :vhost => config[:vhost] || '/nimbul',
             :ssl   => config[:ssl]   || false,
             :ssl_verify => config[:ssl_verify] || OpenSSL::SSL::VERIFY_PEER,
           }
