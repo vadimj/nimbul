@@ -90,8 +90,7 @@ class DnsAdapter
       end
       
       unless account.nil?
-        # only bother with the IP (first column) and hostname in the second column - dump the rest
-        static_entries = static_dns_entries(account).collect{ |e| e.split(/\s+/)[0..1] }
+        static_entries = static_dns_entries(account).collect{ |e| [e.split(/\s+/)[0], e.split(/\s+/)[1..-1].join(" ") ] }
         
         leases[:__static__] = {
           :array => static_entries,
