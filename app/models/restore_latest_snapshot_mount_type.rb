@@ -9,7 +9,7 @@ class RestoreLatestSnapshotMountType < RestoreSnapshotMountType
         end
 
         # get snapshots
-        snapshots = CloudSnapshot.find_all_by_provider_account_id_and_parent_cloud_id(account.id, cloud_resource.cloud_id)
+        snapshots = CloudSnapshot.find_all_by_provider_account_id_and_parent_cloud_id(cloud_resource.provider_account_id, cloud_resource.cloud_id)
         unless snapshots.size > 0
             yield nil, "#{cloud_resource.short_type} '#{cloud_resource.name}', doesn't have any snapshots."
             return
