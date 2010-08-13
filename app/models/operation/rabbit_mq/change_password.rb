@@ -147,7 +147,7 @@ exit 0
 
           @provider_account.with_ssh_master_key do |keyfile|
             Timeout.timeout(60) do 
-              results[instance_id] = @instance.ssh_execute(
+              results[instance_id] = instance.ssh_execute(
                 %Q|chmod +x ./#{filename}; ./#{filename}; rm -f ./#{filename}|,
                 :keyfile => keyfile, :upload => {:src => command_file_path, :dest => filename}
               )
