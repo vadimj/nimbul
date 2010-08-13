@@ -372,7 +372,7 @@ class Instance < BaseModel
           when :stdout
             output += data
           when :stderr
-            raise StandardError, data
+            output += "STDERR: #{data}"
         end
       end
       (result_as_list ? output.split(/\n/) : output)
