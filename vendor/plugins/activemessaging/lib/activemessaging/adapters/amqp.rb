@@ -80,8 +80,19 @@ module ActiveMessaging
         end
         
         def receive
-          while true 
-            message = queue.pop(:ack => true)
+          loop do 
+            begin
+              message = queue.pop(:ack => true)
+            rescue SSLError
+              retry_attempts = retry_attempts.nil? ? 1 : retry_attempts + 1
+              sleep(retry_attempts * 0.25)
+              unless retry_attempts >= SERVER_RETRY_MAX_ATTEMPTS
+                @client = nil # force reconnect
+                retry
+              end
+              raise e
+            end
+            
             unless message.nil?
               message = AmqpMessage.decode(message).stamp_received! unless message.nil?
               message.delivery_tag = queue.delivery_tag
