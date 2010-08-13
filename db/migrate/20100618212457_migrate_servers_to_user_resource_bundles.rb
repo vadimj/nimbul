@@ -1,11 +1,35 @@
 class MigrateServersToUserResourceBundles < ActiveRecord::Migration
     def self.up
 		puts "Importing Addresses into CloudAddresses"
-		Address.all.each do |a|; CloudAddress.create_from(a); end
+		Address.all.each do |a|
+				begin
+						CloudAddress.create_from(a)
+				rescue Exception => e
+						# duplicate key errors aren't actually a problem even if they happen
+						raise e unless e.message =~ /duplicate.entry/i
+				end
+		end
+		
 		puts "Importing Volumes into CloudVolumes"
-		Volume.all.each do |v|; CloudVolume.create_from(v); end
+		Volume.all.each do |v|
+				begin
+						CloudVolume.create_from(v)
+				rescue Exception => e
+						# duplicate key errors aren't actually a problem even if they happen
+						raise e unless e.message =~ /duplicate.entry/i
+				end
+		end
+		
 		puts "Importing Snapshots into CloudSnapshots"
-		Snapshot.all.each do |s|; CloudSnapshot.create_from(s); end
+		Snapshot.all.each do |s|
+				begin
+						CloudSnapshot.create_from(s)
+				rescue Exception => e
+						# duplicate key errors aren't actually a problem even if they happen
+						raise e unless e.message =~ /duplicate.entry/i
+				end
+		end
+		
 		puts "Migrating Servers"
         Cluster.reset_column_information
         Cluster.find(:all, :include => [ :provider_account, :servers, :cloud_resources ], :order => 'name' ).each do |cluster|

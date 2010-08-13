@@ -11,6 +11,34 @@
 
 ActiveRecord::Schema.define(:version => 20100810205540) do
 
+  create_table "access_requests", :force => true do |t|
+    t.string   "state"
+    t.integer  "provider_account_id"
+    t.boolean  "admin_access"
+    t.integer  "requester_id"
+    t.integer  "approver_id"
+    t.text     "description"
+    t.string   "token"
+    t.datetime "sent_at"
+    t.datetime "approved_at"
+    t.datetime "rejected_at"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "access_requests", ["approver_id"], :name => "index_access_requests_on_approver_id"
+  add_index "access_requests", ["provider_account_id"], :name => "index_access_requests_on_provider_account_id"
+  add_index "access_requests", ["requester_id"], :name => "index_access_requests_on_requester_id"
+  add_index "access_requests", ["token"], :name => "index_access_requests_on_token"
+
+  create_table "access_requests_security_groups", :id => false, :force => true do |t|
+    t.integer "access_request_id"
+    t.integer "security_group_id"
+  end
+
+  add_index "access_requests_security_groups", ["access_request_id"], :name => "index_access_requests_security_groups_on_access_request_id"
+  add_index "access_requests_security_groups", ["security_group_id"], :name => "index_access_requests_security_groups_on_security_group_id"
+
   create_table "addresses", :force => true do |t|
     t.integer  "provider_account_id"
     t.string   "name"

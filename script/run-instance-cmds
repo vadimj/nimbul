@@ -130,25 +130,19 @@ begin
   ProviderAccount.find(:all, :include => { :clusters => {:servers => :instances } }).each do |pa|
     next if (ec2 = Ec2Adapter.get_ec2(pa)).nil? or pa.ssh_master_key.blank?
     
-    ids = Ec2Adapter.get_ec2(pa).describe_instances.select do |i| 
-      i[:groups].include? 'flock-managed' 
-    end.collect do |i|
-      i[:instances].select do |inst|
-        inst[:state] == 'running'
-      end.collect { |inst| inst[:id] }
-    end.flatten
-
-    next unless ids.size > 0
-    puts "Adding Tasks for Account: #{pa[:name]} - total tasks: #{ids.size}"
-
     # only bother with instances that actually have a server/cluster associated with them
-    instances = Instance.find_all_by_instance_id(
-      ids,
+    instances = Instance.all(
       :joins => [
         'INNER JOIN servers ON instances.server_id = servers.id',
-        'INNER JOIN clusters ON servers.cluster_id = clusters.id'
-      ]
-    )
+        'INNER JOIN clusters ON servers.cluster_id = clusters.id',
+        'INNER JOIN provider_accounts ON clusters.provider_account_id = provider_accounts.id'
+      ],
+      :include => :security_groups,
+      :conditions => { :provider_accounts => { :id => pa[:id] }, :instances => { :state => :running } }
+    ).select { |i| i.security_groups.any? { |sg| sg.name =~ /flock-managed/ } } 
+
+    next unless instances.size > 0
+    puts "Adding Tasks for Account: #{pa[:name]} - total tasks: #{instances.size}"
 
     instances.each do |instance|
       $manager.add_task do
@@ -162,9 +156,11 @@ begin
           generate_command_file(binding) do |path|
             file = File.basename(path)
             pa.with_ssh_master_key do |keyfile|
-              send_output = instance.send_file(path, file, :keyfile => keyfile)
               Timeout.timeout($options.timeout || 60) do 
-                command_output = instance.ssh_execute("./#{file}; rm -f ./#{file}", :keyfile => keyfile)
+                command_output = instance.ssh_execute(
+                  "chmod +x ./#{file}; ./#{file}; rm -f ./#{file}", :keyfile => keyfile,
+                  :upload => { :src => path, :dest => file }
+                )
               end
             end
           end
