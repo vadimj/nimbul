@@ -1,0 +1,98 @@
+
+Steps to bootstrap an AMQP server into your Nimbul Architecture:
+
+  A. Security Groups
+    1. Create a Security Group called AMQP
+    2. Create a series of firewall rules, one for each amazon account you have, like so:
+       Name: Allow ALL From flock-managed To AMQP
+       EC2 User Id: <amazon account id>
+       Group Name: flock-managed
+    3. NOTE: this assumes that you use 'flock-managed' as your Default Security group for nimbul
+       as defined on the Provider Account "Security" tab. If that's not the case, use whatever
+       you have defined in place of 'flock-managed'
+       
+  B. Provider Account Setup:
+  
+    1. Add the following entries to your Static DNS (DNS Tab):
+      <IP OF ALREADY RUNNING GEM REPOSITORY INSTANCE>     gems.ec2.nytimes.com
+  
+    2. On the Communications tab:
+      a. set the Messaging Server URI to: amqps://events.ec2.nytimes.com:443/nimbul
+      b. create an account publisher with the following information:
+         Type: LDNS
+         S3 Bucket Name: use whatever makes sense
+         S3 Object Name: NimbulHosts
+    
+  C. Server Page
+  
+    1. Create a new server profile called 'AMQP Events'
+      a. Set the ROLES variable to: emissary,rabbitmq-master
+      b. Set the NIMBUL_PASSWORD variable to the broker password defined in your config/broker.yml
+      c. Set a DNS name (e.g., events)
+      d. Add the AMQP security group under the networking tab
+
+  D. Services
+  
+    1. Go to https://nimbul.../service_types
+       a. Add Service Type with the following information:
+          Name: Events
+          FQDN: events.ec2.nytimes.com
+          Description: AMQP Events Service
+    2. Go to https://nimbul.../service_providers
+       a. Add a service provider with the following information:
+          Name: "Events:<Production or Development or Whatever>" (no quotes)
+          Service Type: Events
+          Server: Choose the name of the events server you created (e.g., AMQP Events)
+          Description: Optional
+    3. Go to https://nimbul.../service_overrides
+      a. Add a service override with the following information:
+         Service: Events
+         Provider: Events:<Production, Development or Whatever>
+         Target: 'EC2 Amazon'
+         Overridable: No (unless you want yes...)
+  
+  E. Bootstrapping AMQP Server
+    1. Before starting your new AMQP Events instance, do the following:
+       a. SSH into your Nimbul instance and change directory to the root of your nimbul install
+          run: script/console and enter the following
+               ProviderAccount.all.each dp |p|
+                  unless not p.messaging_password.blank?
+                    p.regenerate_messaging_password 
+                    p.save(false) # don't validate this time
+                  end
+                end
+                
+    2. Now return to your cluster containing your AMQP Events server and start an instance of the AMQP Events server
+    
+    3. Once the instance is in Running state (it won't reach ready
+       without some massaging - i.e., bootstrapping), do the following:
+          a. Find the Private IP of the now running AMQP Events Instance
+          b. Go to your Provider Account Page - DNS tab and add the following Static DNS Entry:
+             <IP of AMQP Events Instance>  events.ec2.nytimes.com
+          c. Force the LDNS to republish via the Provider Account Page - Communications Tab area
+             and then jot down the URL of your hosts file that is being published
+          c. SSH to your nimbul instance and perform the following
+               i. edit your /etc/cloudrc and set your HOSTS_FILE_URL variable to the URL you just grabbed in c.
+              ii. run the command: hostsfile_updater.sh
+             iii. verify that events.ec2.nytimes.com now shows up in your /etc/hosts file
+              iv. change directory to your nimbul root and run: ./restart
+          d. SSH to the AMQP Events instance that is running and perform the following:
+               i. type: emissary restart
+              ii. Now give it about 3 seconds and then verify that the instance is now
+                  showing up in "Ready" state in nimbul
+             iii. If it's not, see me.
+              iv. If it is, go to your provider accounts - dns page and remove the static entry for
+                  events.ec2.nytimes.com. You should notice that the Service Related DNS Records
+                  now shows a real IP address for the events.ec2.nytimes.com entry and not the
+                  bogus 256.0.0.0 entry.
+          e. Providing everything is kosher now, we need to perform one last step:
+               i. SSH back into your Nimbul instance and change to the root of your nimbul install
+              ii. run: script/console and enter the following
+                    ProviderAccount.all.each dp |p|
+                      p.send_messaging_credentials
+                    end
+  F. At this point, your Provider Accounts should all be configured to communicate with your
+     AMQP Events instance, and you should be fully bootstrapped.
+    
+  G. Have a Beer...              
+    
