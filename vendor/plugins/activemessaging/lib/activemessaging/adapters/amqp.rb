@@ -87,7 +87,7 @@ module ActiveMessaging
               retry_attempts = retry_attempts.nil? ? 1 : retry_attempts + 1
               sleep(retry_attempts * 0.25)
               unless retry_attempts >= SERVER_RETRY_MAX_ATTEMPTS
-                @client = nil # force reconnect
+                @client = @queue = nil # force reconnect
                 retry
               end
               raise e

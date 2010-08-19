@@ -40,7 +40,11 @@ agents = [ all ]
         ]
     }
     
-<% unless server.parameters['MYSQL_LOCK_PASS'].blank? %>
+<%
+#  disabling for now
+#  unless server.parameters['MYSQL_LOCK_PASS'].blank? 
+  if false 
+%>
     mysql = {
         lock_user = <%= lock_user %>
         lock_pass = <%= lock_pass %>
@@ -76,6 +80,7 @@ agents = [ all ]
             queue_base = info.stat.<%= request_path[0,3].join('.') -%>.__ID_INSTANCE_ID__:topic
         }
 
-        disable = [ ]
+        # no stats for the time being
+        disable = [ stats ]
     }
 
