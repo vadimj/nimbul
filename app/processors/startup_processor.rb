@@ -3,7 +3,7 @@ class StartupProcessor < ApplicationProcessor
   subscribes_to :startup, :routing_key => 'startup.#'
 
   def on_message(msg)
-    name, public_ip, local_ip, instance_id, server_id = message.args
+    name, public_ip, local_ip, server_id, cluster_id, account_id, instance_id, client_version = message.args
     
     return unless request_valid? server_id
 

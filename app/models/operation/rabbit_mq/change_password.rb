@@ -158,13 +158,16 @@ exit 0
         end
       rescue Timeout::Error
         results[instance_id] = 'ERROR: timed out...'
+        Rails.logger.warn "#{instance.server_name} - #{instance.instance_id}: timed out..."
       rescue Net::SSH::AuthenticationFailed
         results[instance_id] = 'ERROR: authentication failed...'
+        Rails.logger.warn "#{instance.server_name} - #{instance.instance_id}: authentication failure..."
       rescue Errno::EHOSTUNREACH
         results[instance_id] = 'ERROR: host unreachable...'
+        Rails.logger.warn "#{instance.server_name} - #{instance.instance_id}: Host unreachable..."
       rescue Exception => e
         results[instance_id] = "ERROR: #{e.class.name}: #{e.message} (for full details, see logs)"
-        Rails.logger.warn "#{e.class.name}: #{e.message}\n\t#{e.backtrace.join("\n\t")}"
+        Rails.logger.warn "ERROR: #{e.class.name}: #{e.message}\n\t#{e.backtrace.join("\n\t")}"
       end
     end
     results

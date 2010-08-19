@@ -39,6 +39,8 @@ class ApplicationProcessor < ActiveMessaging::Processor
       when stored_message.ok?
         @operation.proceed! if @operation.can_proceed?
     end
+  rescue Exception => e
+    Rails.logger.warn "Skipping message: #{message.inspect} due to exception: #{e.class.name}: #{e.message}\n\t#{e.backtrace.join("\n\t")}"
   end
   
   # Default on_error implementation - logs standard errors but keeps processing. Other exceptions are raised.
