@@ -83,7 +83,7 @@ module ActiveMessaging
           loop do 
             begin
               message = queue.pop(:ack => true)
-            rescue SSLError
+            rescue ::SSLError
               retry_attempts = retry_attempts.nil? ? 1 : retry_attempts + 1
               sleep(retry_attempts * 0.25)
               unless retry_attempts >= SERVER_RETRY_MAX_ATTEMPTS
