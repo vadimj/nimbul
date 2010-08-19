@@ -30,7 +30,7 @@ class Publisher::Serverscripts < Publisher
     end
 
     begin
-      S3Adapter.create_bucket(account, bucket) unless S3Adapter.bucket_exists?(account, bucket) 
+      S3Adapter.create_bucket(account, bucket)
       self.state = "success"
       self.state_text = "Successfully accessed bucket '#{bucket}'"
     rescue
