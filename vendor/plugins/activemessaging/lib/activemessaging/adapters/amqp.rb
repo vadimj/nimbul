@@ -7,6 +7,7 @@ require 'activemessaging/processor'
 require 'activemessaging/adapters/base'
 
 require 'emissary/message'
+require 'openssl'
 
 module ActiveMessaging
   class Processor
