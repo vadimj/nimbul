@@ -16,7 +16,7 @@ class StartupProcessor < ApplicationProcessor
     # we don't allow instances to migrate from server to server yet :)
     if instance.server_id.nil? or instance.server_id == 0
       instance.server_id = server_id
-      instance.server_name = server.nil? ? 'Unknown' : server.name
+      instance.server_name = Server.find(server_id).nil? ? 'Unknown' : Server.find(server_id).name
       instance.save
     end
 
