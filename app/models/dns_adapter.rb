@@ -37,11 +37,16 @@ class DnsAdapter
       ),
       :joins => [
         'INNER JOIN server_profile_revisions ON server_profile_revisions.id = servers.server_profile_revision_id',
-        'INNER JOIN server_profile_revision_parameters ON
+        'LEFT JOIN server_profile_revision_parameters ON
                 server_profile_revision_parameters.server_profile_revision_id = server_profile_revisions.id AND
                 server_profile_revision_parameters.name = "ROLES"',
       ],
       :order => 'dns_leases.dns_hostname_assignment_id ASC, dns_leases.idx'
+      # XXX: FIXME: Actually do something with 'only_active' - condition variable above
+      # XXX: FIXME: isn't even used (and shouldn't be!! - remove it!)
+      #
+      #:order => 'dns_leases.dns_hostname_assignment_id ASC, dns_leases.idx',
+      #:state => (!!only_active ? :inuse : :all)
     ).collect do |lease|
       lease[:state] = (lease[:state].to_i >= 1 ? DnsLease::ACTIVE : DnsLease::INACTIVE)
       unless lease[:state] == DnsLease::ACTIVE
