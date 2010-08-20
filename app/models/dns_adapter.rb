@@ -132,7 +132,7 @@ class DnsAdapter
         :public_ip    => lease[:instance_public_ip],
         :private_dns  => lease[:instance_private_dns],
         :private_ip   => lease[:instance_private_ip],
-        :nimbul_fqdn  => fqdn,
+        :nimbul_fqdn  => fqdn.gsub('_', '-'),
         :nimbul_host  => hostname,
         :base_name    => base_name
       }
