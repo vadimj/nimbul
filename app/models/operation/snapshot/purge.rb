@@ -13,7 +13,7 @@ class Operation::Snapshot::Purge < Operation
     5.minutes
   end
 
-  def operation_parameters
+  def operation_parameters()
     s = server
     keep_snapshots = s.get_server_parameter('KEEP_SNAPSHOTS')
     raise 'KEEP_SNAPSHOTS parameter must be set for this Server Profile and must be an Integer!' if keep_snapshots.blank? || (keep_snapshots.to_i == 0)
@@ -24,9 +24,9 @@ class Operation::Snapshot::Purge < Operation
 
   def steps()
     steps = super || []
-    keep_snapshots = operation_parameters[:keep_snapshots]
-
+    
     steps << Operation::Step.new('create_erb_snapshot') do
+      keep_snapshots = operation_parameters[:keep_snapshots]
       success = false
       #Find EBSes for this instance:
       volumes = CloudVolume.find_all_by_instance_id(instance.id)
