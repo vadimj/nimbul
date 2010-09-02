@@ -42,7 +42,7 @@ class Operation::Snapshot::Purge < Operation
           else
             snapshots = CloudSnapshot.find_all_by_provider_account_id_and_parent_cloud_id(volume.provider_account_id, volume.cloud_id, :order => 'start_time')
             # make sure we deal with completed snapshots only
-            snapshots.collect!{|a| a if a.status == 'completed'}.compact!
+            snapshots.collect!{|a| a if a.state == 'completed'}.compact!
             if snapshots.length <= keep_snapshots
               self[:result_code] = 'ClientError'
               self[:result_message] = "Not enough (#{snapshots.length}) complete snapshots to purge and keep #{keep_snapshots}."
