@@ -1,14 +1,14 @@
 class Operation::InstanceLifecycle::Terminate < Operation::InstanceLifecycle
-  def timeout
-    5.minutes
-  end
-
   def self.label
     'Terminate Instances'
   end
 
   def self.is_schedulable?
     true 
+  end
+
+  def timeout
+    5.minutes
   end
 
   def initialize_parameters

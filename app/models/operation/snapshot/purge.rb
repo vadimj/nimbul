@@ -1,18 +1,17 @@
 require "models/cloud_volume"
 
 class Operation::Snapshot::Purge < Operation
-
-  def timeout
-    5.minutes
-  end
-
   def self.label
     'Purge Snapshots'
   end
 
   def self.is_schedulable?
-    true 
+    true
   end  
+
+  def timeout
+    5.minutes
+  end
 
   def operation_parameters
     s = server
@@ -25,6 +24,7 @@ class Operation::Snapshot::Purge < Operation
 
   def steps()
     steps = super || []
+    keep_snapshots = operation_parameters[:keep_snapshots]
 
     steps << Operation::Step.new('create_erb_snapshot') do
       success = false
