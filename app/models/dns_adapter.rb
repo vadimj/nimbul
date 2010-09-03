@@ -69,7 +69,7 @@ class DnsAdapter
     static = []
     static |= provider.service_dns_records.try(:split, /\r*\n/).to_a 
     static |= provider.static_dns_records.try(:split, /\r*\n/).to_a
-    static.select { |v| v !~ /^\s*#/ }
+    static.select { |v| v !~ /^\s*(|#.*)$/ }
   end
 
   def self.as_json model, options = {}
