@@ -4,7 +4,7 @@ class Admin::StatesController < ApplicationController
 
   def update
     @user = User.find(params[:id])
-    if @user.update_attribute(:enabled, true)
+    if @user.enable!
       flash[:notice] = "User enabled."
     else
       flash[:error] = "There was a problem enabling this user."
@@ -19,7 +19,7 @@ class Admin::StatesController < ApplicationController
 
   def destroy
     @user = User.find(params[:id])
-    if @user.update_attribute(:enabled, false)
+    if @user.disable!
       flash[:notice] = "User disabled."
     else
       flash[:error] = "There was a problem disabling this user."

@@ -17,15 +17,17 @@ class UserObserver < ActiveRecord::Observer
 
 	def before_update(user)
 		@pubkey_changed = user.public_key_changed?
-		delete_pubkey_from_servers(user) if user.public_key_changed?
+		@enabled_changed = user.enabled_changed?
+		delete_pubkey_from_servers(user) if @pubkey_changed or ( @enabled_changed and not user.enabled? )
 	end
 
 	def after_update(user)
-		add_pubkey_to_servers(user) if @pubkey_changed and not user.public_key.blank?
+		add_pubkey_to_servers(user) if @pubkey_changed and not user.public_key.blank? and user.enabled?
 	end
 
 private
 	@pubkey_changed = false
+	@enabled_changed = false
 
 	def add_pubkey_to_servers(user)
 		suas = ServerUserAccess.find_all_by_user_id(user.id)
@@ -34,14 +36,22 @@ private
 				add_key(sua.server_id, user.id, sua.server_user)
 			end
 		end
+		servers = Server.find_all_by_user(user)
+		servers.each do |server|
+			add_key(server.id, user.id, 'root')
+		end
 	end
 
 	def delete_pubkey_from_servers(user)
 		suas = ServerUserAccess.find_all_by_user_id(user.id)
 		unless suas.nil?
 			suas.each do |sua|
-				add_key(sua.server_id, user.id, sua.server_user)
+				del_key(sua.server_id, user.id, sua.server_user)
 			end
+		end
+		servers = Server.find_all_by_user(user)
+		servers.each do |server|
+			del_key(server.id, user.id, 'root')
 		end
 	end
 
