@@ -22,7 +22,7 @@ class UserObserver < ActiveRecord::Observer
 	end
 
 	def after_update(user)
-		add_pubkey_to_servers(user) if @pubkey_changed and not user.public_key.blank? and user.enabled?
+		add_pubkey_to_servers(user) if (@pubkey_changed or @enabled_changed) and not user.public_key.blank? and user.enabled?
 	end
 
 private
