@@ -14,6 +14,7 @@ if [ $(gem sources | grep gems.github.com -c) -eq 0 ]; then
 fi
 
 #yum -y install mysql-shared
+gem update --system
 gem install -v=2.2.2 rails
 gem install gem_plugin
 gem install mongrel
