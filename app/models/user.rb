@@ -47,6 +47,14 @@ class User < BaseModel
 		options[:only] = (options[:only] || []) + default_only
 		super(options)
 	end
+	
+	def enable!
+		self.update_attribute(:enabled, true)
+	end
+	
+	def disable!
+		self.update_attribute(:enabled, false)
+	end
 
 	def has_access?(o)
 		send("has_#{ o.class.to_s.underscore }_access?", o)
