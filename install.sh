@@ -6,7 +6,7 @@
 export uninstall_if_exists=(json json_pure)
 
 export install_if_doesnt_exist=(gem_plugin mongrel system_timer cached_model rubyist-aasm\
- josevalim-rails-footnotes starling daemons ruby-openid facter work_queue carrot emissary)
+ josevalim-rails-footnotes starling daemons ruby-openid facter work_queue carrot emissary mysql)
 
 export install_flags="--no-ri --no-rdoc"
 
