@@ -3,6 +3,15 @@
 # $Id$
 #
 
+export uninstall_if_exists=(json json_pure)
+
+export install_if_doesnt_exist=(gem_plugin mongrel system_timer cached_model rubyist-aasm\
+ josevalim-rails-footnotes starling daemons ruby-openid facter work_queue carrot emissary)
+
+export install_flags="--no-ri --no-rdoc"
+
+export json_ver="1.2.0"
+
 if [ $UID -gt 0 -a $(uname | grep Darwin -c) -eq 0 ]; then
     echo 'You need to be root to run this script'
     exit 1
@@ -13,38 +22,30 @@ if [ $(gem sources | grep gems.github.com -c) -eq 0 ]; then
 	gem sources -a http://gems.github.com
 fi
 
-#yum -y install mysql-shared
 gem update --system
-gem install -v=2.2.2 rails
-gem install gem_plugin
-gem install mongrel
-# gem install mongrel_cluster
+gem install -v=2.2.2 rails $install_flags
 
-gem install system_timer
-gem install cached_model
-gem install rubyist-aasm
-gem install josevalim-rails-footnotes
-gem install starling
-gem install daemons
-gem install ruby-openid
+for lib in ${uninstall_if_exists[@]}; do
+  if [ X$(gem list --local $lib | grep $lib | awk {'print $1'}) == X$lib ]; then
+    echo "Uninstalling $lib"
+    yes | gem uninstall $lib
+  fi
+done
 
-#gem install passenger
-#passenger-install-apache2-module
+for lib in ${install_if_doesnt_exist[@]}; do
+  if [ $(gem list --local $lib | grep $lib -c) -le 0 ]; then
+    echo "Adding missing required library '${lib}' to list of gems to install"
+    install_list="$lib ${install_list}"
+  fi
+done
 
-gem install facter
-gem install work_queue
-gem install carrot 
-gem install emissary
+echo "Installing required libraries"
+if [ ! -z "$install_list" ]; then
+  yes | gem install $install_list $install_flags
+fi
 
-# messaging active messaging shows debugging output about 
-# these not being loading - they are not optional and not 
-# needed so don't worry about them.
-#gem install beanstalk-client reliable-msg stomp rubywmq
-
-# fixing incompatibility between latest json libraries and ActiveSupport in 2.2.2
-# http://groups.google.com/group/rubyonrails-core/browse_thread/thread/54e5453eaac6687b
-yes | gem uninstall json json_pure
-yes | gem install json json_pure --version=1.2.0
+echo "Installing version $json_ver of json and json_pure libraries" 
+yes | gem install json json_pure --version=$json_ver $install_flags
 
 echo "Enjoy"
 
