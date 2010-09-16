@@ -37,29 +37,12 @@ module ApplicationHelper
 			else
 				path << name
 			end
-			if object.respond_to? :server and !object.server.nil?
-				object = object.server
-                if parameters[:create_links]
-            		path << link_to(h(object.name), object)
-                else
-                    path << capitalize(h(object.name))
-                end
-			end
-			if object.respond_to? :cluster and !object.cluster.nil?
-				object = object.cluster
-                if parameters[:create_links]
-        			path << link_to(h(object.name), object)
-                else
-                    path << capitalize(h(object.name))
-                end
-			end
-			if object.respond_to? :provider_account and !object.provider_account.nil?
-				object = object.provider_account
-                if parameters[:create_links]
-        			path << link_to(h(object.name), object)
-                else
-                    path << capitalize(h(object.name))
-                end
+			parent_array(object).each do |p|
+	            if parameters[:create_links]
+	     			path << link_to(h(p.name), p)
+	            else
+	                path << capitalize(h(p.name))
+	            end
 			end
         else
 			path << capitalize(h(object.to_s))
@@ -67,6 +50,32 @@ module ApplicationHelper
 
         result = path.length > 0 ? path.reverse.join(separator) : '' 
         return result
+    end
+    
+    def parent_links(object, separator=': ')
+		path = []
+		parent_array(object).each do |p|
+			path << link_to(h(p.name), p)
+		end
+		result = path.length > 0 ? path.reverse.join(separator) : ''
+		return result
+    end
+    
+    def parent_array(object)
+		parents = []
+		if object.respond_to? :server and !object.server.nil?
+			object = object.server
+			parents << object
+		end
+		if object.respond_to? :cluster and !object.cluster.nil?
+			object = object.cluster
+			parents << object
+		end
+		if object.respond_to? :provider_account and !object.provider_account.nil?
+			object = object.provider_account
+			parents << object
+		end
+		return parents
     end
 
     def javascript(*files)

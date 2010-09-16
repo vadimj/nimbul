@@ -1,4 +1,3 @@
-
 class SecurityGroup < BaseModel
 	belongs_to :provider_account
 	validates_presence_of :name

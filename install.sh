@@ -7,16 +7,13 @@
 # settings
 #
 export uninstall_if_exists=(json json_pure)
-
 export install_if_doesnt_exist=(gem_plugin mongrel system_timer cached_model rubyist-aasm\
  josevalim-rails-footnotes starling daemons ruby-openid facter work_queue carrot emissary)
-
-export rails_ver=2.2.2
+export rails_ver='2.2.2'
 export install_flags="--no-ri --no-rdoc"
-
-export json_ver="1.2.0"
-
+export json_ver='1.2.0'
 export search_mysql_dirs=(/opt/local/lib/mysql5 /usr/local/mysql)
+export sysvipc_gem_ver='0.7'
 
 #
 # make sure we are root
@@ -90,6 +87,21 @@ if [ $(uname | grep Darwin -c) -eq 1 -a $(gem list --local $lib | awk {'print $1
     fi
 fi
 
+echo "Installing sysvipc version ${sysvipc_gem_ver} (later version won't work)"
+mkdir -p /tmp
+cd /tmp
+rm -rf sysvipc-${sysvipc_gem_ver}*
+wget --tries=5 http://rubyforge.org/frs/download.php/23172/sysvipc-${sysvipc_gem_ver}.tar.gz
+tar xzvf sysvipc-${sysvipc_gem_ver}.tar.gz
+cd sysvipc-${sysvipc_gem_ver}
+ruby extconf.rb
+if [ $(uname | grep Darwin -c) -eq 1 ]; then
+    echo "Patching Makefile to avoid weird 'error: redefinition of 'union semun'' issue"
+    perl -pi -e 's/^CPPFLAGS(.*)$/CPPFLAGS$1 -DHAVE_TYPE_UNION_SEMUN/g;' Makefile
+fi
+make ; make install
+cd /tmp
+rm -rf sysvipc-${sysvipc_gem_ver}*
 
 echo "Enjoy"
 

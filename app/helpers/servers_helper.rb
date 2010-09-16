@@ -7,7 +7,7 @@ module ServersHelper
 
 	# sorting helpers
 	def servers_sort_link(text, param)
-		sort_link(text, param, :servers, nil, :list)
+		sort_link(text, param, nil, nil, :list)
 	end
 
 	def security_group_server_link(security_group, server)
