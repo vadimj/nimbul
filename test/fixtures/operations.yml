@@ -2,14 +2,14 @@
 
 one:
   instance_id: 1
-  type: MyString
-  name: MyString
-  params: MyText
-  state: MyString
+  type: Operation
+  name: name1
+  args:
+  state: proceed
 
 two:
   instance_id: 1
-  type: MyString
-  name: MyString
-  params: MyText
-  state: MyString
+  type: Operation
+  name: name2
+  args:
+  state: proceed

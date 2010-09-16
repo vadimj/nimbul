@@ -1,15 +1,12 @@
 # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
 
 one:
-  id: 
-  dns_hostname_assignment_id: 
-  instance_id: 
-  state: 
-  index: 
+  dns_hostname_assignment_id: 1
+  instance_id: 2
+  idx: 0
 
 two:
   id: 
-  dns_hostname_assignment_id: 
-  instance_id: 
-  state: 
-  index: 
+  dns_hostname_assignment_id: 2
+  instance_id: 2
+  idx: 0
