@@ -137,16 +137,19 @@ module ActiveMessaging
         end
         
         def unsubscribe(queue_name, headers={}, subId=nil)
-          if @debug > 1
-            puts "Begin UNsubscribe Request:"
-            puts "    Queue Name: #{queue_name.inspect}"
-            puts "    Headers:    #{headers.inspect}"
-            puts "    subId:      #{subId.inspect}"
-            puts "End UNsubscribe Request."
+          # don't unbind subscriptions if we're not deleting the queue
+          unless not @queue_config[:auto_delete]
+            if @debug > 1
+              puts "Begin UNsubscribe Request:"
+              puts "    Queue Name: #{queue_name.inspect}"
+              puts "    Headers:    #{headers.inspect}"
+              puts "    subId:      #{subId.inspect}"
+              puts "End UNsubscribe Request."
+            end
+
+            routing_key = headers[:routing_key] || queue_name
+            queue.unbind(exchange(*exchange_info(headers)), :key => routing_key)
           end
-          
-          routing_key = headers[:routing_key] || queue_name
-          queue.unbind(exchange(*exchange_info(headers)), :key => routing_key)
         end
         
         def disconnect(headers={})
