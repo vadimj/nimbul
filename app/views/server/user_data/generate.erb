@@ -18,14 +18,14 @@ root_users = user_data.server.cluster.provider_account.users + user_data.server.
 root_users.each do |user|
     instance_user = 'root'
     instance_users[instance_user] = [] if instance_users[instance_user].nil?
-    instance_users[instance_user] << user unless user.public_key.blank?
+    instance_users[instance_user] << user unless user.public_key.blank? or user.public_key !~ /^ssh-/
 end
 
 user_data.server.server_user_accesses.each do |sua|
     user = sua.user
     instance_user = sua.server_user
     instance_users[instance_user] = [] if instance_users[instance_user].nil?
-    instance_users[instance_user] << user unless user.public_key.blank?
+    instance_users[instance_user] << user unless user.public_key.blank? or user.public_key !~ /^ssh-/
 end
 
 instance_users.each do |instance_user, users|
@@ -59,10 +59,17 @@ end
 <% account = user_data.server.cluster.provider_account -%>
 cat <<'EOL' > /etc/hosts
 127.0.0.1		localhost
-<%= DnsAdapter.get_host_entries(user_data.server.cluster.provider_account).join -%>
+<%= DnsAdapter.static_dns_entries(user_data.server.cluster.provider_account).join("\n") %>
 EOL
 
 <%= user_data.cloudrc %>
+
+# populate the hosts file by forcing an update
+# Note: this has to be done /after/ cloudrc is built
+if [ -x /root/bin/hostsfile_updater.sh ]; then
+  source /etc/cloudrc
+  /root/bin/hostsfile_updater.sh
+fi
 
 # Set the environment
 source /etc/bashrc
