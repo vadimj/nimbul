@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-LOOP_SLEEP_TIME = 30
+LOOP_SLEEP_TIME = 60
 
 require 'rubygems'
 

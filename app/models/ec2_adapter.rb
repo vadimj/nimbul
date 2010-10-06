@@ -17,31 +17,67 @@ class Ec2Adapter
       end
       
       # always refresh zones
-      refresh_zones(account)
+      begin
+        refresh_zones(account)
+      rescue Exception => e 
+        Rails.logger.error "#{e.class.name}: #{e.message}\n\t#{e.backtrace.join("\n\t")}"
+      end
       
       # always refresh key pairs
-      refresh_key_pairs(account)
+      begin
+        refresh_key_pairs(account)
+      rescue Exception => e 
+        Rails.logger.error "#{e.class.name}: #{e.message}\n\t#{e.backtrace.join("\n\t")}"
+      end
 
       if resources.nil? or resources == 'server_images' 
+        begin
           refresh_server_images(account)
+        rescue Exception => e 
+          Rails.logger.error "#{e.class.name}: #{e.message}\n\t#{e.backtrace.join("\n\t")}"
+        end
       end
       if resources.nil? or resources == 'security_groups' or resources == 'instances' 
+        begin
           refresh_security_groups(account)
+        rescue Exception => e 
+          Rails.logger.error "#{e.class.name}: #{e.message}\n\t#{e.backtrace.join("\n\t")}"
+        end
       end
       if resources.nil? or resources == 'instances'
+        begin
           refresh_instances(account)
+        rescue Exception => e 
+          Rails.logger.error "#{e.class.name}: #{e.message}\n\t#{e.backtrace.join("\n\t")}"
+        end
       end
       if resources.nil? or resources == 'volumes'
+        begin
           refresh_volumes(account)
+        rescue Exception => e 
+          Rails.logger.error "#{e.class.name}: #{e.message}\n\t#{e.backtrace.join("\n\t")}"
+        end
       end
       if resources.nil? or resources == 'snapshots'
+        begin
           refresh_snapshots(account)
+        rescue Exception => e 
+          Rails.logger.error "#{e.class.name}: #{e.message}\n\t#{e.backtrace.join("\n\t")}"
+        end
       end
       if resources.nil? or resources == 'addresses' 
+        begin
           refresh_addresses(account)
+        rescue Exception => e 
+          Rails.logger.error "#{e.class.name}: #{e.message}\n\t#{e.backtrace.join("\n\t")}"
+        end
       end
       if resources.nil? or resources == 'reserved_instances'
+        begin
           refresh_reserved_instances(account)
+        rescue Exception => e 
+          Rails.logger.error "#{e.class.name}: #{e.message}\n\t#{e.backtrace.join("\n\t")}"
+        end
       end
     end
 
