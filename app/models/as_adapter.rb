@@ -47,13 +47,27 @@ class AsAdapter
         end
       
         if resources.nil? or resources == 'load_balancers'
+          begin
             refresh_load_balancers(account)
+          rescue Exception => e
+            Rails.logger.error "#{e.class.name}: #{e.message}\n\t#{e.backtrace.join("\n\t")}"
+          end
+          
         end
         if resources.nil? or resources == 'launch_configurations' or resources == 'auto_scaling_groups'
+          begin
             refresh_launch_configurations(account)
+          rescue Exception => e
+            Rails.logger.error "#{e.class.name}: #{e.message}\n\t#{e.backtrace.join("\n\t")}"
+          end
         end
+
         if resources.nil? or resources == 'auto_scaling_groups' or resources == 'auto_scaling_triggers'
+          begin
             refresh_auto_scaling_groups(account)
+          rescue Exception => e
+            Rails.logger.error "#{e.class.name}: #{e.message}\n\t#{e.backtrace.join("\n\t")}"
+          end
         end
     end
 

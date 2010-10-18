@@ -1,7 +1,7 @@
 class StatsAdapter
     def self.refresh_account(provider_account)
         # collect this 5 minutes stats (if they haven't been collected already)
-		now = Time.now
+    		now = Time.now
         this_period = Time.at((now.to_f / 5.minutes).floor * 5.minutes)
         stat_record = StatRecord.find(:first, :conditions => [
                 'provider_account_id=:provider_account_id AND taken_at=:taken_at',
@@ -42,5 +42,7 @@ class StatsAdapter
                 instance_allocation_record.save 
             end
         end
+    rescue Exception => e
+      Rails.logger.error "#{e.class.name}: #{e.message}\n\t#{e.backtrace.join("\n\t")}"
     end
 end
