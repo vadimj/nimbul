@@ -182,3 +182,26 @@ img {
 .publisher-state-text-toggle {
   text-decoration: none;
 }
+
+.scrollable { 
+    overflow-x:scroll;  
+    overflow-y:visible;
+}
+
+.headcol {
+    position:absolute; 
+/*
+    width:5em; 
+    left:0; top:auto;
+    border-right: 0px none black; 
+    border-top: 3px solid grey; 
+    margin-top:-3px; padding-right:4px;}
+    .headcol:before {content: 'Row ';
+*/
+}
+
+.long {
+    min-width:100em;
+    background:yellow;
+    text-align:center;
+}

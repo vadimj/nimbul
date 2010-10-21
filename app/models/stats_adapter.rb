@@ -1,8 +1,8 @@
 class StatsAdapter
-    def self.refresh_account(provider_account)
+    def self.refresh_account(provider_account, period=5.minutes)
         # collect this 5 minutes stats (if they haven't been collected already)
     		now = Time.now
-        this_period = Time.at((now.to_f / 5.minutes).floor * 5.minutes)
+        this_period = Time.at((now.to_f / period).floor * period)
         stat_record = StatRecord.find(:first, :conditions => [
                 'provider_account_id=:provider_account_id AND taken_at=:taken_at',
                 { :provider_account_id => 1, :taken_at => this_period.utc }

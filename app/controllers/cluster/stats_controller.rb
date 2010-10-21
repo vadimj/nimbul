@@ -8,18 +8,30 @@ class Cluster::StatsController < ApplicationController
         @provider_account = ProviderAccount.find(@cluster.provider_account_id, :include => [ :clusters, :reserved_instances, :zones ])
         @zones = @provider_account.zones
         @reserved_instances = @provider_account.reserved_instances
-
+        
         @cluster_names = ( @cluster.name )
-        @latest_stat_record = StatRecord.find_by_provider_account_id(@cluster.provider_account_id, :order => 'taken_at DESC', :include => :instance_allocation_records)
+        @cluster_names << ''
+        @latest_stat_record = StatRecord.find_by_provider_account_id(@provider_account.id, :order => 'taken_at DESC', :include => :instance_allocation_records)
         @zone_type_stats = Hash.new()
-        @latest_stat_record.instance_allocation_records.each do |iar|
-            next unless iar.cluster_id == @cluster.id
-            @zone_type_stats[iar.zone] = Hash.new unless @zone_type_stats[iar.zone]
-            @zone_type_stats[iar.zone].store(iar.instance_type, Hash.new) unless @zone_type_stats[iar.zone][iar.instance_type]
-            current_value = @zone_type_stats[iar.zone][iar.instance_type]['Total'] || 0
-            @zone_type_stats[iar.zone].fetch(iar.instance_type).store('Total', current_value + iar.running.to_i)
-            current_cluster_value =  @zone_type_stats[iar.zone][iar.instance_type][iar.cluster_name] || 0
-            @zone_type_stats[iar.zone].fetch(iar.instance_type).store(iar.cluster_name, current_cluster_value + iar.running.to_i)
+
+        # make sure reserved instances show up in the Allocation Table
+        @reserved_instances.each do |ri|
+            @zone_type_stats[ri.zone_id] = Hash.new  unless @zone_type_stats[ri.zone_id]
+            @zone_type_stats[ri.zone_id].store(ri.instance_type, Hash.new) unless @zone_type_stats[ri.zone_id][ri.instance_type]
+            @zone_type_stats[ri.zone_id].fetch(ri.instance_type).store('Total', 0)
+        end
+
+        # build Allocation Table
+        unless @latest_stat_record.nil?
+            @latest_stat_record.instance_allocation_records.each do |iar|
+	            next unless iar.cluster_id == @cluster.id
+                @zone_type_stats[iar.zone_id] = Hash.new unless @zone_type_stats[iar.zone_id]
+                @zone_type_stats[iar.zone_id].store(iar.instance_type, Hash.new) unless @zone_type_stats[iar.zone_id][iar.instance_type]
+                current_value = @zone_type_stats[iar.zone_id][iar.instance_type]['Total'] || 0
+                @zone_type_stats[iar.zone_id].fetch(iar.instance_type).store('Total', current_value + iar.running.to_i)
+                current_cluster_value =  @zone_type_stats[iar.zone_id][iar.instance_type][iar.cluster_name] || 0
+                @zone_type_stats[iar.zone_id].fetch(iar.instance_type).store(iar.cluster_name, current_cluster_value + iar.running.to_i)
+            end
         end
 
         respond_to do |format|
