@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101026152648) do
+ActiveRecord::Schema.define(:version => 20100916204439) do
 
   create_table "addresses", :force => true do |t|
     t.integer  "provider_account_id"
@@ -190,9 +190,11 @@ ActiveRecord::Schema.define(:version => 20101026152648) do
     t.datetime "updated_at"
     t.integer  "provider_account_id"
     t.integer  "servers_count",       :default => 0
+    t.string   "state",               :default => "active"
   end
 
   add_index "clusters", ["provider_account_id"], :name => "index_clusters_on_provider_account_id"
+  add_index "clusters", ["state"], :name => "index_clusters_on_state"
 
   create_table "clusters_users", :id => false, :force => true do |t|
     t.integer "cluster_id"

@@ -1,4 +1,5 @@
 class Cluster < BaseModel
+  include AASM
 	behavior :service
   
 	service_parent_relationship :provider_account
@@ -23,6 +24,15 @@ class Cluster < BaseModel
 	after_update :save_cluster_parameters
 	attr_accessor :should_destroy
 	
+  aasm_column :state
+  aasm_initial_state :active
+
+  aasm_state :active
+  aasm_state :maintenance, :enter => :initiate_maintenance
+
+  aasm_event :activate do transitions :from => [ :active, :maintenance ], :to => :active; end
+  aasm_event :maintain do transitions :from => :active, :to => :maintenance; end
+
 	include TrackChanges # must follow any before filters
 
 	def zones

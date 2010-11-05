@@ -6,6 +6,11 @@
             <th><%= f.label :provider_account_id, "Choose an Account" %></th>
             <td><%= f.collection_select :provider_account_id, @provider_accounts, :id, :name, :prompt => "Choose One" %></td>
         </tr>
+    <% else %>
+        <tr>
+            <th>Provider Account</th>
+            <td><%= h @cluster.provider_account.name %></td>
+        </tr>
     <% end %>
     <tr>
         <th><%= f.label :name, "Cluster Name" %> <small>(e.g. 'Corporate Web Site')</small></th>
@@ -17,10 +22,11 @@
     </tr>
     <% unless @cluster.new_record? %>
         <tr>
-            <th>Provider Account</th>
-            <td><%= h @cluster.provider_account.name %></td>
+          <th><%= f.label :state, "Maintenance Mode" %><br /><small>(removes ALL hosts from nagios list <br />if in maintenance mode)</small></th>
+          <td><%= f.check_box :state, {}, 'maintenance', 'active' %></td>
         </tr>
     <% end %>
+    
 </table>
 <% if @cluster.new_record? %>
     <%= submit_tag 'Create Cluster', :disable_with => "Creating&hellip;" %>
