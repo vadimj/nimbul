@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100916204439) do
+ActiveRecord::Schema.define(:version => 20101026152648) do
 
   create_table "addresses", :force => true do |t|
     t.integer  "provider_account_id"
@@ -203,6 +203,16 @@ ActiveRecord::Schema.define(:version => 20100916204439) do
 
   add_index "clusters_users", ["cluster_id"], :name => "index_clusters_users_on_cluster_id"
   add_index "clusters_users", ["user_id"], :name => "index_clusters_users_on_user_id"
+
+  create_table "code_audits", :force => true do |t|
+    t.string   "svn_module"
+    t.string   "svn_release"
+    t.string   "run_by_user"
+    t.integer  "pass"
+    t.datetime "timestamp"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "dns_hostname_assignments", :force => true do |t|
     t.integer  "dns_hostname_id", :null => false

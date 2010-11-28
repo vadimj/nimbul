@@ -1,4 +1,6 @@
 ActionController::Routing::Routes.draw do |map|
+  map.resources :code_audits
+
 	map.resources :dashboard, :only => [ :index ]
 	map.resources :providers do |provider|
 		provider.resources :regions, :controller => 'provider/regions',
