@@ -1,0 +1,17 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  instance_type_category_id: 1
+  code_name: MyString
+  name: MyString
+  description: MyText
+  is_default: false
+  position: 1
+
+two:
+  instance_type_category_id: 1
+  code_name: MyString
+  name: MyString
+  description: MyText
+  is_default: false
+  position: 1

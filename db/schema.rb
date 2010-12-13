@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101213035823) do
+ActiveRecord::Schema.define(:version => 20101213044655) do
 
   create_table "addresses", :force => true do |t|
     t.integer  "provider_account_id"
@@ -394,6 +394,17 @@ ActiveRecord::Schema.define(:version => 20101213035823) do
 
   add_index "instance_allocation_records", ["stat_record_id"], :name => "index_iars_on_srids"
   add_index "instance_allocation_records", ["zone_id"], :name => "index_instance_allocation_records_on_zone_id"
+
+  create_table "instance_kinds", :force => true do |t|
+    t.integer  "instance_type_category_id"
+    t.string   "code_name"
+    t.string   "name"
+    t.text     "description"
+    t.boolean  "is_default"
+    t.integer  "position"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "instance_list_readers", :force => true do |t|
     t.integer  "provider_account_id"

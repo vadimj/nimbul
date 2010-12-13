@@ -1,4 +1,7 @@
 class OperatingSystemsController < ApplicationController
+    before_filter :login_required
+    require_role  :admin
+
   # GET /operating_systems
   # GET /operating_systems.xml
   def index

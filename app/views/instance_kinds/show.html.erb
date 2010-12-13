@@ -1,0 +1,33 @@
+<p>
+  <b>Instance type category:</b>
+  <%=h @instance_kind.instance_type_category_id %>
+</p>
+
+<p>
+  <b>Code name:</b>
+  <%=h @instance_kind.code_name %>
+</p>
+
+<p>
+  <b>Name:</b>
+  <%=h @instance_kind.name %>
+</p>
+
+<p>
+  <b>Description:</b>
+  <%=h @instance_kind.description %>
+</p>
+
+<p>
+  <b>Is default:</b>
+  <%=h @instance_kind.is_default %>
+</p>
+
+<p>
+  <b>Position:</b>
+  <%=h @instance_kind.position %>
+</p>
+
+
+<%= link_to 'Edit', edit_instance_kind_path(@instance_kind) %> |
+<%= link_to 'Back', instance_kinds_path %>

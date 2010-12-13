@@ -1,4 +1,6 @@
 ActionController::Routing::Routes.draw do |map|
+  map.resources :instance_kinds
+
   map.resources :operating_systems
 
   map.resources :instance_type_categories

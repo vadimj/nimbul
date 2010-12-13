@@ -1,0 +1,26 @@
+  <%= f.error_messages %>
+
+  <p>
+    <%= f.label :instance_type_category_id %><br />
+    <% if @instance_kind.new_record? %>
+        <%= f.collection_select :instance_type_category_id, InstanceTypeCategory.find(:all), :id, :name, { :prompt => false } %>
+    <% else %>
+        <%= h(@instance_kind.instance_type_category.name) %>
+    <% end %>
+  </p>
+  <p>
+    <%= f.label :code_name %><br />
+    <%= f.text_field :code_name %>
+  </p>
+  <p>
+    <%= f.label :name %><br />
+    <%= f.text_field :name %>
+  </p>
+  <p>
+    <%= f.label :description %><br />
+    <%= f.text_area :description %>
+  </p>
+  <p>
+    <%= f.label :is_default %><br />
+    <%= f.check_box :is_default %>
+  </p>
