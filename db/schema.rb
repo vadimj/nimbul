@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101026152648) do
+ActiveRecord::Schema.define(:version => 20101213035823) do
 
   create_table "addresses", :force => true do |t|
     t.integer  "provider_account_id"
@@ -428,6 +428,15 @@ ActiveRecord::Schema.define(:version => 20101026152648) do
   add_index "instance_resources", ["cloud_resource_id"], :name => "index_instance_resources_on_cloud_resource_id"
   add_index "instance_resources", ["instance_id", "type"], :name => "index_instance_resources_on_instance_id_and_type"
 
+  create_table "instance_type_categories", :force => true do |t|
+    t.integer  "provider_id"
+    t.string   "name"
+    t.text     "description"
+    t.integer  "position"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "instances", :force => true do |t|
     t.string   "instance_id"
     t.integer  "provider_account_id"
@@ -633,6 +642,15 @@ ActiveRecord::Schema.define(:version => 20101026152648) do
     t.string  "salt",       :null => false
   end
 
+  create_table "operating_systems", :force => true do |t|
+    t.integer  "provider_id"
+    t.string   "name"
+    t.string   "description"
+    t.integer  "position"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "operation_logs", :force => true do |t|
     t.integer  "operation_id"
     t.string   "step_name"
@@ -734,6 +752,14 @@ ActiveRecord::Schema.define(:version => 20101026152648) do
 
   add_index "provider_accounts_users", ["provider_account_id"], :name => "index_provider_accounts_users_on_provider_account_id"
   add_index "provider_accounts_users", ["user_id"], :name => "index_provider_accounts_users_on_user_id"
+
+  create_table "provider_os_types", :force => true do |t|
+    t.integer  "provider_id"
+    t.string   "name"
+    t.text     "description"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "providers", :force => true do |t|
     t.string   "name"
@@ -1092,6 +1118,20 @@ ActiveRecord::Schema.define(:version => 20101026152648) do
   end
 
   add_index "stat_records", ["provider_account_id", "taken_at"], :name => "index_stat_records_on_provider_account_id_and_taken_at"
+
+  create_table "taggings", :force => true do |t|
+    t.integer  "tag_id"
+    t.integer  "taggable_id"
+    t.string   "taggable_type"
+    t.datetime "created_at"
+  end
+
+  add_index "taggings", ["tag_id"], :name => "index_taggings_on_tag_id"
+  add_index "taggings", ["taggable_id", "taggable_type"], :name => "index_taggings_on_taggable_id_and_taggable_type"
+
+  create_table "tags", :force => true do |t|
+    t.string "name"
+  end
 
   create_table "task_parameters", :force => true do |t|
     t.integer  "task_id"

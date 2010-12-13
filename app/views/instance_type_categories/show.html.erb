@@ -1,0 +1,23 @@
+<p>
+  <b>Provider:</b>
+  <%=h @instance_type_category.provider_id %>
+</p>
+
+<p>
+  <b>Name:</b>
+  <%=h @instance_type_category.name %>
+</p>
+
+<p>
+  <b>Description:</b>
+  <%=h @instance_type_category.description %>
+</p>
+
+<p>
+  <b>Position:</b>
+  <%=h @instance_type_category.position %>
+</p>
+
+
+<%= link_to 'Edit', edit_instance_type_category_path(@instance_type_category) %> |
+<%= link_to 'Back', instance_type_categories_path %>

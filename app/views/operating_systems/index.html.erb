@@ -1,0 +1,26 @@
+<h1>Listing operating_systems</h1>
+
+<table>
+  <tr>
+    <th>Provider</th>
+    <th>Name</th>
+    <th>Description</th>
+    <th>Position</th>
+  </tr>
+
+<% for operating_system in @operating_systems %>
+  <tr>
+    <td><%=h operating_system.provider_id %></td>
+    <td><%=h operating_system.name %></td>
+    <td><%=h operating_system.description %></td>
+    <td><%=h operating_system.position %></td>
+    <td><%= link_to 'Show', operating_system %></td>
+    <td><%= link_to 'Edit', edit_operating_system_path(operating_system) %></td>
+    <td><%= link_to 'Destroy', operating_system, :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New operating_system', new_operating_system_path %>
