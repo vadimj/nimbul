@@ -2,12 +2,13 @@
 <div id="providers">
 <table>
     <tr>
-        <th><%= select_all_check_box 'select_all' %></th>
         <th>Name</th>
+        <th>Long Name</th>
+        <th>Description</th>
+        <th>Main URL</th>
+        <th>API Doc URL</th>
         <th>State</th>
-        <th>PID</th>
-        <th>Last Log Entry</th>
-        <th>Runtime</th>
+        <th>Adapter Class</th>
     </tr>
     <tbody id="provider_records">
         <%= render :partial => "provider", :collection => @providers %>

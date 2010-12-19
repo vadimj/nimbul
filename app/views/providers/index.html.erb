@@ -1,31 +1,5 @@
-<% subtitle 'Providers' %>
+<% subtitle 'Available Cloud Providers' %>
 
-<h1>Providers</h1>
-
-<br />
-
-<% remote_form_for :providers, :url => { :action => 'control' } do |f| %>
-<%= render :partial => "list", :locals => { :f => f }  %>
-
-<%= refresh_link image_tag("refresh.png", :align => "absmiddle", :alt => "Refresh"), 'providers', nil, :list %>
-
-<%= image_submit_tag "start.png", :align => "absmiddle",
-    :alt => "Start", :title => "Start Selected Providers",
-    :onclick => '$(this).next(".command").value="start";',
-    :name => 'start'
-%>
-
-<%= image_submit_tag "reboot.png", :align => "absmiddle",
-    :alt => "Restart", :title => "Restart Selected Providers",
-    :onclick => '$(this).next(".command").value="restart";',
-    :name => 'restart'
-%>
-
-<%= image_submit_tag "stop.png", :align => "absmiddle",
-    :alt => "Stop", :title => "Stop Selected Providers",
-    :onclick => 'if (confirm("Are you sure?")) { $(this).next(".command").value="stop"; } else { return false; }',
-    :name => 'stop'
-%>
-
-<%= hidden_field_tag :command, '', :class => :command %>
-<% end %>
+<h1><%= link_to 'Admin Controls', admin_controls_path %> / Available Cloud Providers</h1>
+<br/>
+<%= render :partial => "list" %>

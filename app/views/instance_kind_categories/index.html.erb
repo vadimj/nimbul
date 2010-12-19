@@ -1,26 +1,31 @@
-<h1>Listing instance_kind_categories</h1>
+<% subtitle 'Available Instance Types' %>
 
-<table>
-  <tr>
-    <th>Provider</th>
-    <th>Name</th>
-    <th>Description</th>
-    <th>Position</th>
-  </tr>
-
+<h1><%= link_to 'Admin Controls', admin_controls_path %> / Available Instance Types</h1>
+<br/>
 <% for instance_kind_category in @instance_kind_categories %>
-  <tr>
-    <td><%=h instance_kind_category.provider_id %></td>
-    <td><%=h instance_kind_category.name %></td>
-    <td><%=h instance_kind_category.description %></td>
-    <td><%=h instance_kind_category.position %></td>
-    <td><%= link_to 'Show', instance_kind_category %></td>
-    <td><%= link_to 'Edit', edit_instance_kind_category_path(instance_kind_category) %></td>
-    <td><%= link_to 'Destroy', instance_kind_category, :confirm => 'Are you sure?', :method => :delete %></td>
-  </tr>
+  <b><%=h instance_kind_category.name %></b>
+  <%= link_to 'show', instance_kind_category %> |
+  <%= link_to 'edit', edit_instance_kind_category_path(instance_kind_category) %> |
+  <%= link_to 'destroy', instance_kind_category, :confirm => 'Are you sure?', :method => :delete %>
+  <ul>
+    <%=h instance_kind_category.description %><br/><br/>
+    <% for instance_kind in instance_kind_category.instance_kinds %>
+    <b><%=h instance_kind.name %></b><% if instance_kind.is_default? -%> - default<% end -%>
+    <%= link_to 'show', instance_kind %> |
+    <%= link_to 'edit', edit_instance_kind_path(instance_kind) %> |
+    <%= link_to 'destroy', instance_kind, :confirm => 'Are you sure?', :method => :delete %>
+    <br/>
+    <ul>
+<%= instance_kind_ram(instance_kind) %> memory<br/>
+<%=h instance_kind.cpu_cores*instance_kind.cpu_units %> EC2 Compute Unit
+(<%=h instance_kind.cpu_cores %> virtual core with <%=h instance_kind.cpu_units %> EC2 Compute Unit)<br/>
+<%=h instance_kind.storage_gb %> GB instance storage<br/>
+<%=h instance_kind.platform_bit %>-bit platform<br/>
+I/O Performance: <%=h instance_kind.io_performance %><br/>
+API name: <%=h instance_kind.api_name %>
+    </ul>
+    <% end %>
+  </ul>
 <% end %>
-</table>
 
-<br />
-
-<%= link_to 'New instance_kind_category', new_instance_kind_category_path %>
+<%= link_to 'New Instance Category', new_instance_kind_category_path %>

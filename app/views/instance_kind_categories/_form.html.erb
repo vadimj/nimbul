@@ -1,0 +1,16 @@
+<% semantic_form_for @instance_kind_category do |f| %>
+  <%= f.error_messages %>
+  <% f.inputs do %>
+    <%= f.input :provider, :hint => 'Choose an existing Provider' %>
+    <%= f.input :name, :hint => 'Name the category, for example, Standard Instances' %>
+    <%= f.input :description,
+      :input_html => { :class => 'autogrow', :warp => 'soft', :size => '40x2' },
+      :required => false
+    %>
+  <% end %>
+  <% f.buttons do %>
+    <%= f.submit %>
+    <%= submit_tag 'Cancel', :name => 'cancel_button' %>
+  <% end %>
+<% end %>
+

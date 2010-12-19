@@ -155,6 +155,8 @@ Rails::Initializer.run do |config|
     SERVER_VOLUME_MOUNT_TYPES_ARRAY = [ 'Mount Volume Mount Type', 'Restore Snapshot Mount Type', 'Restore Latest Snapshot Mount Type' ]
 	SERVER_VOLUME_MOUNT_TYPES = SERVER_VOLUME_MOUNT_TYPES_ARRAY.map{ |t| LabelValue.new(t.gsub('Mount Type',''), t.gsub(' ','')) }
 
+  INSTANCE_KIND_IO_PERFORMANCES = [ 'Low', 'Moderate', 'High' ]
+
   PKI_CONSOLE_ID = 'console'
 
   PKI_CONSOLE_BASE  = RAILS_ROOT + '/pki'

@@ -2,7 +2,7 @@
 
 one:
   instance_type_category_id: 1
-  code_name: MyString
+  api_name: MyString
   name: MyString
   description: MyText
   is_default: false
@@ -10,7 +10,7 @@ one:
 
 two:
   instance_type_category_id: 1
-  code_name: MyString
+  api_name: MyString
   name: MyString
   description: MyText
   is_default: false

@@ -1,26 +1,20 @@
-  <%= f.error_messages %>
+<%= f.error_messages %>
 
-  <p>
-    <%= f.label :instance_type_category_id %><br />
-    <% if @instance_kind.new_record? %>
-        <%= f.collection_select :instance_type_category_id, InstanceTypeCategory.find(:all), :id, :name, { :prompt => false } %>
-    <% else %>
-        <%= h(@instance_kind.instance_type_category.name) %>
-    <% end %>
-  </p>
-  <p>
-    <%= f.label :code_name %><br />
-    <%= f.text_field :code_name %>
-  </p>
-  <p>
-    <%= f.label :name %><br />
-    <%= f.text_field :name %>
-  </p>
-  <p>
-    <%= f.label :description %><br />
-    <%= f.text_area :description %>
-  </p>
-  <p>
-    <%= f.label :is_default %><br />
-    <%= f.check_box :is_default %>
-  </p>
+<br/>
+
+<%= f.label :instance_kind_category_id %>: 
+  <%= f.collection_select :instance_kind_category_id, InstanceKindCategory.find(:all), :id, :name, { :prompt => false } %>
+<br/>
+<br/><b><%= f.text_field :name %></b> - <%= f.label :is_default %>: <%= f.check_box :is_default %>
+<br/><br/>
+<ul>
+  <%= f.text_field :ram_mb, :class => 'short' %> <%= f.label :ram_mb, 'MB memory' %><br/>
+  <%= f.text_field :cpu_cores, :class => 'tiny' %> <%= f.label :cpu_cores, 'virtual core(s)' %> with 
+  <%= f.text_field :cpu_units, :class => 'tiny' %> <%= f.label :cpu_units, 'Compute Unit(s)' %><br/>
+  <%= f.text_field :storage_gb, :class => 'short' %> <%= f.label :storage_gb, 'GB instance storage' %><br/>
+  <%= f.text_field :platform_bit, :class => 'tiny' %><%= f.label :platform_bit, '-bit platform' %><br/>
+  <%= f.label :io_performance, 'I/O Performance' %>: <%= f.select :io_performance, INSTANCE_KIND_IO_PERFORMANCES %><br/>
+  <%= f.label :api_name, 'API name' %>: <%= f.text_field :api_name %><br/>
+  <%= f.label :description %><br />
+  <%= f.text_area :description %>
+</ul>

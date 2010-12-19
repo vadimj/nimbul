@@ -1,27 +1,11 @@
-<h1>New instance_kind_category</h1>
+<% subtitle "New Instance Category" %>
 
-<% form_for(@instance_kind_category) do |f| %>
-  <%= f.error_messages %>
+<h1>
+  <%= link_to 'Admin Controls', admin_controls_path %>
+  / <%= link_to 'Available Instance Types', instance_kind_categories_path %>
+  / New Instance Category
+</h1>
 
-  <p>
-    <%= f.label :provider_id %><br />
-    <%= f.text_field :provider_id %>
-  </p>
-  <p>
-    <%= f.label :name %><br />
-    <%= f.text_field :name %>
-  </p>
-  <p>
-    <%= f.label :description %><br />
-    <%= f.text_field :description %>
-  </p>
-  <p>
-    <%= f.label :position %><br />
-    <%= f.text_field :position %>
-  </p>
-  <p>
-    <%= f.submit "Create" %>
-  </p>
-<% end %>
+<br/>
 
-<%= link_to 'Back', instance_kind_categories_path %>
+<%= render :partial => 'form' %>

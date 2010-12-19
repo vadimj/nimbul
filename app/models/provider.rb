@@ -12,6 +12,6 @@ class Provider < BaseModel
 #        :on => :create
     has_many :regions, :dependent => :destroy
     has_many :provider_accounts
-    has_many :instance_type_categories
-    has_many :operating_systems
+    has_many :operating_systems, :dependent => :destroy
+    has_many :instance_kind_categories, :dependent => :destroy
 end

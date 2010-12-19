@@ -17,11 +17,10 @@
     <li><%= link_to "Daemons (#{@daemons})", daemons_path %></li>
     <li><%= link_to "Incoming Messages (#{@in_messages})", in_messages_path %></li>
     <li><%= link_to "Outgoing Messages (#{@out_messages})", out_messages_path %></li>
-    <!--li><%= link_to "Cloud Providers", providers_path %></li-->
     <li><%= link_to "Logged Exceptions (#{@exceptions})", logged_exceptions_path %></li>
 </ul>
 <ul>
-    <li><%= link_to "Operating Systems", operating_systems_path %></li>
-    <li><%= link_to "Categories of Instances", instance_kinds_categories_path %></li>
-    <li><%= link_to "Types Of Instances", instance_kinds_path %></li>
+    <li><%= link_to "Available Cloud Providers", providers_path %></li>
+    <li><%= link_to "Available Operating Systems", operating_systems_path %></li>
+    <li><%= link_to "Available Instance Types", instance_kind_categories_path %></li>
 </ul>

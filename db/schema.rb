@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101219004941) do
+ActiveRecord::Schema.define(:version => 20101219022410) do
 
   create_table "addresses", :force => true do |t|
     t.integer  "provider_account_id"
@@ -398,21 +398,27 @@ ActiveRecord::Schema.define(:version => 20101219004941) do
   create_table "instance_kind_categories", :force => true do |t|
     t.integer  "provider_id"
     t.string   "name"
-    t.string   "description"
+    t.text     "description"
     t.integer  "position"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
   create_table "instance_kinds", :force => true do |t|
-    t.integer  "instance_type_category_id"
-    t.string   "code_name"
+    t.integer  "instance_kind_category_id"
+    t.string   "api_name"
     t.string   "name"
     t.text     "description"
     t.boolean  "is_default"
     t.integer  "position"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "ram_mb",                    :default => 0
+    t.integer  "cpu_cores",                 :default => 0
+    t.integer  "cpu_units",                 :default => 0
+    t.integer  "storage_gb",                :default => 0
+    t.string   "io_performance"
+    t.integer  "platform_bit",              :default => 32
   end
 
   create_table "instance_list_readers", :force => true do |t|

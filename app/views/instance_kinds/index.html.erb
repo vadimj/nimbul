@@ -12,8 +12,8 @@
 
 <% for instance_kind in @instance_kinds %>
   <tr>
-    <td><%=h instance_kind.instance_type_category_id %></td>
-    <td><%=h instance_kind.code_name %></td>
+    <td><%=h instance_kind.instance_kind_category_id %></td>
+    <td><%=h instance_kind.api_name %></td>
     <td><%=h instance_kind.name %></td>
     <td><%=h instance_kind.description %></td>
     <td><%=h instance_kind.is_default %></td>

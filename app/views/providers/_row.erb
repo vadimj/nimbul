@@ -1,6 +1,7 @@
-	<td class="select-handle"><%= selectable_check_box_tag "provider_ids[]", provider.id, false %></td>
     <td><%=h provider.name.titleize %></td>
+    <td><%=h provider.long_name.titleize %></td>
+    <td><%=h provider.description %></td>
+    <td><a href="<%=h provider.main_documentation_url %>" target=blank><%=h provider.main_documentation_url %></td>
+    <td><a href="<%=h provider.api_documentation_url %>" target=blank><%=h provider.api_documentation_url %></td>
     <td class="<%= provider.state %>"><%=h provider.state %></td>
-    <td><%=h provider.pid %></td>
-    <td><%= time_ago provider.last_ran_at %></td>
-    <td><%= provider.started_at.nil? ? '' : time_ago_in_words(provider.started_at) %></td>
+    <td><%=h provider.adapter_class %></td>
