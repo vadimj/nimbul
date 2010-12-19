@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101213044655) do
+ActiveRecord::Schema.define(:version => 20101219004941) do
 
   create_table "addresses", :force => true do |t|
     t.integer  "provider_account_id"
@@ -395,6 +395,15 @@ ActiveRecord::Schema.define(:version => 20101213044655) do
   add_index "instance_allocation_records", ["stat_record_id"], :name => "index_iars_on_srids"
   add_index "instance_allocation_records", ["zone_id"], :name => "index_instance_allocation_records_on_zone_id"
 
+  create_table "instance_kind_categories", :force => true do |t|
+    t.integer  "provider_id"
+    t.string   "name"
+    t.string   "description"
+    t.integer  "position"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "instance_kinds", :force => true do |t|
     t.integer  "instance_type_category_id"
     t.string   "code_name"
@@ -438,15 +447,6 @@ ActiveRecord::Schema.define(:version => 20101213044655) do
 
   add_index "instance_resources", ["cloud_resource_id"], :name => "index_instance_resources_on_cloud_resource_id"
   add_index "instance_resources", ["instance_id", "type"], :name => "index_instance_resources_on_instance_id_and_type"
-
-  create_table "instance_type_categories", :force => true do |t|
-    t.integer  "provider_id"
-    t.string   "name"
-    t.text     "description"
-    t.integer  "position"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
 
   create_table "instances", :force => true do |t|
     t.string   "instance_id"

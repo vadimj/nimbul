@@ -1,7 +1,7 @@
 class CreateInstanceKinds < ActiveRecord::Migration
   def self.up
     create_table :instance_kinds do |t|
-      t.integer :instance_type_category_id
+      t.integer :instance_kind_category_id
       t.string :code_name
       t.string :name
       t.text :description

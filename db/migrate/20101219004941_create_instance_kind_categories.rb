@@ -1,6 +1,6 @@
-class CreateInstanceTypeCategories < ActiveRecord::Migration
+class CreateInstanceKindCategories < ActiveRecord::Migration
   def self.up
-    create_table :instance_type_categories do |t|
+    create_table :instance_kind_categories do |t|
       t.integer :provider_id
       t.string :name
       t.string :description
@@ -11,6 +11,6 @@ class CreateInstanceTypeCategories < ActiveRecord::Migration
   end
 
   def self.down
-    drop_table :instance_type_categories
+    drop_table :instance_kind_categories
   end
 end

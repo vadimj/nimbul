@@ -1,9 +1,9 @@
 ActionController::Routing::Routes.draw do |map|
+  map.resources :instance_kind_categories
+
   map.resources :instance_kinds
 
   map.resources :operating_systems
-
-  map.resources :instance_type_categories
 
 	map.resources :dashboard, :only => [ :index ]
 	map.resources :providers do |provider|

@@ -1,0 +1,28 @@
+<h1>Editing instance_kind_category</h1>
+
+<% form_for(@instance_kind_category) do |f| %>
+  <%= f.error_messages %>
+
+  <p>
+    <%= f.label :provider_id %><br />
+    <%= f.text_field :provider_id %>
+  </p>
+  <p>
+    <%= f.label :name %><br />
+    <%= f.text_field :name %>
+  </p>
+  <p>
+    <%= f.label :description %><br />
+    <%= f.text_field :description %>
+  </p>
+  <p>
+    <%= f.label :position %><br />
+    <%= f.text_field :position %>
+  </p>
+  <p>
+    <%= f.submit "Update" %>
+  </p>
+<% end %>
+
+<%= link_to 'Show', @instance_kind_category %> |
+<%= link_to 'Back', instance_kind_categories_path %>
