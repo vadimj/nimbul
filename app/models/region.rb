@@ -1,4 +1,3 @@
-
 class Region < BaseModel
     belongs_to :provider
     has_many :zones

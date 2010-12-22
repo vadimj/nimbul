@@ -1,4 +1,6 @@
 ActionController::Routing::Routes.draw do |map|
+  map.resources :regions
+
   map.resources :instance_kind_categories
 
   map.resources :instance_kinds
