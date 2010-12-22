@@ -1,0 +1,38 @@
+<p>
+  <b>Name:</b>
+  <%=h @provider.name %>
+</p>
+
+<p>
+  <b>Long name:</b>
+  <%=h @provider.long_name %>
+</p>
+
+<p>
+  <b>Description:</b>
+  <%=h @provider.description %>
+</p>
+
+<p>
+  <b>Main documentation url:</b>
+  <%=h @provider.main_documentation_url %>
+</p>
+
+<p>
+  <b>Api documentation url:</b>
+  <%=h @provider.api_documentation_url %>
+</p>
+
+<p>
+  <b>State:</b>
+  <%=h @provider.state %>
+</p>
+
+<p>
+  <b>Adapter class:</b>
+  <%=h @provider.adapter_class %>
+</p>
+
+
+<%= link_to 'Edit', edit_provider_path(@provider) %> |
+<%= link_to 'Back', providers_path %>

@@ -1,4 +1,3 @@
-
 class Provider < BaseModel
     behavior :service
     
@@ -13,5 +12,5 @@ class Provider < BaseModel
     has_many :regions, :dependent => :destroy
     has_many :provider_accounts, :dependent => :nullify
     has_many :operating_systems, :dependent => :destroy
-    has_many :instance_kind_categories, :dependent => :destroy
+    has_many :instance_kind_categories, :dependent => :destroy, :include => :instance_kinds, :order => :position
 end

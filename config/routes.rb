@@ -1,4 +1,6 @@
 ActionController::Routing::Routes.draw do |map|
+  map.resources :providers
+
   map.resources :regions
 
   map.resources :instance_kind_categories
@@ -14,6 +16,7 @@ ActionController::Routing::Routes.draw do |map|
 		provider.resources :services, :controller => 'parent/services',
 			:collection => { :list => :any },
 			:only => [ :index, :list, :new, :create, :destroy ]
+		provider.resources :instance_kind_categories, :controller => 'instance_kind_categories'
 	end
 	map.resources :regions do |region|
 		region.resources :zones, :controller => 'region/zones',

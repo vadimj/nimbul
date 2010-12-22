@@ -4,9 +4,8 @@
 <br/>
 <% for instance_kind_category in @instance_kind_categories %>
   <b><%=h instance_kind_category.name %></b>
-  <%= link_to 'show', instance_kind_category %> |
-  <%= link_to 'edit', edit_instance_kind_category_path(instance_kind_category) %> |
-  <%= link_to 'destroy', instance_kind_category, :confirm => 'Are you sure?', :method => :delete %>
+  <%= link_to 'edit', send("edit_#{ @parent_type }_instance_kind_category_path", @parent, instance_kind_category) %> |
+  <%= link_to 'destroy', send("#{ @parent_type }_instance_kind_category_path", @parent, instance_kind_category), :confirm => 'Are you sure?', :method => :delete %>
   <ul>
     <%=h instance_kind_category.description %><br/><br/>
     <% for instance_kind in instance_kind_category.instance_kinds %>
@@ -28,4 +27,4 @@ API name: <%=h instance_kind.api_name %>
   </ul>
 <% end %>
 
-<%= link_to 'New Instance Category', new_instance_kind_category_path %>
+<%= link_to 'New Instance Category', send("new_#{ @parent_type }_instance_kind_category_path", @parent) %>
