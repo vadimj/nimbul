@@ -4,8 +4,8 @@ class Provider < BaseModel
     service_parent_relationship :none
     service_child_relationship  :provider_accounts
     
-    validates_presence_of :name, :endpoint_url
-    validates_uniqueness_of :name
+    validates_presence_of :name, :long_name, :adapter_class
+    validates_uniqueness_of :name, :long_name
 #    validates_uri_existence_of :endpoint_url, :with =>
 #        /(^$)|(^(http|https):\/\/[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(([0-9]{1,5})?\/.*)?$)/ix,
 #        :on => :create

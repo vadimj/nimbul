@@ -1,40 +1,11 @@
-<h1>Editing provider</h1>
+<% subtitle "Edit Cloud Provider" %>
 
-<% form_for(@provider) do |f| %>
-  <%= f.error_messages %>
+<h1>
+  <%= link_to 'Admin Controls', admin_controls_path %>
+  / <%= link_to 'Available Cloud Providers', providers_path %>
+  / Edit Cloud Provider
+</h1>
 
-  <p>
-    <%= f.label :name %><br />
-    <%= f.text_field :name %>
-  </p>
-  <p>
-    <%= f.label :long_name %><br />
-    <%= f.text_field :long_name %>
-  </p>
-  <p>
-    <%= f.label :description %><br />
-    <%= f.text_area :description %>
-  </p>
-  <p>
-    <%= f.label :main_documentation_url %><br />
-    <%= f.text_field :main_documentation_url %>
-  </p>
-  <p>
-    <%= f.label :api_documentation_url %><br />
-    <%= f.text_field :api_documentation_url %>
-  </p>
-  <p>
-    <%= f.label :state %><br />
-    <%= f.text_field :state %>
-  </p>
-  <p>
-    <%= f.label :adapter_class %><br />
-    <%= f.text_field :adapter_class %>
-  </p>
-  <p>
-    <%= f.submit "Update" %>
-  </p>
-<% end %>
+<br/>
 
-<%= link_to 'Show', @provider %> |
-<%= link_to 'Back', providers_path %>
+<%= render :partial => 'form' %>

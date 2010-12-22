@@ -1,7 +1,10 @@
-<p>
-  <b>Name:</b>
-  <%=h @provider.name %>
-</p>
+<% subtitle "Cloud Providers: #{@provider.name}" %>
+
+<h1>
+  <%= link_to 'Admin Controls', admin_controls_path %>
+  / <%= link_to 'Available Cloud Providers', providers_path %>
+  / <%= edit_in_place(@provider, :name, :class => 'editable provider-1-editable') %>
+</h1>
 
 <p>
   <b>Long name:</b>
@@ -32,7 +35,3 @@
   <b>Adapter class:</b>
   <%=h @provider.adapter_class %>
 </p>
-
-
-<%= link_to 'Edit', edit_provider_path(@provider) %> |
-<%= link_to 'Back', providers_path %>

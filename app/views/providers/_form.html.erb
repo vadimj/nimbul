@@ -1,0 +1,24 @@
+<% semantic_form_for @provider do |f| %>
+  <%= f.error_messages %>
+  <% f.inputs do %>
+    <%= f.input :name, :hint => 'Name the Provider, for example, Amazon EC2' %>
+    <%= f.input :long_name, :hint => 'Long name, for example, Amazon Elastic Compute Cloud' %>
+    <%= f.input :adapter_class, :hint => 'Adapter Class, for example, Ec2Adapter' %>
+    <%= f.input :description,
+      :input_html => { :class => 'autogrow', :warp => 'soft', :size => '40x2' },
+      :required => false
+    %>
+    <%= f.input :main_documentation_url,
+      :hint => 'Main documentation, for example, http://aws.amazon.com/ec2/',
+      :required => false
+    %>
+    <%= f.input :api_documentation_url,
+      :hint => 'API documentation, for example, http://aws.amazon.com/documentation/ec2/',
+      :required => false
+    %>
+  <% end %>
+  <% f.buttons do %>
+    <%= f.submit %>
+    <%= submit_tag 'Cancel', :name => 'cancel_button' %>
+  <% end %>
+<% end %>

@@ -5,7 +5,7 @@ class ProvidersController < ApplicationController
   # GET /providers
   # GET /providers.xml
   def index
-    @providers = Provider.find(:all)
+    @providers = Provider.find(:all, :order => 'name')
 
     respond_to do |format|
       format.html # index.html.erb
@@ -43,16 +43,23 @@ class ProvidersController < ApplicationController
   # POST /providers
   # POST /providers.xml
   def create
-    @provider = Provider.new(params[:provider])
+    options = {}
+    redirect_url = providers_url
 
-    respond_to do |format|
-      if @provider.save
-        flash[:notice] = 'Provider was successfully created.'
-        format.html { redirect_to(@provider) }
-        format.xml  { render :xml => @provider, :status => :created, :location => @provider }
-      else
-        format.html { render :action => "new" }
-        format.xml  { render :xml => @provider.errors, :status => :unprocessable_entity }
+    if params[:cancel_button]
+      redirect_to redirect_url
+    else
+      @provider = Provider.new(params[:provider])
+
+      respond_to do |format|
+        if @provider.save
+          flash[:notice] = 'Provider was successfully created.'
+          format.html { redirect_to redirect_url }
+          format.xml  { render :xml => @provider, :status => :created, :location => @provider }
+        else
+          format.html { render :action => "new" }
+          format.xml  { render :xml => @provider.errors, :status => :unprocessable_entity }
+        end
       end
     end
   end
@@ -60,16 +67,25 @@ class ProvidersController < ApplicationController
   # PUT /providers/1
   # PUT /providers/1.xml
   def update
-    @provider = Provider.find(params[:id])
+    options = {}
+    redirect_url = providers_url
 
-    respond_to do |format|
-      if @provider.update_attributes(params[:provider])
-        flash[:notice] = 'Provider was successfully updated.'
-        format.html { redirect_to(@provider) }
-        format.xml  { head :ok }
-      else
-        format.html { render :action => "edit" }
-        format.xml  { render :xml => @provider.errors, :status => :unprocessable_entity }
+    if params[:cancel_button]
+      redirect_to redirect_url
+    else
+      @provider = Provider.find(params[:id])
+
+      respond_to do |format|
+        if @provider.update_attributes(params[:provider])
+          flash[:notice] = 'Provider was successfully updated.'
+          format.html { redirect_to redirect_url }
+          format.xml  { head :ok }
+          format.json { render :json => @provider }
+        else
+          format.html { render :action => "edit" }
+          format.xml  { render :xml => @provider.errors, :status => :unprocessable_entity }
+          format.json { render :json => @provider }
+        end
       end
     end
   end

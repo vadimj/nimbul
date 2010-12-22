@@ -1,32 +1,28 @@
-<h1>Listing providers</h1>
+<% subtitle 'Available Cloud Providers' %>
+
+<h1><%= link_to 'Admin Controls', admin_controls_path %> / Available Cloud Providers</h1>
+<br/>
 
 <table>
   <tr>
     <th>Name</th>
     <th>Long name</th>
-    <th>Description</th>
     <th>Main documentation url</th>
-    <th>Api documentation url</th>
     <th>State</th>
     <th>Adapter class</th>
   </tr>
 
 <% for provider in @providers %>
   <tr>
-    <td><%=h provider.name %></td>
+    <td><%= link_to h(provider.name), provider %></td>
     <td><%=h provider.long_name %></td>
-    <td><%=h provider.description %></td>
     <td><%=h provider.main_documentation_url %></td>
-    <td><%=h provider.api_documentation_url %></td>
-    <td><%=h provider.state %></td>
+    <td class="<%=h provider.state %>"><%=h provider.state %></td>
     <td><%=h provider.adapter_class %></td>
-    <td><%= link_to 'Show', provider %></td>
-    <td><%= link_to 'Edit', edit_provider_path(provider) %></td>
-    <td><%= link_to 'Destroy', provider, :confirm => 'Are you sure?', :method => :delete %></td>
   </tr>
 <% end %>
 </table>
 
 <br />
 
-<%= link_to 'New provider', new_provider_path %>
+<%= link_to 'New Cloud Provider', new_provider_path %>
