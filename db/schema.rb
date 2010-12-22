@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101219022410) do
+ActiveRecord::Schema.define(:version => 20101222030407) do
 
   create_table "addresses", :force => true do |t|
     t.integer  "provider_account_id"
@@ -827,6 +827,7 @@ ActiveRecord::Schema.define(:version => 20101219022410) do
     t.text     "meta_data"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "short_name"
   end
 
   add_index "regions", ["name"], :name => "index_regions_on_name"
