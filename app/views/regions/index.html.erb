@@ -1,4 +1,7 @@
-<h1>Listing regions</h1>
+<% subtitle 'Available Regions' %>
+
+<h1><%= link_to 'Admin Controls', admin_controls_path %> / Available Regions</h1>
+<br/>
 
 <table>
   <tr>
@@ -8,18 +11,16 @@
     <th>Description</th>
     <th>Endpoint url</th>
     <th>State</th>
-    <th>Meta data</th>
   </tr>
 
 <% for region in @regions %>
   <tr>
-    <td><%=h region.provider_id %></td>
+    <td><%=h region.provider.name %></td>
     <td><%=h region.name %></td>
     <td><%=h region.short_name %></td>
     <td><%=h region.description %></td>
     <td><%=h region.endpoint_url %></td>
     <td><%=h region.state %></td>
-    <td><%=h region.meta_data %></td>
     <td><%= link_to 'Show', region %></td>
     <td><%= link_to 'Edit', edit_region_path(region) %></td>
     <td><%= link_to 'Destroy', region, :confirm => 'Are you sure?', :method => :delete %></td>
@@ -29,4 +30,4 @@
 
 <br />
 
-<%= link_to 'New region', new_region_path %>
+<%= link_to 'Add Region', new_region_path %>

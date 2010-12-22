@@ -1,39 +1,11 @@
-<h1>New region</h1>
+<% subtitle "New Region" %>
 
-<% form_for(@region) do |f| %>
-  <%= f.error_messages %>
+<h1>
+  <%= link_to 'Admin Controls', admin_controls_path %>
+  / <%= link_to 'Available Regions', regions_path %>
+  / New Region
+</h1>
 
-  <p>
-    <%= f.label :provider_id %><br />
-    <%= f.text_field :provider_id %>
-  </p>
-  <p>
-    <%= f.label :name %><br />
-    <%= f.text_field :name %>
-  </p>
-  <p>
-    <%= f.label :short_name %><br />
-    <%= f.text_field :short_name %>
-  </p>
-  <p>
-    <%= f.label :description %><br />
-    <%= f.text_area :description %>
-  </p>
-  <p>
-    <%= f.label :endpoint_url %><br />
-    <%= f.text_field :endpoint_url %>
-  </p>
-  <p>
-    <%= f.label :state %><br />
-    <%= f.text_field :state %>
-  </p>
-  <p>
-    <%= f.label :meta_data %><br />
-    <%= f.text_area :meta_data %>
-  </p>
-  <p>
-    <%= f.submit "Create" %>
-  </p>
-<% end %>
+<br/>
 
-<%= link_to 'Back', regions_path %>
+<%= render :partial => 'form' %>

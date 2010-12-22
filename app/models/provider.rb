@@ -11,7 +11,7 @@ class Provider < BaseModel
 #        /(^$)|(^(http|https):\/\/[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(([0-9]{1,5})?\/.*)?$)/ix,
 #        :on => :create
     has_many :regions, :dependent => :destroy
-    has_many :provider_accounts
+    has_many :provider_accounts, :dependent => :nullify
     has_many :operating_systems, :dependent => :destroy
     has_many :instance_kind_categories, :dependent => :destroy
 end
