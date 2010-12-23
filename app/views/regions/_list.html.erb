@@ -1,0 +1,24 @@
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Short name</th>
+    <th>Description</th>
+    <th>Endpoint url</th>
+    <th>State</th>
+  </tr>
+
+<% for region in @regions %>
+  <tr>
+    <td><%=h region.name %></td>
+    <td><%=h region.short_name %></td>
+    <td><%=h region.description %></td>
+    <td><%=h region.endpoint_url %></td>
+    <td class="<%=h region.state %>"><%=h region.state %></td>
+    <td><%= link_to 'Edit', send("edit_#{ @parent_type }_region_path", @parent, region) %></td>
+    <td><%= link_to 'Destroy', send("#{ @parent_type }_region_path", @parent, region), :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<%= link_to 'Add Region', send("new_#{ @parent_type }_region_path", @parent) %>
+<br/><br/>

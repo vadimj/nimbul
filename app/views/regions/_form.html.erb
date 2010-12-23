@@ -1,7 +1,6 @@
-<% semantic_form_for @region do |f| %>
+<% semantic_form_for [@parent, @region] do |f| %>
   <%= f.error_messages %>
   <% f.inputs do %>
-    <%= f.input :provider, :hint => 'Choose an existing Provider' %>
     <%= f.input :name, :hint => 'API name of the Region, for example, us-east-1' %>
     <%= f.input :short_name, :hint => 'Short name of the Region, for example, US - N. Virginia' %>
     <%= f.input :description,

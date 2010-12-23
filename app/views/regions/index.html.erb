@@ -3,31 +3,4 @@
 <h1><%= link_to 'Admin Controls', admin_controls_path %> / Available Regions</h1>
 <br/>
 
-<table>
-  <tr>
-    <th>Provider</th>
-    <th>Name</th>
-    <th>Short name</th>
-    <th>Description</th>
-    <th>Endpoint url</th>
-    <th>State</th>
-  </tr>
-
-<% for region in @regions %>
-  <tr>
-    <td><%=h region.provider.name %></td>
-    <td><%=h region.name %></td>
-    <td><%=h region.short_name %></td>
-    <td><%=h region.description %></td>
-    <td><%=h region.endpoint_url %></td>
-    <td><%=h region.state %></td>
-    <td><%= link_to 'Show', region %></td>
-    <td><%= link_to 'Edit', edit_region_path(region) %></td>
-    <td><%= link_to 'Destroy', region, :confirm => 'Are you sure?', :method => :delete %></td>
-  </tr>
-<% end %>
-</table>
-
-<br />
-
-<%= link_to 'Add Region', new_region_path %>
+<%= render :partial => 'list' %>

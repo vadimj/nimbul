@@ -6,32 +6,61 @@
   / <%= edit_in_place(@provider, :name, :class => 'editable provider-1-editable') %>
 </h1>
 
-<p>
-  <b>Long name:</b>
-  <%=h @provider.long_name %>
-</p>
+<br/>
 
-<p>
-  <b>Description:</b>
-  <%=h @provider.description %>
-</p>
+<h1>State</h1>
+<hr>
+<table border="1">
+  <tr>
+    <th>State</th>
+    <th>Adapter</th>
+  </tr>
+  <tr>
+    <td class="<%=h @provider.state %>"><%=h @provider.state %></td>
+    <td><%= edit_in_place(@provider, :adapter_class, :class => 'editable provider-1-editable') %></td>
+  </tr>
+</table>
 
-<p>
-  <b>Main documentation url:</b>
-  <%=h @provider.main_documentation_url %>
-</p>
+<h1>
+<%= expand_provider_objects_link(@provider, :general_settings) -%>
+<%= compress_provider_objects_link(@provider, :general_settings) -%>
+General Settings</h1>
+<hr>
+<div id="<%= provider_objects_id(@provider, :general_settings) %>" style="display:none;">
+  <p>
+    <b>Long name:</b>
+    <%= edit_in_place(@provider, :long_name, :class => 'editable provider-1-editable') %>
+  </p>
+  
+  <p>
+    <b>Description:</b>
+    <%= edit_in_place(@provider, :description, :class => 'editable provider-1-editable') %>
+  </p>
+  
+  <p>
+    <b>Main documentation url:</b>
+    <%= edit_in_place(@provider, :main_documentation_url, :class => 'editable provider-1-editable') %>
+  </p>
+  
+  <p>
+    <b>Api documentation url:</b>
+    <%= edit_in_place(@provider, :api_documentation_url, :class => 'editable provider-1-editable') %>
+  </p>
+<br/>
+</div>
 
-<p>
-  <b>Api documentation url:</b>
-  <%=h @provider.api_documentation_url %>
-</p>
+<h1>
+<%= expand_provider_objects_link(@provider, :regions) -%>
+<%= compress_provider_objects_link(@provider, :regions) -%>
+Regions
+</h1>
+<hr>
+<div id="<%= provider_objects_id(@provider, :regions) %>"></div>
 
-<p>
-  <b>State:</b>
-  <%=h @provider.state %>
-</p>
+<h1>Instance Types</h1>
+<hr>
+<div id="provider-<%= @provider.id %>-instance_types"></div>
 
-<p>
-  <b>Adapter class:</b>
-  <%=h @provider.adapter_class %>
-</p>
+<h1>Operating Systems</h1>
+<hr>
+<div id="provider-<%= @provider.id %>-operating_systems"></div>
