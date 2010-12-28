@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101222210343) do
+ActiveRecord::Schema.define(:version => 20101224025244) do
 
   create_table "addresses", :force => true do |t|
     t.integer  "provider_account_id"
@@ -204,6 +204,16 @@ ActiveRecord::Schema.define(:version => 20101222210343) do
   add_index "clusters_users", ["cluster_id"], :name => "index_clusters_users_on_cluster_id"
   add_index "clusters_users", ["user_id"], :name => "index_clusters_users_on_user_id"
 
+  create_table "code_audits", :force => true do |t|
+    t.string   "svn_module"
+    t.string   "svn_release"
+    t.string   "run_by_user"
+    t.integer  "pass"
+    t.datetime "timestamp"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "dns_hostname_assignments", :force => true do |t|
     t.integer  "dns_hostname_id", :null => false
     t.integer  "server_id",       :null => false
@@ -396,7 +406,7 @@ ActiveRecord::Schema.define(:version => 20101222210343) do
 
   create_table "instance_kinds", :force => true do |t|
     t.integer  "instance_kind_category_id"
-    t.string   "code_name"
+    t.string   "api_name"
     t.string   "name"
     t.text     "description"
     t.boolean  "is_default"
@@ -409,6 +419,7 @@ ActiveRecord::Schema.define(:version => 20101222210343) do
     t.integer  "storage_gb",                :default => 0
     t.string   "io_performance"
     t.integer  "platform_bit",              :default => 32
+    t.integer  "provider_id"
   end
 
   create_table "instance_list_readers", :force => true do |t|
@@ -443,15 +454,6 @@ ActiveRecord::Schema.define(:version => 20101222210343) do
 
   add_index "instance_resources", ["cloud_resource_id"], :name => "index_instance_resources_on_cloud_resource_id"
   add_index "instance_resources", ["instance_id", "type"], :name => "index_instance_resources_on_instance_id_and_type"
-
-  create_table "instance_type_categories", :force => true do |t|
-    t.integer  "provider_id"
-    t.string   "name"
-    t.text     "description"
-    t.integer  "position"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
 
   create_table "instances", :force => true do |t|
     t.string   "instance_id"
@@ -769,6 +771,14 @@ ActiveRecord::Schema.define(:version => 20101222210343) do
   add_index "provider_accounts_users", ["provider_account_id"], :name => "index_provider_accounts_users_on_provider_account_id"
   add_index "provider_accounts_users", ["user_id"], :name => "index_provider_accounts_users_on_user_id"
 
+  create_table "provider_os_types", :force => true do |t|
+    t.integer  "provider_id"
+    t.string   "name"
+    t.text     "description"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "providers", :force => true do |t|
     t.string   "name"
     t.string   "long_name"
@@ -811,18 +821,17 @@ ActiveRecord::Schema.define(:version => 20101222210343) do
 
   create_table "regions", :force => true do |t|
     t.integer  "provider_id"
-    t.string   "name"
+    t.string   "api_name"
     t.text     "description"
-    t.string   "endpoint_url"
+    t.string   "endpoint"
     t.string   "state"
     t.text     "meta_data"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "short_name"
   end
 
-  add_index "regions", ["name"], :name => "index_regions_on_name"
-  add_index "regions", ["provider_id", "name"], :name => "index_regions_on_provider_id_and_name", :unique => true
+  add_index "regions", ["api_name"], :name => "index_regions_on_name"
+  add_index "regions", ["provider_id", "api_name"], :name => "index_regions_on_provider_id_and_name", :unique => true
 
   create_table "reserved_instances", :force => true do |t|
     t.integer  "provider_account_id"
@@ -1128,6 +1137,20 @@ ActiveRecord::Schema.define(:version => 20101222210343) do
 
   add_index "stat_records", ["provider_account_id", "taken_at"], :name => "index_stat_records_on_provider_account_id_and_taken_at"
 
+  create_table "taggings", :force => true do |t|
+    t.integer  "tag_id"
+    t.integer  "taggable_id"
+    t.string   "taggable_type"
+    t.datetime "created_at"
+  end
+
+  add_index "taggings", ["tag_id"], :name => "index_taggings_on_tag_id"
+  add_index "taggings", ["taggable_id", "taggable_type"], :name => "index_taggings_on_taggable_id_and_taggable_type"
+
+  create_table "tags", :force => true do |t|
+    t.string "name"
+  end
+
   create_table "task_parameters", :force => true do |t|
     t.integer  "task_id"
     t.string   "name"
@@ -1201,8 +1224,8 @@ ActiveRecord::Schema.define(:version => 20101222210343) do
     t.string   "identity_url"
     t.integer  "invitation_id"
     t.integer  "invitation_limit"
-    t.text     "public_key"
     t.string   "time_zone",                                :default => "Eastern Time (US & Canada)"
+    t.text     "public_key"
   end
 
   add_index "users", ["email"], :name => "index_users_on_email"

@@ -1,26 +1,28 @@
 class User < BaseModel
-	include Authentication
-	include Authentication::ByCookieToken
-	include Authentication::UserAbstraction
+    include Authentication
+    include Authentication::ByCookieToken
+    include Authentication::UserAbstraction
 
     has_and_belongs_to_many :provider_accounts
-	has_and_belongs_to_many :security_groups
-	has_and_belongs_to_many :clusters
+    has_and_belongs_to_many :security_groups
+    has_and_belongs_to_many :clusters
 
     has_many :server_profile_user_accesses, :dependent => :destroy
     has_many :server_profiles, :through => :server_profile_user_accesses
 
     has_many :logs, :foreign_key => :author_id, :class_name => 'AuditLog', :dependent => :nullify
 
-	set_inheritance_column :user_type
-	validates_presence_of  :user_type
+    has_many :user_keys
 
-	# prevents a user from submitting a crafted form that bypasses activation
-	# anything else you want your user to change should be added here.
-	# Add identity_url if you want users to be able to update their OpenID identity
-	attr_accessible :login, :email, :name, :password, :password_confirmation, :invitation_token, :time_zone, :public_key
+    set_inheritance_column :user_type
+    validates_presence_of  :user_type
 
-	attr_accessor :login_and_name, :auth_type
+    # prevents a user from submitting a crafted form that bypasses activation
+    # anything else you want your user to change should be added here.
+    # Add identity_url if you want users to be able to update their OpenID identity
+    attr_accessible :login, :email, :name, :password, :password_confirmation, :invitation_token, :time_zone, :public_key
+
+    attr_accessor :login_and_name, :auth_type
 
     def login_and_name
         login + ' (' + name + ')'
