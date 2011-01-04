@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101224025244) do
+ActiveRecord::Schema.define(:version => 20101026152678) do
 
   create_table "addresses", :force => true do |t|
     t.integer  "provider_account_id"
@@ -204,16 +204,6 @@ ActiveRecord::Schema.define(:version => 20101224025244) do
   add_index "clusters_users", ["cluster_id"], :name => "index_clusters_users_on_cluster_id"
   add_index "clusters_users", ["user_id"], :name => "index_clusters_users_on_user_id"
 
-  create_table "code_audits", :force => true do |t|
-    t.string   "svn_module"
-    t.string   "svn_release"
-    t.string   "run_by_user"
-    t.integer  "pass"
-    t.datetime "timestamp"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
   create_table "dns_hostname_assignments", :force => true do |t|
     t.integer  "dns_hostname_id", :null => false
     t.integer  "server_id",       :null => false
@@ -394,33 +384,6 @@ ActiveRecord::Schema.define(:version => 20101224025244) do
 
   add_index "instance_allocation_records", ["stat_record_id"], :name => "index_iars_on_srids"
   add_index "instance_allocation_records", ["zone_id"], :name => "index_instance_allocation_records_on_zone_id"
-
-  create_table "instance_kind_categories", :force => true do |t|
-    t.integer  "provider_id"
-    t.string   "name"
-    t.text     "description"
-    t.integer  "position"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "instance_kinds", :force => true do |t|
-    t.integer  "instance_kind_category_id"
-    t.string   "api_name"
-    t.string   "name"
-    t.text     "description"
-    t.boolean  "is_default"
-    t.integer  "position"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "ram_mb",                    :default => 0
-    t.integer  "cpu_cores",                 :default => 0
-    t.integer  "cpu_units",                 :default => 0
-    t.integer  "storage_gb",                :default => 0
-    t.string   "io_performance"
-    t.integer  "platform_bit",              :default => 32
-    t.integer  "provider_id"
-  end
 
   create_table "instance_list_readers", :force => true do |t|
     t.integer  "provider_account_id"
@@ -660,15 +623,6 @@ ActiveRecord::Schema.define(:version => 20101224025244) do
     t.string  "salt",       :null => false
   end
 
-  create_table "operating_systems", :force => true do |t|
-    t.integer  "provider_id"
-    t.string   "name"
-    t.string   "description"
-    t.integer  "position"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
   create_table "operation_logs", :force => true do |t|
     t.integer  "operation_id"
     t.string   "step_name"
@@ -771,14 +725,6 @@ ActiveRecord::Schema.define(:version => 20101224025244) do
   add_index "provider_accounts_users", ["provider_account_id"], :name => "index_provider_accounts_users_on_provider_account_id"
   add_index "provider_accounts_users", ["user_id"], :name => "index_provider_accounts_users_on_user_id"
 
-  create_table "provider_os_types", :force => true do |t|
-    t.integer  "provider_id"
-    t.string   "name"
-    t.text     "description"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
   create_table "providers", :force => true do |t|
     t.string   "name"
     t.string   "long_name"
@@ -821,17 +767,17 @@ ActiveRecord::Schema.define(:version => 20101224025244) do
 
   create_table "regions", :force => true do |t|
     t.integer  "provider_id"
-    t.string   "api_name"
+    t.string   "name"
     t.text     "description"
-    t.string   "endpoint"
+    t.string   "endpoint_url"
     t.string   "state"
     t.text     "meta_data"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  add_index "regions", ["api_name"], :name => "index_regions_on_name"
-  add_index "regions", ["provider_id", "api_name"], :name => "index_regions_on_provider_id_and_name", :unique => true
+  add_index "regions", ["name"], :name => "index_regions_on_name"
+  add_index "regions", ["provider_id", "name"], :name => "index_regions_on_provider_id_and_name", :unique => true
 
   create_table "reserved_instances", :force => true do |t|
     t.integer  "provider_account_id"
@@ -1137,20 +1083,6 @@ ActiveRecord::Schema.define(:version => 20101224025244) do
 
   add_index "stat_records", ["provider_account_id", "taken_at"], :name => "index_stat_records_on_provider_account_id_and_taken_at"
 
-  create_table "taggings", :force => true do |t|
-    t.integer  "tag_id"
-    t.integer  "taggable_id"
-    t.string   "taggable_type"
-    t.datetime "created_at"
-  end
-
-  add_index "taggings", ["tag_id"], :name => "index_taggings_on_tag_id"
-  add_index "taggings", ["taggable_id", "taggable_type"], :name => "index_taggings_on_taggable_id_and_taggable_type"
-
-  create_table "tags", :force => true do |t|
-    t.string "name"
-  end
-
   create_table "task_parameters", :force => true do |t|
     t.integer  "task_id"
     t.string   "name"
@@ -1206,6 +1138,14 @@ ActiveRecord::Schema.define(:version => 20101224025244) do
 
   add_index "user_failures", ["remote_ip"], :name => "index_user_failures_on_remote_ip"
 
+  create_table "user_keys", :force => true do |t|
+    t.integer  "user_id"
+    t.text     "public_key"
+    t.string   "hash_of_public_key"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "users", :force => true do |t|
     t.string   "user_type"
     t.string   "login",                     :limit => 40
@@ -1225,7 +1165,6 @@ ActiveRecord::Schema.define(:version => 20101224025244) do
     t.integer  "invitation_id"
     t.integer  "invitation_limit"
     t.string   "time_zone",                                :default => "Eastern Time (US & Canada)"
-    t.text     "public_key"
   end
 
   add_index "users", ["email"], :name => "index_users_on_email"
