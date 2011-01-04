@@ -16,14 +16,13 @@ class UserObserver < ActiveRecord::Observer
 	end
 
 	def before_update(user)
-#		@pubkey_changed = user.public_key_changed?
+		@pubkey_changed = user.public_key_changed?
 		@enabled_changed = user.enabled_changed?
-		delete_pubkey_from_servers(user) if @enabled_changed and not user.enabled?
+		delete_pubkey_from_servers(user) if @pubkey_changed or ( @enabled_changed and not user.enabled? )
 	end
 
 	def after_update(user)
-#		add_pubkey_to_servers(user) if (@pubkey_changed or @enabled_changed) and not user.public_key.blank? and user.enabled?
-		add_pubkey_to_servers(user) if @enabled_changed and user.enabled?
+		add_pubkey_to_servers(user) if (@pubkey_changed or @enabled_changed) and not user.public_key.blank? and user.enabled?
 	end
 
 private
