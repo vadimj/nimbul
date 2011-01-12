@@ -11,6 +11,12 @@
     <th><%= f.label :time_zone, 'Time Zone' %></th>
     <td><%= f.time_zone_select :time_zone, ActiveSupport::TimeZone.us_zones %></td>
   </tr>
+  <% unless current_user.user_type == 'LdapUser' %>
+    <tr>
+      <th><%= f.label :password %></th>
+      <td>******** <%= link_to 'change', user_profile_password_settings_path(current_user) %></td>
+    </tr>
+  <% end %>
   <tr>
     <th colspan="2">Public Keys</th>
   </tr>

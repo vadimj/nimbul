@@ -14,21 +14,25 @@ class User::ProfilesController < ApplicationController
   end
  
   def create
-    logout_keeping_session!
-    
-    user_params = params[:user]	
-    @user = SiteUser.new(user_params)
-
-    success = @user && @user.save
-    if success && @user.errors.empty?
-      # redirect_back_or_default('/')
-      redirect_to new_session_path
-      flash[:notice] = "Thanks for signing up! "
-      flash[:notice] += ((in_beta? && @user.emails_match?) ? "You can now log into your account." : "We're sending you 														an email with your activation code.")
+    if params[:cancel_button]
+      redirect_to new_session_url
     else
-      flash.now[:error]  = "We couldn't set up that account, sorry.  Please try again, or %s."
-      flash[:error_item] = ["contact us", contact_site]
-      render :action => 'new'
+      logout_keeping_session!
+      
+      user_params = params[:user]	
+      @user = SiteUser.new(user_params)
+
+      success = @user && @user.save
+      if success && @user.errors.empty?
+        # redirect_back_or_default('/')
+        redirect_to new_session_path
+        flash[:notice] = "Thanks for signing up! "
+        flash[:notice] += ((in_beta? && @user.emails_match?) ? "You can now log into your account." : "We're sending you 														an email with your activation code.")
+      else
+        flash.now[:error]  = "We couldn't set up that account, sorry.  Please try again, or %s."
+        flash[:error_item] = ["contact us", contact_site]
+        render :action => 'new'
+      end
     end
   end
 
@@ -40,14 +44,18 @@ class User::ProfilesController < ApplicationController
   end
 
   def update
-    user_params = params[:user]
-    @user = current_user
-    if @user.update_attributes(user_params)
-      flash[:notice] = "Profile updated."
-      redirect_to :action => 'show'
+    if params[:cancel_button]
+      redirect_to dashboard_index_url
     else
-      flash.now[:error] = "There was a problem updating your profile."
-      render :action => 'edit'
+      user_params = params[:user]
+      @user = current_user
+      if @user.update_attributes(user_params)
+        flash[:notice] = "Profile updated."
+        redirect_to :action => 'edit'
+      else
+        flash.now[:error] = "There was a problem updating your profile."
+        render :action => 'edit'
+      end
     end
   end
 

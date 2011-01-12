@@ -1,15 +1,21 @@
+<% readonly ||= false %>
 <% fields_for 'user[user_key_attributes][]', user_key do |f| %>
   <% content_tag_for :tr, user_key do %>
-    <td colspan="2">
+    <td>  
       <% unless user_key.new_record? %>
         <%= f.hidden_field :id, :index => nil %>
+        <%= user_key.hash_of_public_key %>
       <% end %>
+    </td>
+    <td>
       <%= f.text_area :public_key, :index => nil, :size => '80x4', :warp => 'soft' %>
-      <% if user_key.new_record? %>
-        <%= link_to_function 'remove', "$(this).up('.user_key').remove()"%>
-      <% else %>
-        <%= link_to_function 'remove', "mark_for_destroy(this, $(this).up('.user_key'))"%>
-        <%= f.hidden_field :should_destroy, :index => nil, :class => 'should_destroy' %>
+      <% unless readonly %>
+        <% if user_key.new_record? %>
+          <%= link_to_function 'remove', "$(this).up('.user_key').remove()"%>
+        <% else %>
+          <%= link_to_function 'remove', "mark_for_destroy(this, $(this).up('.user_key'))"%>
+          <%= f.hidden_field :should_destroy, :index => nil, :class => 'should_destroy' %>
+        <% end %>
       <% end %>
     </td>
   <% end %>

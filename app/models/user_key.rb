@@ -2,7 +2,6 @@ require 'digest/md5'
 class UserKey < ActiveRecord::Base
   belongs_to :user
   validates_presence_of :public_key
-  validates_uniqueness_of :hash_of_public_key, :scope => :user_id
   
   before_save :set_hash_of_public_key
 
