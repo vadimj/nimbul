@@ -1,0 +1,8 @@
+<tbody id="user_user_keys">
+  <%= render :partial => 'user/user_keys/user_key', :collection => @user.user_keys %>
+</tbody>
+<tr>
+  <td colspan="2" align="right">
+    <%= add_user_user_key_link 'Add a Key' %>
+  </td>
+</tr>

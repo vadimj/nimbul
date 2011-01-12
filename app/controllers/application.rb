@@ -122,7 +122,6 @@ class ApplicationController < ActionController::Base
 	def parent
 		return @parent if @parent
 		@parent = parent_class && parent_class.find_by_id(parent_id(parent_type))
-		@parent_type = parent_type
 		instance_variable_set("@#{parent_type}", @parent) # Layouts usually want a @user, @item etc
 	end
 
@@ -131,7 +130,8 @@ class ApplicationController < ActionController::Base
 	end
 
 	def parent_type
-		self.class.parents.detect { |parent| parent_id(parent) }
+		return @parent_type if @parent_type
+		@parent_type = self.class.parents.detect { |parent| parent_id(parent) }
 	end
 
 	def parent_class

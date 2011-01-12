@@ -1,63 +1,54 @@
 class User::ProfilesController < ApplicationController
-	before_filter :login_required, :only =>  [ :show, :edit, :update ]
-	before_filter :login_prohibited, :only => [:new, :create]
+  before_filter :login_required, :only =>  [ :show, :edit, :update ]
+  before_filter :login_prohibited, :only => [:new, :create]
    
-	# This show action only allows users to view their own profile
-	def show
-		@user = current_user
-	end  
+  # This show action only allows users to view their own profile
+  def show
+    @user = current_user
+  end  
 
-	# render new.rhtml
-	def new
-		@user = SiteUser.new(:invitation_token => params[:invitation_token])
-	end
+  # render new.rhtml
+  def new
+    @user = SiteUser.new(:invitation_token => params[:invitation_token])
+    @user_key = @user.user_keys.build({})
+  end
  
-	def create
-    	logout_keeping_session!
-		@user = SiteUser.new(
-			:login => params[:user][:login],
-			:email => params[:user][:email],
-			:name => params[:user][:name],
-			:password => params[:user][:password],
-			:password_confirmation => params[:user][:password_confirmation],
-			:invitation_token => params[:user][:invitation_token],
-			:time_zone => params[:user][:time_zone],
-			:public_key => params[:user][:public_key]
-		)
-		success = @user && @user.save
-		if success && @user.errors.empty?
-			# redirect_back_or_default('/')
-			redirect_to new_session_path
- 			flash[:notice] = "Thanks for signing up! "
-			flash[:notice] += ((in_beta? && @user.emails_match?) ? "You can now log into your account." : "We're sending you 														an email with your activation code.")
-		else
-			flash.now[:error]  = "We couldn't set up that account, sorry.  Please try again, or %s."
-			flash[:error_item] = ["contact us", contact_site]
-			render :action => 'new'
-		end
-	end
+  def create
+    logout_keeping_session!
+    
+    user_params = params[:user]	
+    @user = SiteUser.new(user_params)
 
-	def edit
-		@user = current_user
-		if !@user.identity_url.blank? && @user.crypted_password.blank?
-			redirect_to edit_user_openid_account_path
-		end
-	end
+    success = @user && @user.save
+    if success && @user.errors.empty?
+      # redirect_back_or_default('/')
+      redirect_to new_session_path
+      flash[:notice] = "Thanks for signing up! "
+      flash[:notice] += ((in_beta? && @user.emails_match?) ? "You can now log into your account." : "We're sending you 														an email with your activation code.")
+    else
+      flash.now[:error]  = "We couldn't set up that account, sorry.  Please try again, or %s."
+      flash[:error_item] = ["contact us", contact_site]
+      render :action => 'new'
+    end
+  end
 
-	def update
-		@user = current_user
-		if @user.update_attributes(
-			:name  => params[:user][:name],
-			:email => params[:user][:email],
-			:time_zone => params[:user][:time_zone],
-			:public_key => params[:user][:public_key]
-		)
-			flash[:notice] = "Profile updated."
-			redirect_to :action => 'show'
-		else
-			flash.now[:error] = "There was a problem updating your profile."
-			render :action => 'edit'
-		end
-	end
+  def edit
+    @user = current_user
+    if !@user.identity_url.blank? && @user.crypted_password.blank?
+      redirect_to edit_user_openid_account_path
+    end
+  end
+
+  def update
+    user_params = params[:user]
+    @user = current_user
+    if @user.update_attributes(user_params)
+      flash[:notice] = "Profile updated."
+      redirect_to :action => 'show'
+    else
+      flash.now[:error] = "There was a problem updating your profile."
+      render :action => 'edit'
+    end
+  end
 
 end
