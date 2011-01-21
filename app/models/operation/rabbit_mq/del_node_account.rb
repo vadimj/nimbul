@@ -23,6 +23,12 @@ class Operation::RabbitMq::DelNodeAccount < Operation::RabbitMq
         :result_code => self[:result_code],
         :result_message => self[:result_message],
       } )
+
+      unless success
+        fail! && next
+      else
+        succeed!
+      end
     end
     
     return steps

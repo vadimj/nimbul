@@ -18,7 +18,7 @@ class Operation::RabbitMq::AddNodeAccount < Operation::RabbitMq
       
       success = true
       self[:result_code] = 'Success'
-      self[:result_message] = "Request to add user credentials for account '#{account.name}'"
+      self[:result_message] = "Request to add user credentials for account '#{provider_account.name}'"
     
       operation_logs << OperationLog.new( {
         :step_name => 'add_user',
@@ -26,6 +26,12 @@ class Operation::RabbitMq::AddNodeAccount < Operation::RabbitMq
         :result_code => self[:result_code],
         :result_message => self[:result_message],
       } )
+
+      unless success
+        fail! && next
+      else
+        succeed!
+      end
     end
     
     return steps
