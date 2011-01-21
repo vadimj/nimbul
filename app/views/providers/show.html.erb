@@ -1,0 +1,66 @@
+<% subtitle "Cloud Providers: #{@provider.name}" %>
+
+<h1>
+  <%= link_to 'Admin Controls', admin_controls_path %>
+  / <%= link_to 'Available Cloud Providers', providers_path %>
+  / <%= edit_in_place(@provider, :name, :class => 'editable provider-1-editable') %>
+</h1>
+
+<br/>
+
+<h1>State</h1>
+<hr>
+<table border="1">
+  <tr>
+    <th>State</th>
+    <th>Adapter</th>
+  </tr>
+  <tr>
+    <td class="<%=h @provider.state %>"><%=h @provider.state %></td>
+    <td><%= edit_in_place(@provider, :adapter_class, :class => 'editable provider-1-editable') %></td>
+  </tr>
+</table>
+
+<h1>
+<%= expand_provider_objects_link(@provider, :general_settings) -%>
+<%= compress_provider_objects_link(@provider, :general_settings) -%>
+General Settings</h1>
+<hr>
+<div id="<%= provider_objects_id(@provider, :general_settings) %>" style="display:none;">
+  <p>
+    <b>Long name:</b>
+    <%= edit_in_place(@provider, :long_name, :class => 'editable provider-1-editable') %>
+  </p>
+  
+  <p>
+    <b>Description:</b>
+    <%= edit_in_place(@provider, :description, :class => 'editable provider-1-editable') %>
+  </p>
+  
+  <p>
+    <b>Main documentation url:</b>
+    <%= edit_in_place(@provider, :main_documentation_url, :class => 'editable provider-1-editable') %>
+  </p>
+  
+  <p>
+    <b>Api documentation url:</b>
+    <%= edit_in_place(@provider, :api_documentation_url, :class => 'editable provider-1-editable') %>
+  </p>
+<br/>
+</div>
+
+<h1>
+<%= expand_provider_objects_link(@provider, :regions) -%>
+<%= compress_provider_objects_link(@provider, :regions) -%>
+Regions
+</h1>
+<hr>
+<div id="<%= provider_objects_id(@provider, :regions) %>"></div>
+
+<h1>Instance Types</h1>
+<hr>
+<div id="provider-<%= @provider.id %>-instance_types"></div>
+
+<h1>Operating Systems</h1>
+<hr>
+<div id="provider-<%= @provider.id %>-operating_systems"></div>

@@ -8,10 +8,7 @@ class DnsAdapter
     DnsHostnameAssignment.create(server, hostname)
   end
 
-  def self.get_account_leases(account, only_active = false)
-    conditions = { :provider_accounts => { :id => account[:id] } }
-    conditions.merge!({ :dns_leases => { :instance_id => (1)..(Instance.last[:id]) } }) if only_active
-    
+  def self.get_account_leases(account)
     DnsLease.find_by_model(account,
       :select => %Q(
         DISTINCT(dns_leases.id)                   AS id,
@@ -21,6 +18,7 @@ class DnsAdapter
         provider_accounts.name                    AS provider_account_name,
         clusters.id                               AS cluster_id,
         clusters.name                             AS cluster_name,
+        clusters.state                            AS cluster_state,
         servers.id                                AS server_id,
         servers.name                              AS server_name,
         instances.id                              AS instance_id,
@@ -42,11 +40,6 @@ class DnsAdapter
                 server_profile_revision_parameters.name = "ROLES"',
       ],
       :order => 'dns_leases.dns_hostname_assignment_id ASC, dns_leases.idx'
-      # XXX: FIXME: Actually do something with 'only_active' - condition variable above
-      # XXX: FIXME: isn't even used (and shouldn't be!! - remove it!)
-      #
-      #:order => 'dns_leases.dns_hostname_assignment_id ASC, dns_leases.idx',
-      #:state => (!!only_active ? :inuse : :all)
     ).collect do |lease|
       lease[:state] = (lease[:state].to_i >= 1 ? DnsLease::ACTIVE : DnsLease::INACTIVE)
       unless lease[:state] == DnsLease::ACTIVE
@@ -105,7 +98,7 @@ class DnsAdapter
       end
     end
     
-    get_account_leases(model, !!options[:only_active]).each do |lease|
+    get_account_leases(model).each do |lease|
       cluster_name = lease[:cluster_name].gsub(' ','_').downcase.gsub(/[^\w\d]+/, '-')
       server_name  = lease[:server_name].gsub(' ','_').downcase.gsub(/[^\w\d]+/, '-') 
       hostname     = sprintf("%s-%05d", lease[:hostname_base], lease[:lease_index])
@@ -127,6 +120,7 @@ class DnsAdapter
         :server_id     => lease[:server_id]  || -1,
         :roles         => lease[:roles].gsub(/\s/, ''),
 
+        :cluster_state => lease[:cluster_state] || 'active',
         :index        => lease[:lease_index],
         :public_dns   => lease[:instance_public_dns],
         :public_ip    => lease[:instance_public_ip],
@@ -156,7 +150,7 @@ class DnsAdapter
     ]
     
     entries = leases[:active].sort.inject([]) do |array,(hostname,entries)|
-      entries.each do |lease|
+      entries.select {|e| e[:cluster_state] == 'active' }.each do |lease|
         data = required_fields.inject([]) do |line,k|
           line << lease[k]
         end

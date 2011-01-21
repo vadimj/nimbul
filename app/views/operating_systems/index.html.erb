@@ -1,0 +1,24 @@
+<% subtitle 'Available Operating Systems' %>
+
+<h1><%= link_to 'Admin Controls', admin_controls_path %> / Available Operating Systems</h1>
+<br/>
+<table>
+  <tr>
+    <th>Provider</th>
+    <th>Name</th>
+    <th>Description</th>
+  </tr>
+
+<% for operating_system in @operating_systems %>
+  <tr>
+    <td><%=h operating_system.provider.name %></td>
+    <td><%=h operating_system.name %></td>
+    <td><%=h operating_system.description %></td>
+    <td><%= link_to 'Show', operating_system %></td>
+    <td><%= link_to 'Edit', edit_operating_system_path(operating_system) %></td>
+    <td><%= link_to 'Destroy', operating_system, :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<%= link_to 'Add Operating System', new_operating_system_path %>

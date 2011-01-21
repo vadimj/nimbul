@@ -1,0 +1,30 @@
+<h1>Listing instance_kinds</h1>
+
+<table>
+  <tr>
+    <th>Instance type category</th>
+    <th>Code name</th>
+    <th>Name</th>
+    <th>Description</th>
+    <th>Is default</th>
+    <th>Position</th>
+  </tr>
+
+<% for instance_kind in @instance_kinds %>
+  <tr>
+    <td><%=h instance_kind.instance_kind_category_id %></td>
+    <td><%=h instance_kind.api_name %></td>
+    <td><%=h instance_kind.name %></td>
+    <td><%=h instance_kind.description %></td>
+    <td><%=h instance_kind.is_default %></td>
+    <td><%=h instance_kind.position %></td>
+    <td><%= link_to 'Show', instance_kind %></td>
+    <td><%= link_to 'Edit', edit_instance_kind_path(instance_kind) %></td>
+    <td><%= link_to 'Destroy', instance_kind, :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New instance_kind', new_instance_kind_path %>

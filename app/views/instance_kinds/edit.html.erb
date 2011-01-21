@@ -1,0 +1,11 @@
+<h1>Editing instance_kind</h1>
+
+<% form_for(@instance_kind) do |f| %>
+  <%= render :partial => 'fields', :locals => { :f => f } %>
+  <p>
+    <%= f.submit "Update" %>
+  </p>
+<% end %>
+
+<%= link_to 'Show', @instance_kind %> |
+<%= link_to 'Back', instance_kinds_path %>

@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101026152648) do
+ActiveRecord::Schema.define(:version => 20101222210343) do
 
   create_table "addresses", :force => true do |t|
     t.integer  "provider_account_id"
@@ -190,9 +190,11 @@ ActiveRecord::Schema.define(:version => 20101026152648) do
     t.datetime "updated_at"
     t.integer  "provider_account_id"
     t.integer  "servers_count",       :default => 0
+    t.string   "state",               :default => "active"
   end
 
   add_index "clusters", ["provider_account_id"], :name => "index_clusters_on_provider_account_id"
+  add_index "clusters", ["state"], :name => "index_clusters_on_state"
 
   create_table "clusters_users", :id => false, :force => true do |t|
     t.integer "cluster_id"
@@ -383,6 +385,32 @@ ActiveRecord::Schema.define(:version => 20101026152648) do
   add_index "instance_allocation_records", ["stat_record_id"], :name => "index_iars_on_srids"
   add_index "instance_allocation_records", ["zone_id"], :name => "index_instance_allocation_records_on_zone_id"
 
+  create_table "instance_kind_categories", :force => true do |t|
+    t.integer  "provider_id"
+    t.string   "name"
+    t.text     "description"
+    t.integer  "position"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "instance_kinds", :force => true do |t|
+    t.integer  "instance_kind_category_id"
+    t.string   "code_name"
+    t.string   "name"
+    t.text     "description"
+    t.boolean  "is_default"
+    t.integer  "position"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "ram_mb",                    :default => 0
+    t.integer  "cpu_cores",                 :default => 0
+    t.integer  "cpu_units",                 :default => 0
+    t.integer  "storage_gb",                :default => 0
+    t.string   "io_performance"
+    t.integer  "platform_bit",              :default => 32
+  end
+
   create_table "instance_list_readers", :force => true do |t|
     t.integer  "provider_account_id"
     t.string   "type"
@@ -415,6 +443,15 @@ ActiveRecord::Schema.define(:version => 20101026152648) do
 
   add_index "instance_resources", ["cloud_resource_id"], :name => "index_instance_resources_on_cloud_resource_id"
   add_index "instance_resources", ["instance_id", "type"], :name => "index_instance_resources_on_instance_id_and_type"
+
+  create_table "instance_type_categories", :force => true do |t|
+    t.integer  "provider_id"
+    t.string   "name"
+    t.text     "description"
+    t.integer  "position"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "instances", :force => true do |t|
     t.string   "instance_id"
@@ -621,6 +658,15 @@ ActiveRecord::Schema.define(:version => 20101026152648) do
     t.string  "salt",       :null => false
   end
 
+  create_table "operating_systems", :force => true do |t|
+    t.integer  "provider_id"
+    t.string   "name"
+    t.string   "description"
+    t.integer  "position"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "operation_logs", :force => true do |t|
     t.integer  "operation_id"
     t.string   "step_name"
@@ -772,6 +818,7 @@ ActiveRecord::Schema.define(:version => 20101026152648) do
     t.text     "meta_data"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "short_name"
   end
 
   add_index "regions", ["name"], :name => "index_regions_on_name"

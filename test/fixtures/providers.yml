@@ -1,0 +1,19 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  name: MyString
+  long_name: MyString
+  description: MyText
+  main_documentation_url: MyString
+  api_documentation_url: MyString
+  state: MyString
+  adapter_class: MyString
+
+two:
+  name: MyString
+  long_name: MyString
+  description: MyText
+  main_documentation_url: MyString
+  api_documentation_url: MyString
+  state: MyString
+  adapter_class: MyString

@@ -199,9 +199,3 @@ img {
     .headcol:before {content: 'Row ';
 */
 }
-
-.long {
-    min-width:100em;
-    background:yellow;
-    text-align:center;
-}

@@ -1,17 +1,22 @@
 ActionController::Routing::Routes.draw do |map|
-	map.resources :dashboard, :only => [ :index ]
-	map.resources :providers do |provider|
-		provider.resources :regions, :controller => 'provider/regions',
-			:only => [ :index ]
-		provider.resources :services, :controller => 'parent/services',
-			:collection => { :list => :any },
-			:only => [ :index, :list, :new, :create, :destroy ]
-	end
-	map.resources :regions do |region|
-		region.resources :zones, :controller => 'region/zones',
-			:only => [ :index ]
-	end
-	map.resources :provider_accounts,
+  map.resources :dashboard, :only => [ :index ]
+
+  map.resources :providers do |provider|
+    provider.resources :services, :controller => 'parent/services',
+      :collection => { :list => :any },
+      :only => [ :index, :list, :new, :create, :destroy ]
+    provider.resources :regions, :controller => 'regions'
+    provider.resources :instance_kind_categories, :controller => 'instance_kind_categories'
+    provider.resources :instance_kinds, :controller => 'instance_kinds'
+    provider.resources :operating_systems, :controller => 'operating_systems'
+  end
+
+  map.resources :regions do |region|
+    region.resources :zones, :controller => 'region/zones',
+      :only => [ :index ]
+  end
+
+  map.resources :provider_accounts,
 	    :collection => { :list => :any, :control => :post } do |provider_account|
 		provider_account.resources :instances, :controller => 'parent/instances',
 			:collection => { :list => :any, :control => :any },

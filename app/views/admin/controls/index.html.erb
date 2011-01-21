@@ -17,6 +17,8 @@
     <li><%= link_to "Daemons (#{@daemons})", daemons_path %></li>
     <li><%= link_to "Incoming Messages (#{@in_messages})", in_messages_path %></li>
     <li><%= link_to "Outgoing Messages (#{@out_messages})", out_messages_path %></li>
-    <!--li><%= link_to "Cloud Providers", providers_path %></li-->
     <li><%= link_to "Logged Exceptions (#{@exceptions})", logged_exceptions_path %></li>
+</ul>
+<ul>
+    <li><%= link_to "Available Cloud Providers", providers_path %></li>
 </ul>

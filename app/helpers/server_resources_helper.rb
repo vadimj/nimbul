@@ -54,20 +54,20 @@ module ServerResourcesHelper
             )
     end
 
-   	def remove_server_volume_link(text, resource_bundle, volume)
-		url = resource_bundle_server_volume_url(resource_bundle, volume)
-    	options = {
+    def remove_server_volume_link(text, resource_bundle, volume)
+        url = resource_bundle_server_volume_url(resource_bundle, volume)
+        options = {
             :url => url,
             :method => :delete,
             :confirm => "You sure you want to remove this volume from this launch configuration?\n\nThis action cannot be undone.",
-		}
-		html_options = {
-			:title => "Remove volume '#{volume.cloud_resource.name}' from this launch configuration",
+        }
+        html_options = {
+            :title => "Remove volume from this launch configuration",
             :href => url,
             :method => :delete,
-		}
-		link_to_remote text, options, html_options
-	end
+        }
+        link_to_remote text, options, html_options
+    end
 
     def server_volume_force_allocation_check_box(resource_bundle, volume)
         title = 'If checked, this volume will be moved to a new instance even if it is already associated with a running instance.'

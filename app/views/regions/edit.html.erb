@@ -1,0 +1,11 @@
+<% subtitle "Edit Region" %>
+
+<h1>
+  <%= link_to 'Admin Controls', admin_controls_path %>
+  / <%= link_to 'Available Regions', send("#{ @parent_type }_regions_path", @parent) %>
+  / Edit Region
+</h1>
+
+<br/>
+
+<%= render :partial => 'form' %>
