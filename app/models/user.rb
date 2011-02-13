@@ -7,20 +7,45 @@ class User < BaseModel
 	has_and_belongs_to_many :security_groups
 	has_and_belongs_to_many :clusters
 
-    has_many :server_profile_user_accesses, :dependent => :destroy
-    has_many :server_profiles, :through => :server_profile_user_accesses
+  has_many :server_profile_user_accesses, :dependent => :destroy
+  has_many :server_profiles, :through => :server_profile_user_accesses
 
-    has_many :logs, :foreign_key => :author_id, :class_name => 'AuditLog', :dependent => :nullify
+  has_many :logs, :foreign_key => :author_id, :class_name => 'AuditLog', :dependent => :nullify
 
-	set_inheritance_column :user_type
-	validates_presence_of  :user_type
+  has_many :user_keys, :dependent => :destroy
 
-	# prevents a user from submitting a crafted form that bypasses activation
-	# anything else you want your user to change should be added here.
-	# Add identity_url if you want users to be able to update their OpenID identity
-	attr_accessible :login, :email, :name, :password, :password_confirmation, :invitation_token, :time_zone, :public_key
+  set_inheritance_column :user_type
+  validates_presence_of  :user_type
+  validates_associated :user_keys
+    
+  after_save :save_user_keys
 
-	attr_accessor :login_and_name, :auth_type
+  # prevents a user from submitting a crafted form that bypasses activation
+  # anything else you want your user to change should be added here.
+  # Add identity_url if you want users to be able to update their OpenID identity
+  attr_accessible :login, :email, :name, :password, :password_confirmation, :invitation_token, :time_zone, :user_key_attributes
+  attr_accessor :login_and_name, :auth_type
+
+  def save_user_keys
+    user_keys.each do |i|
+      if i.should_destroy?
+        i.destroy
+      else
+        i.save
+      end
+    end
+  end
+
+  def user_key_attributes=(user_key_attributes)
+    user_key_attributes.each do |attributes|
+      if attributes[:id].blank?
+        user_keys.build(attributes)
+      else
+        user_key = user_keys.detect { |c| c.id == attributes[:id].to_i }
+        user_key.attributes = attributes
+      end
+    end
+  end
 
     def login_and_name
         login + ' (' + name + ')'

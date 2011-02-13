@@ -10,8 +10,11 @@
 <tr><th>User Name</th><td><%=h @user.login %></td></tr>
 <tr><th>E-Mail</th><td><%=h @user.email %></td></tr>
 <tr><th>Time Zone</th><td><%=h @user.time_zone %></td></tr>
-<tr><th>Public Key</th><td><%= public_key_link @user %></td></tr>
 <% unless current_user.user_type == 'LdapUser' %>
-	<tr><th>Password</th><td><%= link_to '(change)', user_profile_password_settings_path(current_user) %></td></tr>
+  <tr><th>Password</th><td><%= link_to '(change)', user_profile_password_settings_path(current_user) %></td></tr>
 <% end %>
+<tr>
+  <th colspan="2">Public Keys</th>
+</tr>
+<%= render :partial => 'user/user_keys/user_key', :collection => @user.user_keys, :locals => { :readonly => true } %>
 </table>
