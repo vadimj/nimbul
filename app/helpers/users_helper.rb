@@ -95,17 +95,6 @@ module UsersHelper
         sort_link(text, param, :users, nil, :list)
     end
 
-    def public_key_link(user)
-        return '' if user.nil?
-        text = ''
-        ltext = 'Set'
-        if user.public_key.blank?
-            text = 'Not Set '
-            ltext = 'Set Now'
-        end
-        text + link_to(ltext, edit_user_profile_path(user))
-    end
-
     def user_name_login_email_id(user, search = nil)
         return '' if user.nil?
         result = ''
