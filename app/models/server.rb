@@ -284,6 +284,7 @@ class Server < BaseModel
 
 	# this method is used by find_all_by_user, count_all_by_user and search_by_user in the searchable behavior
 	def self.options_for_find_by_user(user, options={})
+	  user = User.find_by_id(user) if user.is_a? Fixnum
 		extra_joins = options[:joins]
 		extra_conditions = options[:conditions]
 		order = options[:order]
@@ -354,4 +355,32 @@ class Server < BaseModel
         
         return instances
 	end
+	
+    def add_user_key(user_key, server_user)
+	self.instances.each do |instance|
+	    next if not instance.running?
+	    instance.operations << Operation.factory(
+	        'Operation::SshKeys::Add',
+		:args => {
+		    :local_user_id => user_key.user_id,
+		    :server_user => server_user,
+		    :user_key_id => user_key.id,
+		}
+	    )
+	end
+    end
+
+    def delete_user_key(user_key, server_user)
+	self.instances.each do |instance|
+	    next if not instance.running?
+	    instance.operations << Operation.factory(
+	        'Operation::SshKeys::Delete',
+		:args => {
+		    :local_user_id => user_key.user_id,
+		    :server_user => server_user,
+		    :user_key_id => user_key.id,
+		}
+	    )
+	end
+    end
 end

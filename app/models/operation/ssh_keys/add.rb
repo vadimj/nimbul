@@ -4,18 +4,20 @@ class Operation::SshKeys::Add < Operation::SshKeys
   def initiate_failure() update_server_user_access(self[:result_message]); super; end
   def initiate_timeout() update_server_user_access(self[:result_message]); super; end
 
-    def initiate_success()
-      super
-      user = User.find(self[:args][:local_user_id])
-      unless user.nil?
-        details = "#{user.login}'s pk added to #{self[:args][:server_user]}@#{self.instance_id}"
-        update_server_user_access "Last activity: #{details}"
-        update_attributes({
-          :result_code => 'Success_AddPublicKey',
-          :result_message => details,
-        })
-      end
+  def initiate_success()
+    super
+    user = User.find_by_id(self[:args][:local_user_id], :include => :user_keys)
+    user_key = user.user_keys.detect{|uk| uk.id == self[:args][:user_key_id]}
+    
+    unless user.nil? or user_key.nil?
+    details = "#{user.login}'s key '#{user_key.hash_of_public_key}' added to #{self[:args][:server_user]}@#{self.instance_id}"
+    update_server_user_access "Last activity: #{details}"
+    update_attributes({
+      :result_code => 'Success_AddPublicKey',
+      :result_message => details,
+    })
     end
+  end
 
   def steps
     steps = super
@@ -24,7 +26,8 @@ class Operation::SshKeys::Add < Operation::SshKeys
 
       timeout_in(5.minutes)
 
-      user = User.find_by_id(self[:args][:local_user_id])
+      user = User.find_by_id(self[:args][:local_user_id], :include => :user_keys)
+      user_key = user.user_keys.detect{|uk| uk.id == self[:args][:user_key_id]}
 
       if user.nil?
         self[:result_code] = 'Error_InvalidUserID'
@@ -32,21 +35,21 @@ class Operation::SshKeys::Add < Operation::SshKeys
         fail! && next
       end
 
-      if user.public_key.length <= 0
+      if user_key.nil? or user_key.public_key.blank?
         self[:result_code] = 'Error_MissingPublicKey'
-        self[:result_message] = "#{user.login} is missing a public key"
+        self[:result_message] = "#{user.login}'s public key is empty"
         fail! && update_server_user_access(self[:result_message]) && next
       end
 
       send_request(
         instance_request_path(instance),
-        :sshkeys, :add, [ self[:args][:server_user], user.public_key ]
+        :sshkeys, :add, [ self[:args][:server_user], user_key.public_key ]
       )
 
       success = true
       self[:result_code] = 'Success'
       self[:result_message] = "Request to add user ssh public key sent."
-
+  
       operation_logs << OperationLog.new( {
         :step_name => 'add',
         :is_success => success,
@@ -57,7 +60,7 @@ class Operation::SshKeys::Add < Operation::SshKeys
 
     steps << Operation::Step.new('verify_key_addition') do # local
       message = get_response_by_handler('sshkeys')
-
+  
       # Make sure we got a response message
       if message.nil?
         success = false
@@ -76,12 +79,12 @@ class Operation::SshKeys::Add < Operation::SshKeys
       end
 
       operation_logs << OperationLog.new({
-          :step_name => "verify_key_addition",
-          :is_success => success,
-          :result_code => self[:result_code],
-          :result_message => self[:result_message],
+        :step_name => "verify_key_addition",
+        :is_success => success,
+        :result_code => self[:result_code],
+        :result_message => self[:result_message],
       })
-
+  
       unless success
         fail! && next
       else

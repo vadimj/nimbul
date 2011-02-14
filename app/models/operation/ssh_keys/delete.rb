@@ -4,14 +4,18 @@ class Operation::SshKeys::Delete < Operation::SshKeys
   def initiate_failure() super; update_server_user_access(self[:result_message]); end
   def initiate_timeout() super; update_server_user_access(self[:result_message]); end
 
-    def initiate_success()
-        super
-        user = User.find(self[:args][:local_user_id])
-        update_attributes({
-            :result_code => 'Success_RemovePublicKey',
-            :result_message => "#{user.login}'s public key has been removed for instance user #{self[:args][:server_user]}",
-        })
+  def initiate_success()
+    super
+    user = User.find_by_id(self[:args][:local_user_id], :include => :user_keys)
+    user_key = user.user_keys.detect{|uk| uk.id == self[:args][:user_key_id]}
+
+    unless user.nil? or user_key.nil?
+      update_attributes({
+        :result_code => 'Success_RemovePublicKey',
+        :result_message => "#{user.login}'s key '#{user_key.hash_of_public_key}' has been removed for instance user #{self[:args][:server_user]}",
+      })
     end
+  end
 
   def steps
     steps = super
@@ -20,7 +24,8 @@ class Operation::SshKeys::Delete < Operation::SshKeys
 
       timeout_in(5.minutes)
 
-      user = User.find_by_id(self[:args][:local_user_id])
+      user = User.find_by_id(self[:args][:local_user_id], :include => :user_keys)
+      user_key = user.user_keys.detect{|uk| uk.id == self[:args][:user_key_id]}
 
       if user.nil?
         self[:result_code] = 'Error_InvalidUserID'
@@ -28,15 +33,15 @@ class Operation::SshKeys::Delete < Operation::SshKeys
         fail! && next
       end
 
-      if user.public_key.length <= 0
+      if user_key.nil? or user_key.public_key.blank?
         self[:result_code] = 'Error_MissingPublicKey'
-        self[:result_message] = "#{user.login} is missing a public key"
+        self[:result_message] = "#{user.login}'s public key is empty"
         fail! && update_server_user_access(self[:result_message]) && next
       end
 
       send_request(
         instance_request_path(instance),
-        :sshkeys, :delete, [ self[:args][:server_user], user.public_key ]
+        :sshkeys, :delete, [ self[:args][:server_user], user_key.public_key ]
       )
 
       success = true
@@ -73,10 +78,10 @@ class Operation::SshKeys::Delete < Operation::SshKeys
       end
 
       operation_logs << OperationLog.new({
-          :step_name => "verify_key_deletion",
-          :is_success => success,
-          :result_code => self[:result_code],
-          :result_message => self[:result_message],
+        :step_name => "verify_key_deletion",
+        :is_success => success,
+        :result_code => self[:result_code],
+        :result_message => self[:result_message],
       })
 
       unless success

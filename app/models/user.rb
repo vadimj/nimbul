@@ -62,11 +62,6 @@ class User < BaseModel
 		end
     end
 
-    def public_key
-        return self[:public_key] if self[:public_key].blank?
-        return self[:public_key].delete("\C-M").delete("\r").delete("\n")
-    end
-
 	def to_xml(options = {})
 		default_only = []
 		options[:only] = (options[:only] || []) + default_only
