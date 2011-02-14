@@ -3,7 +3,7 @@ class UserKeyObserver < ActiveRecord::Observer
         self.class.add_user_key_to_servers(user_key) if not user_key.public_key.blank? and user_key.user.enabled?
     end
 
-    def after_destroy(user_key)
+    def before_destroy(user_key)
         self.class.delete_user_key_from_servers(user_key)
     end
 
