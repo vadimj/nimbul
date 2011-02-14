@@ -904,3 +904,4 @@ class Ec2Adapter
         return true
     end
 end
+
