@@ -6,16 +6,17 @@ class Operation::SshKeys::Add < Operation::SshKeys
 
   def initiate_success()
     super
-    user = User.find_by_id(self[:args][:local_user_id], :include => :user_keys)
-    user_key = user.user_keys.detect{|uk| uk.id == self[:args][:user_key_id]}
-    
-    unless user.nil? or user_key.nil?
-    details = "#{user.login}'s key '#{user_key.hash_of_public_key}' added to #{self[:args][:server_user]}@#{self.instance_id}"
-    update_server_user_access "Last activity: #{details}"
-    update_attributes({
-      :result_code => 'Success_AddPublicKey',
-      :result_message => details,
-    })
+    user = User.find_by_id(self[:args][:local_user_id])
+    public_key = self[:args][:public_key]
+    hash_of_public_key = self[:args][:hash_of_public_key]
+
+    unless public_key.blank?
+      details = "#{user.login}'s key '#{hash_of_public_key}' added to #{self[:args][:server_user]}@#{self.instance_id}"
+      update_server_user_access "Last activity: #{details}"
+      update_attributes({
+        :result_code => 'Success_AddPublicKey',
+        :result_message => details,
+      })
     end
   end
 
@@ -26,8 +27,9 @@ class Operation::SshKeys::Add < Operation::SshKeys
 
       timeout_in(5.minutes)
 
-      user = User.find_by_id(self[:args][:local_user_id], :include => :user_keys)
-      user_key = user.user_keys.detect{|uk| uk.id == self[:args][:user_key_id]}
+      user = User.find_by_id(self[:args][:local_user_id])
+      public_key = self[:args][:public_key]
+      hash_of_public_key = self[:args][:hash_of_public_key]
 
       if user.nil?
         self[:result_code] = 'Error_InvalidUserID'
@@ -35,7 +37,7 @@ class Operation::SshKeys::Add < Operation::SshKeys
         fail! && next
       end
 
-      if user_key.nil? or user_key.public_key.blank?
+      if public_key.blank?
         self[:result_code] = 'Error_MissingPublicKey'
         self[:result_message] = "#{user.login}'s public key is empty"
         fail! && update_server_user_access(self[:result_message]) && next
@@ -43,7 +45,7 @@ class Operation::SshKeys::Add < Operation::SshKeys
 
       send_request(
         instance_request_path(instance),
-        :sshkeys, :add, [ self[:args][:server_user], user_key.public_key ]
+        :sshkeys, :add, [ self[:args][:server_user], public_key ]
       )
 
       success = true

@@ -6,13 +6,14 @@ class Operation::SshKeys::Delete < Operation::SshKeys
 
   def initiate_success()
     super
-    user = User.find_by_id(self[:args][:local_user_id], :include => :user_keys)
-    user_key = user.user_keys.detect{|uk| uk.id == self[:args][:user_key_id]}
+    user = User.find_by_id(self[:args][:local_user_id])
+      public_key = self[:args][:public_key]
+      hash_of_public_key = self[:args][:hash_of_public_key]
 
-    unless user.nil? or user_key.nil?
+    unless public_key.blank?
       update_attributes({
         :result_code => 'Success_RemovePublicKey',
-        :result_message => "#{user.login}'s key '#{user_key.hash_of_public_key}' has been removed for instance user #{self[:args][:server_user]}",
+        :result_message => "#{user.login}'s key '#{hash_of_public_key}' has been removed for instance user #{self[:args][:server_user]}",
       })
     end
   end
@@ -24,8 +25,9 @@ class Operation::SshKeys::Delete < Operation::SshKeys
 
       timeout_in(5.minutes)
 
-      user = User.find_by_id(self[:args][:local_user_id], :include => :user_keys)
-      user_key = user.user_keys.detect{|uk| uk.id == self[:args][:user_key_id]}
+      user = User.find_by_id(self[:args][:local_user_id])
+      public_key = self[:args][:public_key]
+      hash_of_public_key = self[:args][:hash_of_public_key]
 
       if user.nil?
         self[:result_code] = 'Error_InvalidUserID'
@@ -33,7 +35,7 @@ class Operation::SshKeys::Delete < Operation::SshKeys
         fail! && next
       end
 
-      if user_key.nil? or user_key.public_key.blank?
+      if public_key.blank?
         self[:result_code] = 'Error_MissingPublicKey'
         self[:result_message] = "#{user.login}'s public key is empty"
         fail! && update_server_user_access(self[:result_message]) && next
@@ -41,7 +43,7 @@ class Operation::SshKeys::Delete < Operation::SshKeys
 
       send_request(
         instance_request_path(instance),
-        :sshkeys, :delete, [ self[:args][:server_user], user_key.public_key ]
+        :sshkeys, :delete, [ self[:args][:server_user], public_key ]
       )
 
       success = true

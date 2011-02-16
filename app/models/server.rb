@@ -364,7 +364,8 @@ class Server < BaseModel
 		:args => {
 		    :local_user_id => user_key.user_id,
 		    :server_user => server_user,
-		    :user_key_id => user_key.id,
+		    :public_key => user_key.public_key,
+		    :hash_of_public_key => user_key.hash_of_public_key,
 		}
 	    )
 	end
@@ -378,7 +379,8 @@ class Server < BaseModel
 		:args => {
 		    :local_user_id => user_key.user_id,
 		    :server_user => server_user,
-		    :user_key_id => user_key.id,
+		    :public_key => user_key.public_key,
+		    :hash_of_public_key => user_key.hash_of_public_key,
 		}
 	    )
 	end

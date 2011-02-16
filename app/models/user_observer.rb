@@ -1,4 +1,6 @@
 class UserObserver < ActiveRecord::Observer
+  @enabled_changed = false
+
   def after_save(user)
     UserMailer.deliver_activation(user) if user.recently_activated?
     UserMailer.deliver_forgot_password(user) if user.recently_forgot_password?
@@ -15,8 +17,6 @@ class UserObserver < ActiveRecord::Observer
     self.class.add_user_keys_to_servers(user) if @enabled_changed and user.enabled?
   end
   
-  @enabled_changed = false
-
   def self.delete_user_keys_from_servers(user)
     user.user_keys.each do |user_key|
       UserKeyObserver.delete_user_key_from_servers(user_key)

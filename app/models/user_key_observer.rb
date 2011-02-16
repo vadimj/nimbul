@@ -1,4 +1,6 @@
 class UserKeyObserver < ActiveRecord::Observer
+    @public_key_changed = false
+
     def after_create(user_key)
         self.class.add_user_key_to_servers(user_key) if not user_key.public_key.blank? and user_key.user.enabled?
     end
@@ -15,8 +17,6 @@ class UserKeyObserver < ActiveRecord::Observer
     def after_update(user_key)
         self.class.add_user_key_to_servers(user_key) if @public_key_changed and not user_key.public_key.blank? and user_key.user.enabled?
     end
-
-    @public_key_changed = false
 
     def self.add_user_key_to_servers(user_key)
         suas = ServerUserAccess.find_all_by_user_id(user_key.user_id, :include => :server)

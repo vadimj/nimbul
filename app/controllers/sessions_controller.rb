@@ -31,6 +31,11 @@ class SessionsController < ApplicationController
 			password_authentication(params[:login], params[:password])
 	    end
 	end
+	
+	def show
+		# redirect to dashboard
+		redirect_to dashboard_index_url
+	end
 
 	def destroy
 		logout_killing_session!
