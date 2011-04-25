@@ -1,0 +1,15 @@
+@operations ||= []
+@tasks ||= []
+if @error_message.blank?
+    @operations.each do |s|
+        page.insert_html :bottom, 'operation_records', :partial => 'operations/operation', :object => s
+        page["operation_#{s.id}"].visual_effect :highlight
+    end
+    @tasks.each do |v|
+        page["task_#{v.id}"].replace_html :partial => "tasks/row", :object => v
+        page["task_#{v.id}"].visual_effect :highlight
+    end
+else
+    page['error_redbox'].replace_html :partial => 'shared/error_redbox'
+    page['error_redbox'].appear
+end

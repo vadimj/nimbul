@@ -18,6 +18,10 @@ class Object
   end
 end
 
+class ServiceWithoutActiveInstance < Exception
+end
+
+
 # Uncomment below to force Rails into production mode when
 # you don't control web/app server and can't set it the proper way
 ENV['RAILS_ENV'] ||= 'production'
@@ -58,8 +62,8 @@ Rails::Initializer.run do |config|
   config.gem "chronic"
   config.gem 'justinfrench-formtastic', :lib => 'formtastic', :source => 'http://gems.github.com'
   config.gem 'work_queue', :source => 'http://gems.github.com'
-  config.gem 'carrot', :source => 'http://gems.ec2.nytimes.com'
-  config.gem 'emissary', :source => 'http://gems.ec2.nytimes.com'
+  config.gem 'carrot'
+  config.gem 'emissary'
 
   # Only load the plugins named here, in the order given. By default, all plugins
   # in vendor/plugins are loaded in alphabetical order.
@@ -82,6 +86,7 @@ Rails::Initializer.run do |config|
 #    config.cache_store = :mem_cache_store
 #    config.action_controller.perform_caching = true
 
+
   # Your secret key for verifying cookie session data integrity.
   # If you change this key, all old sessions will become invalid!
   # Make sure the secret is at least 30 characters and all random,
@@ -94,7 +99,7 @@ Rails::Initializer.run do |config|
   # Use the database for sessions instead of the cookie-based default,
   # which shouldn't be used to store highly confidential information
   # (create the session table with "rake db:sessions:create")
-  # config.action_controller.session_store = :active_record_store
+  config.action_controller.session_store = :active_record_store
 
   # Use SQL instead of Active Record's schema dumper when creating the test database.
   # This is necessary if your schema can't be completely dumped by the schema dumper,
@@ -104,6 +109,7 @@ Rails::Initializer.run do |config|
   # Activate observers that should always be running
   # config.active_record.observers = :cacher, :garbage_collector
   config.active_record.observers = :user_observer,
+                                   :user_key_observer,
                                    :server_user_access_observer,
                                    :instance_observer,
                                    :provider_account_observer
@@ -116,7 +122,7 @@ Rails::Initializer.run do |config|
 
   # Helper type for select boxes with groups and filter
   GroupLabelValueFilter = Struct.new(:group, :label, :value, :filter)
-
+  
   # Helper type to JSON Error handling
   ModelError = Struct.new(:model,:error)
 
@@ -149,6 +155,8 @@ Rails::Initializer.run do |config|
     AS_TRIGGER_BREACH_SCALE_INCREMENT_UNITS = [ '%', 'instances' ]
     SERVER_VOLUME_MOUNT_TYPES_ARRAY = [ 'Mount Volume Mount Type', 'Restore Snapshot Mount Type', 'Restore Latest Snapshot Mount Type' ]
 	SERVER_VOLUME_MOUNT_TYPES = SERVER_VOLUME_MOUNT_TYPES_ARRAY.map{ |t| LabelValue.new(t.gsub('Mount Type',''), t.gsub(' ','')) }
+
+  INSTANCE_KIND_IO_PERFORMANCES = [ 'Low', 'Moderate', 'High' ]
 
   PKI_CONSOLE_ID = 'console'
 

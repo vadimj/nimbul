@@ -24,11 +24,9 @@
 # end
 module Behaviors::Searchable
 	module ClassBehaviors
-	    def search_by_parent(parent, options={})
+		def find_all_by_parent(parent, options={})
 			parent_type = parent.class.to_s.underscore
-			# handle SiteUser and LdapUser subclasses
-			parent_type = 'user' if parent.is_a?(User)
-			send("search_by_#{ parent_type }", parent, options)
+			send("find_all_by_#{ parent_type }", parent, options)
 		end
 
 		def find_all_by_user(user, options={})
@@ -41,12 +39,19 @@ module Behaviors::Searchable
 			count(:all, options)
 		end
 
+		def search_by_parent(parent, search, page=nil, extra_joins=nil, extra_conditions=nil, sort=nil, filter=nil, include=nil)
+			parent_type = parent.class.to_s.underscore
+			# handle SiteUser and LdapUser subclasses
+			parent_type = 'user' if parent.is_a?(User)
+			send("search_by_#{ parent_type }", parent, search, page, extra_joins, extra_conditions, sort, filter, include)
+		end
+
 		def search_by_user(user, options={})
 			options = options_for_find_by_user(user, options)
 			search(options[:search], options[:page], options[:joins], options[:conditions], options[:order], options[:filter], options[:include])
 		end
 
-		def search(search, page, joins, conditions, order=nil, filters=nil, include=nil)
+		def search(search, page, joins, conditions, order=nil, filters=nil, include=nil, group_by=nil)
 			unless search.blank?
 				conditions = [ '' ] if conditions.nil? or conditions.empty?
 				conditions[0] = conditions[0] + " AND " unless conditions[0].blank?
@@ -107,7 +112,8 @@ module Behaviors::Searchable
 				:joins => joins,
 				:conditions => conditions,
 				:order => order,
-				:include => include
+				:include => include,
+				:group => group_by
 		end
 	end # class methods
 end

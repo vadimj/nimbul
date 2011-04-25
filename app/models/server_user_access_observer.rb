@@ -3,62 +3,51 @@ require 'pp'
 class ServerUserAccessObserver < ActiveRecord::Observer
 
 private
-	@is_enabled_changed   = false
-	@server_user_changed  = false
-	@previous_server_user = nil
-
-	def add_key(server, local_user, server_user)
-		server.instances.each do |instance|
-			next if not instance.running?
-			instance.operations << Operation.factory(
-					'Operations::SshKeys::Add',
-					:args => { :local_user_id => local_user, :server_user => server_user }
-			)
-		end
-	end
-
-	def del_key(server, local_user, server_user)
-		server.instances.each do |instance|
-			next if not instance.running?
-			instance.operations << Operation.factory(
-					'Operations::SshKeys::Delete',
-					:args => { :local_user_id => local_user, :server_user => server_user }
-			)
-		end
-	end
+  @is_enabled_changed   = false
+  @server_user_changed  = false
+  @previous_server_user = nil
 
 public
+  def after_create(user_access)
+    user = User.find(user_access.user_id, :include => :user_keys)
+    user.user_keys.each do |user_key|
+      user_access.server.add_user_key(user_key, user_access.server_user)
+    end
+  end
 
-	def after_create(user_access)
-		add_key(user_access.server, user_access.user_id, user_access.server_user)
-	end
+  def before_update(user_access)
+    @is_enabled_changed  = user_access.is_enabled_changed?
+    @server_user_changed = user_access.server_user_changed?
 
-	def before_update(user_access)
-		@is_enabled_changed  = user_access.is_enabled_changed?
-		@server_user_changed = user_access.server_user_changed?
+    if @server_user_changed
+      @previous_server_user = user_access.server_user_was
+    end
+  end
 
-		if @server_user_changed
-			@previous_server_user = user_access.server_user_was
-		end
-	end
+  def after_update(user_access)
+    user = User.find(user_access.user_id, :include => :user_keys)
 
-	def after_update(user_access)
-		if @is_enabled_changed
-			case user_access.is_enabled.to_i
-				when 0: del_key(user_access.server, user_access.user_id, user_access.server_user)
-				when 1: add_key(user_access.server, user_access.user_id, user_access.server_user)
-			end
-		end
+    if @is_enabled_changed
+      user.user_keys.each do |user_key|
+        user_access.server.add_user_key(user_key, user_access.server_user) if user_access.is_enabled?
+        user_access.server.delete_user_key(user_key, user_access.server_user) if not user_access.is_enabled?
+      end
+    end
+    
+    if @server_user_changed and user_access.is_enabled?
+      user.user_keys.each do |user_key|
+	# remove user's access to the previous server user
+        user_access.server.delete_user_key(user_key, @previous_server_user)
+        # and then add access to the new user
+        user_access.server.add_user_key(user_key, user_access.server_user)
+      end
+    end
+  end
 
-		if @server_user_changed and user_access.is_enabled.to_i != 0
-			# remove user's access to the previous server user
-			del_key(user_access.server, user_access.user_id, user_access.server_user)
-			# and then add access to the new user
-			add_key(user_access.server, user_access.user_id, user_access.server_user)
-		end
-	end
-
-	def after_destroy(user_access)
-		del_key(user_access.server, user_access.user_id, user_access.server_user)
-	end
+  def after_destroy(user_access)
+    user = User.find(user_access.user_id, :include => :user_keys)
+    user.user_keys.each do |user_key|
+      user_access.server.delete_user_key(user_key, user_access.server_user)
+    end
+  end
 end

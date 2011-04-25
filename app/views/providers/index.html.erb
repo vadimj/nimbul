@@ -1,31 +1,28 @@
-<% subtitle 'Providers' %>
+<% subtitle 'Available Cloud Providers' %>
 
-<h1>Providers</h1>
+<h1><%= link_to 'Admin Controls', admin_controls_path %> / Available Cloud Providers</h1>
+<br/>
+
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Long name</th>
+    <th>Main documentation url</th>
+    <th>State</th>
+    <th>Adapter class</th>
+  </tr>
+
+<% for provider in @providers %>
+  <tr>
+    <td><%= link_to h(provider.name), provider %></td>
+    <td><%=h provider.long_name %></td>
+    <td><%=h provider.main_documentation_url %></td>
+    <td class="<%=h provider.state %>"><%=h provider.state %></td>
+    <td><%=h provider.adapter_class %></td>
+  </tr>
+<% end %>
+</table>
 
 <br />
 
-<% remote_form_for :providers, :url => { :action => 'control' } do |f| %>
-<%= render :partial => "list", :locals => { :f => f }  %>
-
-<%= refresh_link image_tag("refresh.png", :align => "absmiddle", :alt => "Refresh"), 'providers', nil, :list %>
-
-<%= image_submit_tag "start.png", :align => "absmiddle",
-    :alt => "Start", :title => "Start Selected Providers",
-    :onclick => '$(this).next(".command").value="start";',
-    :name => 'start'
-%>
-
-<%= image_submit_tag "reboot.png", :align => "absmiddle",
-    :alt => "Restart", :title => "Restart Selected Providers",
-    :onclick => '$(this).next(".command").value="restart";',
-    :name => 'restart'
-%>
-
-<%= image_submit_tag "stop.png", :align => "absmiddle",
-    :alt => "Stop", :title => "Stop Selected Providers",
-    :onclick => 'if (confirm("Are you sure?")) { $(this).next(".command").value="stop"; } else { return false; }',
-    :name => 'stop'
-%>
-
-<%= hidden_field_tag :command, '', :class => :command %>
-<% end %>
+<%= link_to 'New Cloud Provider', new_provider_path %>

@@ -3,7 +3,7 @@ class StartupProcessor < ApplicationProcessor
   subscribes_to :startup, :routing_key => 'startup.#'
 
   def on_message(msg)
-    name, public_ip, local_ip, instance_id, server_id = message.args
+    name, public_ip, local_ip, instance_id, server_id, cluster_id, account_id, queue_name, client_version = message.args
     
     return unless request_valid? server_id
 
@@ -16,14 +16,14 @@ class StartupProcessor < ApplicationProcessor
     # we don't allow instances to migrate from server to server yet :)
     if instance.server_id.nil? or instance.server_id == 0
       instance.server_id = server_id
-      instance.server_name = server.nil? ? 'Unknown' : server.name
+      instance.server_name = Server.find(server_id).nil? ? 'Unknown' : Server.find(server_id).name
       instance.save
     end
 
     # Add initialization operation to the instance	
     instance.operations << (
       @operation = Operation.factory(
-        'Operations::Initialization',
+        'Operation::Initialization',
         :args => {
           :local_ip => local_ip,
           :public_ip => public_ip

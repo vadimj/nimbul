@@ -1,0 +1,40 @@
+<%= link_to '<< Back to Operations', server_path(@server, :anchor => :operations) %>
+<br />
+<br />
+
+<h1>
+Server: <%= @operation.server.name %>
+<br />
+Instance: <%= @operation.instance.instance_id %>
+<br />
+Operation: <%=h @operation.class %>, <%= time_and_time_ago(@operation.created_at) %>
+</h1>
+
+<br />
+
+<% if @operation_logs.length > 0 %>
+<table>
+<tr>
+    <th>Timestamp</th>
+    <th>Step</th>
+    <th>Result</th>
+    <th>Code</th>
+    <th>Details</th>
+</tr>
+<% @operation_logs.each do |operation_log| %>
+    <tr>
+    <td><%= time_and_time_ago(operation_log.created_at) %></td>
+    <td><%=h operation_log.step_name %></td>
+    <td class="<%= operation_log.is_success %>"><%= operation_log.is_success? ? 'Success' : 'Failure' %></td>
+    <td><%=h operation_log.result_code %></td>
+    <td><%=h operation_log.result_message %></td>
+    </tr>
+<% end %>
+</table>
+<% else %>
+    <strong>No Logs found for this Operation.</strong>
+    <br />
+<% end %>
+
+<br />
+<%= link_to '<< Back to Operations', server_path(@server, :anchor => :operations) %>

@@ -13,7 +13,10 @@ cd "${NIMBUL_HOME}"
 mongrel_rails stop -P tmp/pids/mongrel.pid
 script/daemons stop
 sleep 10
-killall -9 ruby
+killall -9 ruby mongrel_rails
+
+# make sure to cleanup the pid file if it's there
+rm -f tmp/pids/mongrel.pid
 
 rake keystore:reset_lock
 

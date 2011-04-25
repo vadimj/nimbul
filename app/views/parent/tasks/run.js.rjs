@@ -1,0 +1,13 @@
+@operations ||= []
+if @error_message.blank? and @task
+    page["task_#{@task.id}"].hide
+    page["task_#{@task.id}"].replace_html :partial => "tasks/row", :object => @task
+    page["task_#{@task.id}"].appear
+    @operations.each do |operation|
+        page.insert_html :top, 'operation_records', :partial => 'operations/operation', :object => operation
+        page["operation_#{operation.id}"].highlight
+    end
+else
+    page['error_redbox'].replace_html :partial => 'shared/error_redbox'
+    page['error_redbox'].appear
+end

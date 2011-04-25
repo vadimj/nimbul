@@ -124,7 +124,7 @@ class FirewallRule < BaseModel
         %w(name type protocol from_port to_port ip_range group_user_id group_name)
     end
 
-    def self.find_all_by_provider_account(provider_account, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
+    def self.search_by_provider_account(provider_account, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
 	    joins = []
 	    joins = joins + extra_joins unless extra_joins.blank?
 

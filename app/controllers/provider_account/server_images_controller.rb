@@ -9,7 +9,7 @@ class ProviderAccount::ServerImagesController < ApplicationController
 	    
         joins = nil
 	    conditions = nil
-	    @server_images  = ServerImage.find_all_by_parent(parent, params[:search], params[:page], joins, conditions, params[:sort], params[:filter], [:provider_account])
+	    @server_images  = ServerImage.search_by_parent(parent, params[:search], params[:page], joins, conditions, params[:sort], params[:filter], [:provider_account])
 
         @parent_type = parent_type
         @parent = parent

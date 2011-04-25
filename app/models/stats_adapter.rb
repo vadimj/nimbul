@@ -1,8 +1,8 @@
 class StatsAdapter
-    def self.refresh_account(provider_account)
+    def self.refresh_account(provider_account, period=5.minutes)
         # collect this 5 minutes stats (if they haven't been collected already)
-		now = Time.now
-        this_period = Time.at((now.to_f / 5.minutes).floor * 5.minutes)
+    		now = Time.now
+        this_period = Time.at((now.to_f / period).floor * period)
         stat_record = StatRecord.find(:first, :conditions => [
                 'provider_account_id=:provider_account_id AND taken_at=:taken_at',
                 { :provider_account_id => 1, :taken_at => this_period.utc }
@@ -14,7 +14,7 @@ class StatsAdapter
             })
             stat_record.save
             iaRecords = InstanceAllocationRecord.find_by_sql([
-                "select server_id, zone_id, type as instance_type, count(id) as running from instances where provider_account_id=? and state='running' group by server_id, zone_id, type order by zone_id, type",
+                "select server_id, zone_id, instance_type, count(id) as running from instances where provider_account_id=? and state='running' group by server_id, zone_id, instance_type order by zone_id, instance_type",
                 provider_account.id
             ])
             iaRecords.each do |iaRecord|
@@ -42,5 +42,7 @@ class StatsAdapter
                 instance_allocation_record.save 
             end
         end
+    rescue Exception => e
+      Rails.logger.error "#{e.class.name}: #{e.message}\n\t#{e.backtrace.join("\n\t")}"
     end
 end

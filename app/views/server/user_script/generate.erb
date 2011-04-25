@@ -1,0 +1,1025 @@
+#!/usr/bin/env ruby
+
+#
+# Account: <%= user_script.account.name %> [<%= user_script.account.id %>]
+# Cluster: <%= user_script.cluster.name %> [<%= user_script.cluster.id %>]
+# Server: <%= user_script.server.name %> [<%= user_script.server.id %>]
+#
+
+#### Server Instance Details ####
+
+#
+# AMI: <%= user_script.server.image_id %> - <%= ServerImage.find_by_image_id(user_script.server.image_id).location %>
+# Default Key: <%= user_script.server.key_name %>
+# Instance Type: <%= user_script.server.instance_type %>
+# Security Groups: <%= user_script.security_groups.join(", ") %>
+#
+
+####################
+#### Resources #####
+####################
+#
+# Volumes:
+#<%= user_script.volumes.collect { |mp,d| sprintf("\t%s on %s [type: %s, zone: %s] --- %s", d[:id], mp, d[:type].to_s, d[:zone], d[:name]) }.join("\n#\t") %>
+#
+# Addresses:
+#<%= user_script.addresses.collect { |a| sprintf("\t%-16s\t%s", *a.zip.flatten) }.join "\n#\t" %>
+#
+
+require 'rubygems'
+require 'ostruct'
+require 'optparse'
+require 'readline'
+require 'fcntl'
+
+begin
+  require 'json'
+rescue LoadError
+  puts "Please install the json and json-pure gems to use this script: sudo gem install json json-pure"
+  exit! 1
+end
+
+def update_program_name
+  # allow setting of program name if using a tar/gzip loader
+  arg, program_name = (ARGV[ARGV.index('--program-name'),2] rescue [ nil, nil ])
+  unless program_name =~ /^-/
+    new_argv = ARGV - [arg, program_name]
+  else
+    new_argv = ARGV - [arg]
+    program_name = nil
+  end
+  ARGV.clear
+  new_argv.each { |a| ARGV << a }
+  program_name || $0
+end
+
+$0 = update_program_name
+
+class << $stdin
+  def has_data?
+    self.fcntl(Fcntl::F_GETFL, 0) == 0
+  end
+end
+
+class Object
+  def try method, *args
+    self.__send__(method.to_s.to_sym, *args) unless not respond_to? method.to_s.to_sym
+  end
+end
+
+class Symbol
+  def <=>(test); self.to_s <=> test.to_s; end
+end
+
+class Array
+  def symbolize_keys
+    inject([]) do |array, value|
+      array << case value
+        when Hash, Array
+          value.symbolize_keys
+        else
+          value
+      end
+      array
+    end
+  end
+    
+  def symbolize_keys!
+    self.replace(self.symbolize_keys)
+  end
+end
+
+class Hash
+  def symbolize_keys
+    inject({}) do |options, (key, value)|
+      options[(key.to_sym rescue key) || key] = case value
+        when Hash, Array
+          value = value.symbolize_keys
+        else
+          value
+      end
+      options
+    end
+  end
+  
+  def symbolize_keys!
+    self.replace(self.symbolize_keys)
+  end
+end
+
+class Integer
+  SECOND =  1 
+  MINUTE = 60 * SECOND
+  HOUR   = 60 * MINUTE
+  DAY    = 24 * HOUR
+  WEEK   =  7 * DAY
+  MONTH  = 30 * DAY
+  YEAR   = 52 * WEEK
+  INFINITY = (1.0/0)
+  
+  def to_years()   self.to_i >= YEAR   ? self.to_i / YEAR   : 0 ; end
+  def to_months()  self.to_i >= MONTH  ? self.to_i / MONTH  : 0 ; end
+  def to_weeks()   self.to_i >= WEEK   ? self.to_i / WEEK   : 0 ; end
+  def to_days()    self.to_i >= DAY    ? self.to_i / DAY    : 0 ; end
+  def to_hours()   self.to_i >= HOUR   ? self.to_i / HOUR   : 0 ; end
+  def to_minutes() self.to_i >= MINUTE ? self.to_i / MINUTE : 0 ; end
+  
+  def years()   self.to_i * YEAR; end
+  def months()  self.to_i * MONTH; end
+  def weeks()   self.to_i * WEEK; end
+  def days()    self.to_i * DAY; end
+  def hours()   self.to_i * HOUR; end
+  def minutes() self.to_i * MINUTE; end
+  def seconds() self.to_i ; end
+  
+  alias :year   :years
+  alias :month  :months
+  alias :week   :weeks
+  alias :day    :days
+  alias :hour   :hours
+  alias :minute :minutes
+  alias :second :seconds
+
+  def time_hash
+    total = {}
+    total[:seconds] = self.to_i
+    total[:seconds] -= (total[:years]   = total[:seconds] / 1.year).years
+    total[:seconds] -= (total[:months]  = total[:seconds] / 1.month).months
+    total[:seconds] -= (total[:weeks]   = total[:seconds] / 1.week).weeks
+    total[:seconds] -= (total[:days]    = total[:seconds] / 1.day).days
+    total[:seconds] -= (total[:hours]   = total[:seconds] / 1.hour).hours
+    total[:seconds] -= (total[:minutes] = total[:seconds] / 1.minute).minutes
+    total
+  end
+  
+  def time_text type = :accurate
+    total = time_hash
+    
+    unless not type == :accurate
+      [:years, :months, :weeks, :days, :hours, :minutes, :seconds].inject([]) do |a, timepart|
+        timepart_name = total[timepart] > 1 ? timepart.to_s : timepart.to_s[0..-2]
+        a << "#{total[timepart]} #{timepart_name}" unless total[timepart] <= 0; a
+      end.join ', ' 
+    else
+      case self.to_i
+        when (0.seconds)..(30.seconds):
+          'less than a minute'
+        when (31.seconds)..(59.seconds):
+          'about a minute'
+        when (1.minute)..(1.minute + 14.seconds):
+          'a minute'
+        when (1.minute + 15.seconds)..( 2.minutes - 1.second):
+          'more than a minute'
+        when (2.minutes)..(30.minutes - 1.second):
+          'less than half an hour'
+        when (30.minutes)..(30.minutes + 59.seconds):
+          'half an hour'
+        when (31.minutes)..(59.minutes + 59.seconds):
+          'more than half an hour'
+        when (1.hour)..(1.hour + 14.minutes + 59.seconds):
+          'one hour'
+        when (1.hour + 15.minutes)..( 2.hours - 1.second):
+          'around an hour'
+        when (2.hours)..( 5.hours - 1.second):
+          'a few hours'
+        when (5.hours)..(12.hours - 1.second):
+          'less than half a day'
+        when (12.hours)..(12.hours + 14.minutes + 59.seconds):
+          'half a day'
+        when (12.hours + 15.minutes)..(24.hours - 1.second):
+          'more than half a day'
+        when (1.day)..(1.week - 1.second):
+          "about #{total[:days]} #{total[:days] > 1 ? 'days' : 'day'}"
+        when (1.week)..(1.month - 1.second):
+          "about #{total[:weeks]} #{total[:weeks] > 1 ? 'weeks' : 'week'}"
+        when (1.month)..(1.year - 1.second):
+          "about #{total[:months]} #{total[:months] > 1 ? 'months' : 'month'}"
+        when (1.year)..(INFINITY):
+          "about #{total[:years]} #{total[:years] > 1 ? 'years' : 'year'}"
+      end
+    end
+  end
+end
+
+COMMANDS = [ :run, :start, :stop, :reboot, :list, :hosts ]
+
+BUILD_DATE      = '<%= Time.now -%>'
+SERVER_NAME     = '<%= user_script.server.name -%>'
+SERVER_ID       = <%= user_script.server.id.inspect %>
+IMAGE_AMI       = '<%= user_script.server.image_id -%>'
+HOSTSFILE_URL   = '<%= user_script.hosts_file_url -%>'
+SECURITY_GROUPS = <%= user_script.security_groups.inspect %>
+INSTANCE_TYPE   = '<%= user_script.server.instance_type -%>'
+KEY_NAME        = '<%= user_script.server.key_name -%>'
+VOLUMES         = <%= user_script.volumes.inspect %>
+ADDRESSES       = <%= user_script.addresses.inspect %>
+DEFAULT_ZONE    = '<%= user_script.zone %>'
+AVAILABLE_ZONES = <%= user_script.available_zones.inspect %>
+USER_DATA       = DATA.read
+
+['INT', 'TERM' ].map do |signal|
+  Signal.trap(signal) { exit! 2 }
+end
+
+class Ec2
+  attr_reader :ec2, :instance
+  def initialize ec2, instance
+    @ec2 = ec2
+    @instance = instance
+  end
+  
+  def create_volume_from_snapshot snapshot_id, availability_zone
+    ec2.create_volume_from_snapshot(snapshot_id, availability_zone)
+  end
+  
+  def attach volume_id, mount_point
+    ec2.attach_volume volume_id, @instance, mount_point
+  end
+  
+  def detach volume_id, instance_id = nil, device = nil, force = nil
+    ec2.detach_volume volume_id, instance_id, device, force
+  end
+  
+  def attached? volume_id
+    ec2.describe_volumes(volume_id).any? { |v| v[:status] != 'available' } rescue false
+  end
+
+  def volume_available? volume_id
+    not attached? volume_id
+  end
+
+  def associate address
+    ec2.associate_address @instance, address
+  end
+  
+  def disassociate address
+    ec2.disassociate_address address
+  end
+  
+  def associated? address
+    ec2.describe_addresses(address).any? { |v| !v[:instance_id].nil? } rescue false
+  end
+
+  def address_available? address
+    not associated? address
+  end
+  
+end
+
+###############################################################################################################
+################################################### Parser ####################################################
+###############################################################################################################
+
+class CommandParser
+  attr_reader :options, :parser
+  
+  def self.instance
+    @@parser ||= begin
+      command = (ARGV[0] || 'missing').downcase.to_sym
+      command = if command == :help
+       unless ARGV[1].nil? || ARGV[1].empty?
+          ARGV.shift
+          ARGV << '-h'
+          unless COMMANDS.include? ARGV[0].downcase.to_sym
+            puts "Invalid command '#{ARGV[0].to_s}' given..."
+            puts
+            :missing
+          else
+            ARGV[0].downcase.to_sym
+          end
+        else
+          :missing
+        end
+      elsif not COMMANDS.include?(command)
+        puts "Invalid command '#{command.to_s}' given..."
+        puts
+        :missing
+      else
+        command
+      end
+      CommandParser.const_get(command.to_s.capitalize).new(command) rescue CommandParser.new(command)
+    end
+  end
+
+  def initialize command
+    @parser = nil
+
+    @options = OpenStruct.new
+    options.verbose = false
+    options.debug   = false
+    options.help    = false
+    options.exit    = false
+    options.trace   = false
+    options.command = command
+    options.showinfo = false
+    options.skip_age_check = false
+    setup unless not respond_to? :setup
+  end
+
+  def age_check
+    time_since_build = Time.now.to_i - Time.parse(BUILD_DATE).to_i
+    unless time_since_build <= 30.minutes
+      puts "This server control script is #{time_since_build.time_text :fuzzy} old"
+      puts "Please refresh this script from S3 unless you are certain that it is ok."
+      puts 
+      puts "If you are sure that this script has not changed, you can bypass this by"
+      puts "using the --skip-age-check argument."
+      puts 
+      exit 1
+    end
+    return true
+  end
+
+  def help!
+    options.help = options.exit = true
+  end
+
+  def banner
+    unless options.command == :missing
+      parser.banner = "Usage: #{File.basename($0, '.*')} #{options.command.to_s} "
+
+      unless not respond_to? :lead_in
+        lead_in
+        parser.separator ""
+      end
+      
+      subcmd = options.subcommand && options.subcommand != :missing ? options.subcommand.to_s.capitalize : "\b"
+      parser.separator "#{options.command.to_s.capitalize} #{subcmd} Options:"
+    else
+      parser.separator "Valid Commands:"
+      parser.separator ""
+      parser.separator "  run     - Runs a shell command on all instances of this server"
+      parser.separator "  hosts   - Put or Get the hosts file that this server uses"
+      parser.separator "  list    - List all instances of this server"
+      parser.separator "  reboot  - Reboot an instance of this server"
+      parser.separator "  start   - Start an instance of this server"
+      parser.separator "  stop    - Stop an instance of this server"
+    end
+  end
+
+  def parse
+    OptionParser.new do |parser|
+      @parser = parser
+      
+      self.help! if options.command == :missing
+      
+      parser.banner = "Usage: #{File.basename($0)} <command> [options]"
+      parser.separator ""
+
+      banner
+      build
+      
+      parser.separator ""
+      parser.separator "Common options:"
+
+      parser.on('-d', '--[no-]debug', 'Turn on debugging') { |d| options.debug = !!d }
+      parser.on('-v', '--[no-]verbose', 'Increase verbosity level') { |v| options.verbose = !!v }
+      parser.on('--trace', 'Turn on display of exception backtrace') { |v| options.trace = true }
+
+      parser.on('--server-info', 'Display server details') do
+        puts "Embedded Server Details:"
+        puts
+        puts sprintf("%-20s: \t%s\n", "BUILD_DATE", "#{::BUILD_DATE}")
+        puts sprintf("%-20s: \t%s\n", "SERVER_ID", "#{::SERVER_ID}")
+        puts sprintf("%-20s: \t%s\n", "SERVER_NAME", "#{::SERVER_NAME}")
+        puts sprintf("%-20s: \t%s\n", "DEFAULT_ZONE", "#{::DEFAULT_ZONE}")
+        puts sprintf("%-20s: \t%s\n", "AVAILABLE_ZONES", "#{::AVAILABLE_ZONES.inspect}")
+        puts sprintf("%-20s: \t%s\n", "IMAGE_AMI", "#{::IMAGE_AMI}")
+        puts sprintf("%-20s: \t%s\n", "INSTANCE_TYPE", "#{::INSTANCE_TYPE}")
+        puts sprintf("%-20s: \t%s\n", "SECURITY_GROUPS", "#{::SECURITY_GROUPS.join ', '}")
+        puts sprintf("%-20s: \t%s\n", "KEY_NAME", "#{::KEY_NAME}")
+        puts sprintf("%-20s: \t%s\n", "VOLUMES", "#{::VOLUMES.inspect}")
+        puts sprintf("%-20s: \t%s\n", "ADDRESSES", "#{::ADDRESSES.collect { |k,v| k }.join ', '}")
+        puts sprintf("%-20s: \t%s\n", "HOSTSFILE_URL", "#{::HOSTSFILE_URL}")
+        puts
+        exit! 0
+      end
+      
+      parser.on('--skip-age-check') do |v|
+        @options.skip_age_check = true
+      end
+      
+      parser.on_tail('-h', '--help', 'Show this message') do
+        self.help!
+      end
+      
+      parser.on_tail('--version', 'Show version') do
+        puts "This script built on: #{BUILD_DATE.to_s}"
+        exit!
+      end
+
+      result = parser.parse!
+
+      unless not options.exit
+        puts parser.help if options.help
+        exit
+      end
+
+      age_check unless @options.skip_age_check
+
+      result 
+    end
+    
+    begin
+      validate_options
+    rescue OptionParser::MissingArgument => e
+      puts e.message
+      puts 
+      puts parser.help
+      exit
+    end
+    
+    options
+  end
+
+  def build; end
+  def setup; end
+  def validate_options; end
+  protected :build, :setup
+end
+
+class CommandParser::Missing < CommandParser; end
+
+###############################################################################################################
+################################################# Commands ####################################################
+###############################################################################################################
+
+class ServerCommand
+  
+  attr_reader :options, :aws_config, :aws_context, :ec2, :s3
+  
+  def self.instance
+    @@executor ||= begin
+      options = CommandParser.instance.parse
+      unless COMMANDS.include? options.command
+        ServerCommand.new(options)
+      else
+        ServerCommand.const_get(options.command.to_s.capitalize).new(options)
+      end
+    end
+  end
+
+  def initialize options
+    require 'AWS/EC2'
+    require 'basic_configuration'
+    require 'aws_context'
+
+    @options = options
+    @aws_config  = BasicConfiguration.new
+    @aws_context = AwsContext.instance
+
+    @ec2 = @aws_context.ec2(*@aws_config.keys)
+    @ec2.debug = options.debug
+    if options.command == :hosts and options.subcommand == :put
+      @s3 = @aws_context.s3(*@aws_config.keys)
+      @s3.debug = options.debug
+    end
+
+    setup unless not respond_to? :setup
+  rescue Exception => e
+    subcmd = options.subcommand && options.subcommand != :missing ? "[#{options.subcommand.to_s}]" : "\b"
+    puts "Command '#{options.command.to_s}' #{subcmd} failed due to the following error:"
+    puts
+    unless options.trace
+      puts "#{e.message}"
+    else
+      puts "#{e.message}\n\t#{e.backtrace.join("\n\t")}"
+    end
+    exit 2
+  end
+  
+  def get_s3_object uri
+    require 'net/http'
+
+    url = URI.parse(uri)
+    http = Net::HTTP.new(url.host, url.port)
+    http.set_debug_output $stderr if @options.debug
+    result = http.start do |http|
+      response, body = http.get(url.path)
+      body || response.body
+    end
+  end
+
+  def host_lookup instance_id
+    begin
+      @@json ||= JSON.parse(get_s3_object(::HOSTSFILE_URL.gsub(/hosts$/, 'json'))).symbolize_keys
+      @@json[:all].collect do |hostname,instances|
+        instances.select { |host| host[:cloud_id] == instance_id }
+      end.flatten.first
+    rescue Exception
+      return { :server_id => nil }
+    end
+  end
+  
+  def get_instance_list only_active = true, force_list = false
+    my_sg = ::SECURITY_GROUPS.sort.join ' '
+
+    @@instance_list = nil unless not force_list
+
+    @@instance_list ||= @ec2.describe_instances.inject({}) do |instances,group|  
+      sg = group[:groups].sort.join(' ')
+      group[:instances].each do |i|
+        hostinfo = host_lookup i[:id]
+        if sg == my_sg or hostinfo.try(:[], :server_id) == ::SERVER_ID
+          instances[i[:id]] = {
+            :id       => i[:id],
+            :state    => i[:state],
+            :ami      => i[:image_id],
+            :dns      => i[:public_dns],
+            :groups   => sg.split(/\s+/),
+            :roles    => hostinfo.try(:[], :roles).try(:split, /\s*,\s*/),
+            :server   => hostinfo.try(:[], :server_name),
+            :cluster  => hostinfo.try(:[], :cluster_name),
+            :account  => hostinfo.try(:[], :account_name),
+            :provider => hostinfo.try(:[], :provider_name),
+            :up_since => (Time.now.getlocal - Time.parse(i[:launch_time]).getlocal).to_i.time_text(:fuzzy)
+          } unless (!!only_active && i[:state] != 'running')
+        end
+      end
+      instances
+    end
+  end
+
+  def setup_readline
+    # Default
+    @libedit = false
+    
+    # If NotImplemented then this might be libedit
+    begin
+      Readline.emacs_editing_mode
+    rescue NotImplementedError
+      @libedit = true
+    end
+      
+    stty_save = `stty -g`.chomp
+    trap('INT') { system('stty', stty_save); exit }
+  end
+
+  def instance_display_list instances, display_keys = [ :state, :ami, :cluster, :server, :dns ]
+    instances.values.sort{|a,b| a[:up_since] <=> b[:up_since]}.collect do |data|
+      "#{data[:id]}: #{display_keys.collect { |k| data[k] || 'unknown' }.compact.join " - "} (running for #{data[:up_since]})" 
+    end
+  end
+  
+  def choose_instance only_active = true
+    setup_readline
+    
+    instances = get_instance_list(only_active)
+    
+    list = instances.keys + [ 'quit', 'all' ]
+    list.collect { |i| i += ' ' } if !!@libedit
+    
+    comp = proc { |s| list.grep( /^#{Regexp.escape(s)}/ ) }
+    Readline.completion_append_character = " "
+    Readline.completion_proc = comp
+    
+    while true
+      puts "Choose an Instance:\n\n\t#{instance_display_list(instances).join("\n\t")}\n\n"
+      selection = Readline.readline("(use quit to exit, use 'all' for all instances)\n> ", true).strip
+      break if list.include?(selection) 
+    end
+    
+    exit! if selection == 'quit'
+
+    unless selection == 'all'
+      [ instances[selection] ]
+    else
+      instances.collect { |k,v| v }
+    end
+  end
+  
+  def run() puts "Nothing to do."; end
+  def setup; end
+  protected :run, :setup
+  
+  def execute
+    run
+  rescue Exception => e
+    subcmd = options.subcommand && options.subcommand != :missing ? "[#{options.subcommand.to_s}]" : "\b"
+    puts "Command '#{options.command.to_s}' #{subcmd} failed due to the following error:"
+    puts
+    unless options.trace
+      puts "#{e.message}"
+    else
+      puts "#{e.message}\n\t#{e.backtrace.join("\n\t")}"
+    end
+  end
+end
+
+###############################################################################################################
+######################################### Instance Specific ###################################################
+###############################################################################################################
+
+class InstanceSpecific < ::CommandParser
+  def setup
+    options.cloud_id = nil
+  end
+
+  def build
+    parser.banner += "[-i <Cloud ID>]"
+    parser.on('-i [ID]', '--cloud-id [ID]', String,
+              '[optional] The Cloud ID of the instance this action should be',
+              'performed on. Note: You will be presented a list of IDs to choose ',
+              'from if you do not provide one.' 
+    ) { |v| options.cloud_id = v }
+  end
+end
+
+class ServerCommand::InstanceSpecific < ServerCommand
+  attr_reader :instances
+  
+  def setup
+    super 
+    unless options.cloud_id and get_instance_list(true)[options.cloud_id]
+      puts "Getting list of instances for user selection..."
+      @instances = choose_instance
+      options.cloud_id = (@instances.size > 1 ? 'all' : @instances.first[:id]) rescue 'missing'
+    else
+      puts "Getting instance '#{options.cloud_id}' details.."
+      @instances = [ get_instance_list(true)[options.cloud_id] ] rescue []
+    end
+    @instances
+  end
+end
+
+###############################################################################################################
+#################################################### RUN ####################################################
+###############################################################################################################
+
+class Run < InstanceSpecific
+  def setup
+    options.ssh_key_file = nil 
+  end
+  
+  def lead_in
+    parser.separator "Run Description:"
+    parser.separator "    RUN provides a mechanism for sending a shell command (via ssh)"
+    parser.separator "    to all instances of the given server. Pass --keyfile <keyfile> to use"
+    parser.separator "    to use a key other than the one defined in your aws_config.ini"
+    parser.on('--keyfile [KEYFILE]',
+              '[optional] Path to key file to use when making ssh connection to server hosts'
+    ) { |v| options.ssh_key_file = v }
+  end
+end
+
+class ServerCommand::Run < ServerCommand::InstanceSpecific
+  def setup
+    super
+    options.ssh_key_file ||= @aws_config.aws[:aws_key] 
+    @command = ARGV[0].nil? ? ($stdin.has_data? ? $stdin.read : nil) : ARGV[0]
+    raise ArgumentError, 'no command specified...' if @command.nil?
+  end
+      
+  def send(command, host)
+    # switch to using instance id and run-cmd-instance ?
+    ssh_opts = %w{ StrictHostKeyChecking=no ConnectTimeout=5 }
+    opt = "StrictHostKeyChecking=no"
+    cmd = "ssh -i #{options.ssh_key_file} -o #{ssh_opts.join ' -o '} root@#{host} '#{command}'"
+    system(cmd)
+  end
+  
+  def run
+    unless @instances.empty?
+      @instances.each do |instance|
+        puts "  -> Sending command to instance '#{instance[:id]}' using hostname '#{instance[:dns]}'"
+        send @command, instance[:dns]
+      end
+    end
+  end
+end
+
+###############################################################################################################
+#################################################### HOSTS ####################################################
+###############################################################################################################
+
+class Hosts < ::CommandParser
+  def setup
+    options.filename = nil
+    options.json = false
+    options.subcommand = (ARGV[1]||'missing').downcase.to_sym
+  end
+
+  def validate_options
+    raise OptionParser::MissingArgument, "Missing required argument 'file'" if options.filename.nil? and options.subcommand == :put
+  end
+
+  def lead_in
+    case options.subcommand
+      when :get
+        parser.separator "Hosts Get Description:"
+        parser.separator "    Retrieves the hosts file which this server uses. Providing"
+        parser.separator "    a filename through -f will cause it to be stored in the file"
+        parser.separator "    and not displayed on STDOUT."
+      when :put
+        parser.separator "Hosts Put Description:"
+        parser.separator "    Updates the hosts file which this server uses. You must"
+        parser.separator "    provide a filename through -f to use as the new hosts file."
+      else
+        parser.separator "Hosts Description:"
+        parser.separator "    Display or Update the hosts file which this server uses."
+    end
+  end
+  
+  def build
+    unless [:put, :get].include? options.subcommand
+      parser.banner += '<sub-command> [options]'
+      options.subcommand = :missing
+      parser.separator ""
+      parser.separator "Valid sub-commands:"
+      parser.separator "  get   - Get server hosts file from s3 storage"
+      parser.separator "  put   - Update server hosts file on s3 storage"
+      parser.separator ""
+      self.help!
+    else
+      ARGV.shift
+    end
+
+    parser.separator "Common Sub-Command Options:"
+    parser.on('--json',
+              '[optional] Get/Store JSON version of hosts file instead of normal /etc/hosts format'
+    ) { |v| options.json = true }
+    
+    case options.subcommand
+      when :get
+        parser.banner += 'get [-f FILE]'
+        parser.on('-f [FILE]', '--file [FILE]', '[optional] File to store downloaded hosts to') {|f| options.filename = f }
+      when :put
+        parser.banner += 'put -f FILE'
+        parser.on('-f FILE', '--file FILE', 'File to push containing new list of hosts') {|f| options.filename = f }
+    end
+  end
+end
+
+class ServerCommand::Hosts < ServerCommand
+  def setup
+    unless options.subcommand == :get
+      if options.filename.nil?
+        puts "Missing required argument 'file' !!"
+        exit! 2
+      elsif not File.exists? options.filename
+        puts "required file '#{options.filename}' is missing!"
+        exit! 2
+      end
+    end
+  end
+
+  def run
+    case options.subcommand
+      when :put
+        s3_bucket_name, s3_object_path = ::HOSTSFILE_URL.gsub('http://','').split(/.s3.amazonaws.com\//)
+        s3_object_path.gsub!(/\.hosts$/, '.json') unless not options.json
+        
+        opts = { :data => IO.read(options.filename), :policy => 'public-read' }
+        obj = s3.create_object(s3_bucket_name, s3_object_path, opts)
+      when :get
+        hosts_uri = !!options.json ? ::HOSTSFILE_URL.gsub(/\.hosts$/, '.json') : ::HOSTSFILE_URL
+        hosts_data = get_s3_object(hosts_uri)
+
+        if options.filename.nil?
+          puts hosts_data
+        else 
+          puts "Retrieved hosts data for server '#{::SERVER_NAME}' from '#{::HOSTSFILE_URL}'"
+          File.open(options.filename, 'w') { |f| f << hosts_data }
+        end
+    end
+  end
+end
+
+###############################################################################################################
+#################################################### LISTS ####################################################
+###############################################################################################################
+
+class List < ::CommandParser
+  def lead_in
+    parser.separator "List Description:"
+    parser.separator "    Attempts to list instances of this particular server. "
+    parser.separator "    Of course it should be noted that, due to a lack tags, it is"
+    parser.separator "    very difficult to guarantee that this will be accurate."
+    parser.separator "    YOU HAVE BEEN WARNED."
+  end
+end
+
+class ServerCommand::List < ServerCommand
+  def run
+    puts "Possible Instance Matches:"
+    puts "\t#{instance_display_list(get_instance_list()).join("\n\t")}"
+  end
+end
+
+###############################################################################################################
+################################################### REBOOT ####################################################
+###############################################################################################################
+
+class Reboot < InstanceSpecific
+  def lead_in
+    parser.separator "Reboot Description:"
+    parser.separator "    REBOOT sends the reboot command to the selected instance"
+  end
+end
+
+class ServerCommand::Reboot < ServerCommand::InstanceSpecific
+  def run
+    unless @instances.empty?
+      ec2.reboot_instances(@instances.collect { |instance| instance[:id] })
+    end
+  end
+end
+
+###############################################################################################################
+####################################################  STOP ####################################################
+###############################################################################################################
+
+class Stop < InstanceSpecific
+  def lead_in
+    parser.separator "Stop Description:"
+    parser.separator "    STOP sends the shutdown command to the selected instance"
+  end
+end
+
+class ServerCommand::Stop < ServerCommand::InstanceSpecific
+  def run
+    unless @instances.empty?
+      response = ec2.terminate_instances(@instances.collect { |instance| instance[:id] })
+      response.each do |instance|
+        puts "Stopping instance '#{instance[:id]}' - state now: #{instance[:state]}"
+      end
+    end
+  end
+end
+
+###############################################################################################################
+#################################################### START ####################################################
+###############################################################################################################
+
+class Start < ::CommandParser
+  def setup
+    options.dumpdata = false
+    options.force_reallocation = false
+  end
+  
+  def lead_in
+    parser.banner += "[-DF]"
+
+    parser.separator "Start Description:"
+    parser.separator "    Attempts to start one instance of this particular server. If you "
+    parser.separator "    specify force-reallocation, any resources (EIP, Volumes, etc) will "
+    parser.separator "    be detached from any server they are currently attached to and"
+    parser.separator "    reattached to the new instance. Not specifying the option will cause"
+    parser.separator "    the script to ask you if you would like to reallocate any resources"
+    parser.separator "    before actually doing so."
+  end
+
+  def build
+    parser.on('-D', '--dumpdata',
+             'Dumps the user_data for this server to STDOUT'
+    ) { |v| options.dumpdata = !!v }
+    
+    parser.on('-F', '--force-reallocation',
+             'Forces all resources to be reallocated to first',
+             'instance started by this command'
+    ) {|v| options.force_reallocation  = !!v }
+  end
+end
+
+class ServerCommand::Start < ServerCommand
+  def have_volumes?
+    !!(true unless ::VOLUMES.empty?)
+  end
+  
+  def have_addresses?
+    !!(true unless ::ADDRESSES.empty?)
+  end
+  
+  def ask message
+    begin
+      printf "\n#{message + ' [y/n] '}"
+    end while ((selection = $stdin.gets) !~ /^(y|n)/i)
+    !!(selection =~ /^y/)
+  end
+  
+  def run
+    unless not options.dumpdata
+      puts ::USER_DATA
+      exit! 2
+    end
+
+    startup_zone = have_volumes? ? ::VOLUMES[::VOLUMES.keys.first][:zone] : ::DEFAULT_ZONE
+    
+    params = {
+      :instance_type => ::INSTANCE_TYPE,
+      :security_groups => ::SECURITY_GROUPS,
+      :key_name => ::KEY_NAME,
+      :user_data => ::USER_DATA,
+      :zone => startup_zone
+    }
+    
+    response = @ec2.run_instances(::IMAGE_AMI, 1, 1, params)
+    
+    unless response.nil?
+      require 'timeout'
+      requested_id = response[:instances].first[:id]
+
+      if have_volumes? or have_addresses?
+        begin
+          Timeout::timeout(300) do |sec|
+            timeout_at = Time.now.to_i + sec
+            while (get_instance_list(true,true)[requested_id].nil?)
+              puts "Waiting #{timeout_at - Time.now.to_i} more seconds for new instance '#{requested_id}' to start..."
+              sleep 2
+            end
+          end
+        rescue Timeout::Error
+          raise "Timed out waiting for new instance '#{requested_id}' to start." unless not timed_out
+        end
+        
+        ec2 = Ec2.new(@ec2, requested_id)
+        
+        unless not have_volumes?
+          ::VOLUMES.each do |mount_point,volume_data|
+            case volume_data[:type]
+              when :snapshot
+                puts "Generating volume from snapshot with id #{volume_data[:id]}"
+                result = ec2.create_volume_from_snapshot volume_data[:id], startup_zone
+                unless result.nil?
+                  volume_id = result[:volume_id]
+                  begin
+                    Timeout::timeout(300) do |sec|
+                      timeout_at = Time.now.to_i + sec
+                      while (not ec2.volume_available?(volume_id))
+                        puts "Waiting for newly created volume (#{volume_id}) to become available before attaching (timeout in #{timeout_at - Time.now.to_i} seconds)..."
+                        sleep 2
+                      end
+                    end
+                  rescue Timeout::Error
+                    puts "Timed out waiting for volume '#{volume_id}' to become available - please attach manually!"
+                    next
+                  end # unless not force
+                else
+                  puts "Unable to generate volume based on snapshot '#{volume_data[:id]}'"
+                  next
+                end
+              when :volume
+                volume_id = volume_data[:id]
+              else
+                next # no valid type, so skip to next volume
+            end
+            
+            unless not ec2.attached? volume_id
+              force = options.force_reallocation ||
+                      ask("Volume with id '#{volume_id}' is already attached to another instance.\n" +
+                          "Should I force reattachment to this new instance? [N/y]")               
+
+              next unless force
+
+              ec2.detach(volume_id, nil, nil, true)
+              puts "Waiting for detachment before continuing (timeout in 30 seconds) ..."
+              
+              begin
+                Timeout::timeout(30) { sleep 1 while (ec2.attached?(volume_id)); true }
+              rescue Timeout::Error
+                puts "Timed out waiting for detachment of volume '#{volume_id}' - please attach manually!"
+                next
+              end # unless not force
+            end # unless not attached
+            
+            puts "Attaching volume '#{volume_id}' to instance '#{requested_id}' at mount point '#{mount_point}'"
+            ec2.attach volume_id, mount_point
+          end
+        end
+        
+        unless not have_addresses? 
+          ::ADDRESSES.each do |address,name|
+            unless not ec2.associated? address
+              force = options.force_reallocation ||
+                      ask("Address with id '#{address}' is already associated with another instance.\n" +
+                          "Should I force reassociation to this new instance? [N/y]")
+
+              next unless force
+
+              ec2.disassociate(address)
+              puts "Waiting for disassocation before continuing (timeout in 30 seconds) ..."
+              
+              begin
+                Timeout::timeout(30) { sleep 1 while (ec2.associated?(address)); true }
+              rescue Timeout::Error
+                puts "Timed out waiting for disassociation of address '#{address}' - please associate manually!"
+                next
+              end # unless not force
+            end # unless not associated
+            
+            puts "Associating address '#{address}' with instance '#{requested_id}'"
+            ec2.associate address
+          end
+        end
+      end
+    else
+      raise 'Unable to start new instance'
+    end
+    
+  end
+end
+
+ServerCommand.instance.execute
+
+__END__
+<%= user_script.data %>

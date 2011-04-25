@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100712093736) do
+ActiveRecord::Schema.define(:version => 20101222210343) do
 
   create_table "addresses", :force => true do |t|
     t.integer  "provider_account_id"
@@ -97,13 +97,14 @@ ActiveRecord::Schema.define(:version => 20100712093736) do
 
   create_table "auto_scaling_triggers", :force => true do |t|
     t.integer  "auto_scaling_group_id"
+    t.integer  "provider_account_id"
     t.string   "name",                         :limit => 64,                               :null => false
+    t.integer  "period"
     t.string   "lower_threshold"
     t.string   "upper_threshold"
     t.integer  "breach_duration"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "period"
     t.string   "lower_breach_scale_increment"
     t.string   "upper_breach_scale_increment"
     t.string   "state",                                      :default => "disabled"
@@ -113,6 +114,7 @@ ActiveRecord::Schema.define(:version => 20100712093736) do
   end
 
   add_index "auto_scaling_triggers", ["auto_scaling_group_id"], :name => "index_asg_id_on_asgt"
+  add_index "auto_scaling_triggers", ["provider_account_id"], :name => "index_pa_id_on_asgt"
 
   create_table "block_device_mappings", :force => true do |t|
     t.integer  "launch_configuration_id"
@@ -188,9 +190,11 @@ ActiveRecord::Schema.define(:version => 20100712093736) do
     t.datetime "updated_at"
     t.integer  "provider_account_id"
     t.integer  "servers_count",       :default => 0
+    t.string   "state",               :default => "active"
   end
 
   add_index "clusters", ["provider_account_id"], :name => "index_clusters_on_provider_account_id"
+  add_index "clusters", ["state"], :name => "index_clusters_on_state"
 
   create_table "clusters_users", :id => false, :force => true do |t|
     t.integer "cluster_id"
@@ -208,6 +212,7 @@ ActiveRecord::Schema.define(:version => 20100712093736) do
   end
 
   add_index "dns_hostname_assignments", ["dns_hostname_id"], :name => "unique_dns_hostname_id_idx", :unique => true
+  add_index "dns_hostname_assignments", ["server_id"], :name => "index_dns_hostname_assignments_on_server_id"
 
   create_table "dns_hostnames", :force => true do |t|
     t.string   "name",                :limit => 64, :null => false
@@ -216,6 +221,7 @@ ActiveRecord::Schema.define(:version => 20100712093736) do
     t.integer  "provider_account_id",               :null => false
   end
 
+  add_index "dns_hostnames", ["name"], :name => "index_dns_hostnames_on_name"
   add_index "dns_hostnames", ["provider_account_id", "name"], :name => "unique_provider_account_hostname", :unique => true
 
   create_table "dns_leases", :force => true do |t|
@@ -226,6 +232,7 @@ ActiveRecord::Schema.define(:version => 20100712093736) do
     t.datetime "updated_at"
   end
 
+  add_index "dns_leases", ["dns_hostname_assignment_id", "idx"], :name => "index_dns_leases_on_dns_hostname_assignment_id_and_idx"
   add_index "dns_leases", ["instance_id", "dns_hostname_assignment_id"], :name => "unique_instance_hostname_assignment_idx", :unique => true
 
   create_table "dns_requests", :force => true do |t|
@@ -237,6 +244,8 @@ ActiveRecord::Schema.define(:version => 20100712093736) do
   end
 
   add_index "dns_requests", ["dns_hostname_assignment_id", "request_type", "instance_id"], :name => "hostname_assignment_request_instance_idx"
+  add_index "dns_requests", ["instance_id"], :name => "index_dns_requests_on_instance_id"
+  add_index "dns_requests", ["request_type"], :name => "index_dns_requests_on_request_type"
 
   create_table "events", :force => true do |t|
     t.integer  "provider_account_id"
@@ -373,7 +382,34 @@ ActiveRecord::Schema.define(:version => 20100712093736) do
     t.integer  "zone_id"
   end
 
+  add_index "instance_allocation_records", ["stat_record_id"], :name => "index_iars_on_srids"
   add_index "instance_allocation_records", ["zone_id"], :name => "index_instance_allocation_records_on_zone_id"
+
+  create_table "instance_kind_categories", :force => true do |t|
+    t.integer  "provider_id"
+    t.string   "name"
+    t.text     "description"
+    t.integer  "position"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "instance_kinds", :force => true do |t|
+    t.integer  "instance_kind_category_id"
+    t.string   "code_name"
+    t.string   "name"
+    t.text     "description"
+    t.boolean  "is_default"
+    t.integer  "position"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "ram_mb",                    :default => 0
+    t.integer  "cpu_cores",                 :default => 0
+    t.integer  "cpu_units",                 :default => 0
+    t.integer  "storage_gb",                :default => 0
+    t.string   "io_performance"
+    t.integer  "platform_bit",              :default => 32
+  end
 
   create_table "instance_list_readers", :force => true do |t|
     t.integer  "provider_account_id"
@@ -408,13 +444,22 @@ ActiveRecord::Schema.define(:version => 20100712093736) do
   add_index "instance_resources", ["cloud_resource_id"], :name => "index_instance_resources_on_cloud_resource_id"
   add_index "instance_resources", ["instance_id", "type"], :name => "index_instance_resources_on_instance_id_and_type"
 
+  create_table "instance_type_categories", :force => true do |t|
+    t.integer  "provider_id"
+    t.string   "name"
+    t.text     "description"
+    t.integer  "position"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "instances", :force => true do |t|
     t.string   "instance_id"
     t.integer  "provider_account_id"
     t.integer  "server_id"
     t.integer  "server_pool_id"
     t.string   "image_id"
-    t.string   "type"
+    t.string   "instance_type"
     t.string   "key_name"
     t.string   "state"
     t.string   "public_dns"
@@ -613,6 +658,15 @@ ActiveRecord::Schema.define(:version => 20100712093736) do
     t.string  "salt",       :null => false
   end
 
+  create_table "operating_systems", :force => true do |t|
+    t.integer  "provider_id"
+    t.string   "name"
+    t.string   "description"
+    t.integer  "position"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "operation_logs", :force => true do |t|
     t.integer  "operation_id"
     t.string   "step_name"
@@ -637,7 +691,7 @@ ActiveRecord::Schema.define(:version => 20100712093736) do
     t.datetime "updated_at"
     t.datetime "timeout_at"
     t.string   "parameter"
-    t.integer  "server_task_id"
+    t.integer  "task_id"
   end
 
   add_index "operations", ["state"], :name => "index_operations_on_state"
@@ -764,6 +818,7 @@ ActiveRecord::Schema.define(:version => 20100712093736) do
     t.text     "meta_data"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "short_name"
   end
 
   add_index "regions", ["name"], :name => "index_regions_on_name"
@@ -893,6 +948,8 @@ ActiveRecord::Schema.define(:version => 20100712093736) do
     t.datetime "updated_at"
   end
 
+  add_index "server_profile_revision_parameters", ["server_profile_revision_id"], :name => "index_sprp_spr_id"
+
   create_table "server_profile_revisions", :force => true do |t|
     t.integer  "server_profile_id"
     t.integer  "revision",          :default => 0
@@ -942,40 +999,6 @@ ActiveRecord::Schema.define(:version => 20100712093736) do
   add_index "server_resources", ["cloud_resource_id"], :name => "index_server_resources_on_cloud_resource_id"
   add_index "server_resources", ["resource_bundle_id"], :name => "index_server_resources_on_resource_bundle_id"
   add_index "server_resources", ["type"], :name => "index_server_resources_on_server_id_and_type"
-
-  create_table "server_task_parameters", :force => true do |t|
-    t.integer  "server_task_id"
-    t.string   "type"
-    t.string   "name"
-    t.string   "description"
-    t.string   "value"
-    t.string   "control_type"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "server_tasks", :force => true do |t|
-    t.integer  "server_id"
-    t.string   "name"
-    t.string   "description"
-    t.string   "operation"
-    t.datetime "active_from"
-    t.datetime "active_to"
-    t.boolean  "is_active"
-    t.boolean  "is_scheduled"
-    t.boolean  "is_repeatable"
-    t.integer  "run_every_value"
-    t.string   "run_every_units"
-    t.datetime "run_at"
-    t.integer  "run_in_value"
-    t.string   "run_in_units"
-    t.string   "run_cron"
-    t.integer  "timeout"
-    t.string   "state"
-    t.text     "state_text"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
 
   create_table "server_user_accesses", :force => true do |t|
     t.integer  "server_id"
@@ -1036,6 +1059,7 @@ ActiveRecord::Schema.define(:version => 20100712093736) do
 
   add_index "service_overrides", ["service_provider_id", "target_type", "target_id"], :name => "idx_spid_ttype_tid", :unique => true
   add_index "service_overrides", ["service_provider_id"], :name => "index_service_overrides_on_service_provider_id"
+  add_index "service_overrides", ["target_id", "target_type"], :name => "index_service_overrides_on_target_id_and_target_type"
 
   create_table "service_providers", :force => true do |t|
     t.integer  "service_type_id",               :null => false
@@ -1046,6 +1070,7 @@ ActiveRecord::Schema.define(:version => 20100712093736) do
     t.text     "description"
   end
 
+  add_index "service_providers", ["server_id"], :name => "index_service_providers_on_server_id"
   add_index "service_providers", ["service_type_id", "server_id"], :name => "idx_sp_service_type_server_id", :unique => true
 
   create_table "service_types", :force => true do |t|
@@ -1058,6 +1083,16 @@ ActiveRecord::Schema.define(:version => 20100712093736) do
 
   add_index "service_types", ["fqdn"], :name => "index_service_types_on_fqdn", :unique => true
   add_index "service_types", ["name"], :name => "index_service_types_on_name", :unique => true
+
+  create_table "sessions", :force => true do |t|
+    t.string   "session_id", :null => false
+    t.text     "data"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "sessions", ["session_id"], :name => "index_sessions_on_session_id"
+  add_index "sessions", ["updated_at"], :name => "index_sessions_on_updated_at"
 
   create_table "snapshots", :force => true do |t|
     t.integer  "provider_account_id"
@@ -1092,6 +1127,49 @@ ActiveRecord::Schema.define(:version => 20100712093736) do
   end
 
   add_index "stat_records", ["provider_account_id", "taken_at"], :name => "index_stat_records_on_provider_account_id_and_taken_at"
+
+  create_table "task_parameters", :force => true do |t|
+    t.integer  "task_id"
+    t.string   "name"
+    t.string   "description"
+    t.string   "value_type"
+    t.string   "regex"
+    t.boolean  "is_required"
+    t.string   "custom_value"
+    t.string   "value_provider_type"
+    t.integer  "value_provider_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "task_parameters", ["task_id"], :name => "index_task_parameters_on_task_id"
+  add_index "task_parameters", ["value_provider_type", "value_provider_id"], :name => "index_task_parameters_on_vp_type_and_vp_id"
+
+  create_table "tasks", :force => true do |t|
+    t.integer  "taskable_id"
+    t.string   "name"
+    t.string   "description"
+    t.string   "operation"
+    t.datetime "active_from"
+    t.datetime "active_to"
+    t.boolean  "is_active"
+    t.boolean  "is_scheduled"
+    t.boolean  "is_repeatable"
+    t.integer  "run_every_value"
+    t.string   "run_every_units"
+    t.datetime "run_at"
+    t.integer  "run_in_value"
+    t.string   "run_in_units"
+    t.string   "run_cron"
+    t.integer  "timeout"
+    t.string   "state"
+    t.text     "state_text"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "parent_type"
+    t.integer  "parent_id"
+    t.string   "taskable_type",   :default => "Server"
+  end
 
   create_table "user_failures", :force => true do |t|
     t.string   "remote_ip"

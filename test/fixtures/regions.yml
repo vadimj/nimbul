@@ -3,6 +3,7 @@
 one:
   provider_id: 1
   name: MyString
+  short_name: MyString
   description: MyText
   endpoint_url: MyString
   state: MyString
@@ -11,6 +12,7 @@ one:
 two:
   provider_id: 1
   name: MyString
+  short_name: MyString
   description: MyText
   endpoint_url: MyString
   state: MyString

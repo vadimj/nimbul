@@ -1,0 +1,23 @@
+<p>
+  <b>Provider:</b>
+  <%=h @operating_system.provider_id %>
+</p>
+
+<p>
+  <b>Name:</b>
+  <%=h @operating_system.name %>
+</p>
+
+<p>
+  <b>Description:</b>
+  <%=h @operating_system.description %>
+</p>
+
+<p>
+  <b>Position:</b>
+  <%=h @operating_system.position %>
+</p>
+
+
+<%= link_to 'Edit', edit_operating_system_path(@operating_system) %> |
+<%= link_to 'Back', operating_systems_path %>

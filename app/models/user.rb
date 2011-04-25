@@ -7,20 +7,45 @@ class User < BaseModel
 	has_and_belongs_to_many :security_groups
 	has_and_belongs_to_many :clusters
 
-    has_many :server_profile_user_accesses, :dependent => :destroy
-    has_many :server_profiles, :through => :server_profile_user_accesses
+  has_many :server_profile_user_accesses, :dependent => :destroy
+  has_many :server_profiles, :through => :server_profile_user_accesses
 
-    has_many :logs, :foreign_key => :author_id, :class_name => 'AuditLog', :dependent => :nullify
+  has_many :logs, :foreign_key => :author_id, :class_name => 'AuditLog', :dependent => :nullify
 
-	set_inheritance_column :user_type
-	validates_presence_of  :user_type
+  has_many :user_keys, :dependent => :destroy
 
-	# prevents a user from submitting a crafted form that bypasses activation
-	# anything else you want your user to change should be added here.
-	# Add identity_url if you want users to be able to update their OpenID identity
-	attr_accessible :login, :email, :name, :password, :password_confirmation, :invitation_token, :time_zone, :public_key
+  set_inheritance_column :user_type
+  validates_presence_of  :user_type
+  validates_associated :user_keys
+    
+  after_save :save_user_keys
 
-	attr_accessor :login_and_name, :auth_type
+  # prevents a user from submitting a crafted form that bypasses activation
+  # anything else you want your user to change should be added here.
+  # Add identity_url if you want users to be able to update their OpenID identity
+  attr_accessible :login, :email, :name, :password, :password_confirmation, :invitation_token, :time_zone, :user_key_attributes
+  attr_accessor :login_and_name, :auth_type
+
+  def save_user_keys
+    user_keys.each do |i|
+      if i.should_destroy?
+        i.destroy
+      else
+        i.save
+      end
+    end
+  end
+
+  def user_key_attributes=(user_key_attributes)
+    user_key_attributes.each do |attributes|
+      if attributes[:id].blank?
+        user_keys.build(attributes)
+      else
+        user_key = user_keys.detect { |c| c.id == attributes[:id].to_i }
+        user_key.attributes = attributes
+      end
+    end
+  end
 
     def login_and_name
         login + ' (' + name + ')'
@@ -37,15 +62,18 @@ class User < BaseModel
 		end
     end
 
-    def public_key
-        return self[:public_key] if self[:public_key].blank?
-        return self[:public_key].delete("\C-M").delete("\r").delete("\n")
-    end
-
 	def to_xml(options = {})
 		default_only = []
 		options[:only] = (options[:only] || []) + default_only
 		super(options)
+	end
+	
+	def enable!
+		self.update_attribute(:enabled, true)
+	end
+	
+	def disable!
+		self.update_attribute(:enabled, false)
 	end
 
 	def has_access?(o)
@@ -171,9 +199,9 @@ class User < BaseModel
         return false
 	end
 
-	def has_server_task_access?(server_task)
+	def has_task_access?(task)
 		return true if has_role?("admin")
-		return true if has_server_access?(server_task.server)
+		return true if has_access?(task.taskable)
         return false
 	end
 

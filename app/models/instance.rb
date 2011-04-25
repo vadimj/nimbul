@@ -1,16 +1,18 @@
 require 'aasm'
+require 'net/ssh'
+require 'net/sftp'
 
 class Instance < BaseModel
-    include AASM
-    set_inheritance_column :instance_type
-  
-    belongs_to :provider_account
-    belongs_to :zone
-    belongs_to :server, :counter_cache => true
-    belongs_to :user
-    belongs_to :auto_scaling_group
+  include AASM
 
-    has_and_belongs_to_many :security_groups
+  self.inheritance_column = :_none_
+  belongs_to :provider_account
+  belongs_to :zone
+  belongs_to :server, :counter_cache => true
+  belongs_to :user
+  belongs_to :auto_scaling_group
+
+  has_and_belongs_to_many :security_groups
 
 	has_many :operations, :dependent => :destroy
 
@@ -31,17 +33,17 @@ class Instance < BaseModel
 
 	alias :hostnames :dns_hostname_assignments
 	
-    attr_accessor :should_destroy
+  attr_accessor :should_destroy
 	attr_accessor :console_timestamp
 	attr_accessor :console_output
 
-    def should_destroy?
-        should_destroy.to_i == 1
-    end
+  def should_destroy?
+    should_destroy.to_i == 1
+  end
 
-    def name
-        self.instance_id
-    end
+  def name
+    self.instance_id
+  end
 
 	def mountee_class_name
 		'instance'
@@ -75,7 +77,7 @@ class Instance < BaseModel
 	def dns_assignable?() dns_active? and running? and is_ready?; end
 	def dns_releasable?() terminating? or dns_inactive?; end
 
-	def dns_active?() dns_active == true; end
+	def dns_active?() !!dns_active; end
 	def dns_inactive?() not dns_active?; end
 
 	def ready?() is_ready == true; end
@@ -97,11 +99,11 @@ class Instance < BaseModel
 	end
 
 	def self.sort_fields
-		%w(instance_id zone_id server_name auto_scaling_group_id state launch_time image_id type key_name public_dns dns_name private_dns volume_name is_locked is_ready user_id)
+		%w(instance_id zone_id server_name auto_scaling_group_id state launch_time image_id instance_type key_name public_dns dns_name private_dns volume_name is_locked is_ready user_id)
 	end
 
 	def self.search_fields
-		%w(instance_id server_name state image_id type key_name public_dns dns_name private_dns volume_name)
+		%w(instance_id server_name state image_id instance_type key_name public_dns dns_name private_dns volume_name)
 	end
 
 	def self.filter_fields
@@ -149,19 +151,31 @@ class Instance < BaseModel
 		end
 	end
 	
+	def unlock!
+		update_attribute(:is_locked, false)
+	end
+	
+	def lock!
+		update_attribute(:is_locked, true)
+	end
+	
 	def has_dns_lease?(hostname_assignment = nil)
-		if not hostname_assignment.nil?
-			hostname_assignment = DnsHostnameAssignment.find(hostname_assignment) if hostname_assignment.is_a? Fixnum
-			return dns_leases.select { |l| l.dns_hostname_assignment == hostname_assignment }.size > 0
+    conditions = { :instance_id => self[:id] }
+		unless hostname_assignment.nil?
+			return DnsLease.count(
+        :conditions => conditions.merge!({
+          :dns_hostname_assignment_id => hostname_assignment[:id]
+        })
+      ) > 0
 		else
-			return true if dns_leases.length > 0
+			return true if DnsLease.count(:conditions => conditions) > 0
 		end
 		return false
 	end
 
 	def unleased_hostnames
 		dns_hostname_assignments.inject([])  do |array,object|
-			array.push object unless has_dns_lease? object.id; array
+			array.push object unless has_dns_lease? object; array
 		end
 	end
 	
@@ -204,54 +218,54 @@ class Instance < BaseModel
 		return false
 	end
 
-	def self.find_all_by_parent(parent, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
-		send("find_all_by_#{ parent.class.to_s.underscore }", parent, search, page, extra_joins, extra_conditions, sort, filter, include)
+	def self.find_all_by_server(server, options={})
+		find_all_by_server_id(server.id, options)
 	end
 
-  def self.find_all_by_provider_account(provider_account, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
-    joins = []
-    joins = joins + extra_joins unless extra_joins.blank?
+	def self.search_by_provider_account(provider_account, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
+	    joins = []
+	    joins = joins + extra_joins unless extra_joins.blank?
 
-      conditions = [ 'provider_account_id = ?', (provider_account.is_a?(ProviderAccount) ? provider_account.id : provider_account) ]
-    unless extra_conditions.blank?
-      extra_conditions = [ extra_conditions ] if not extra_conditions.is_a? Array
-      conditions[0] << ' AND ' + extra_conditions[0];
-      conditions << extra_conditions[1..-1]
-    end
+		conditions = [ 'provider_account_id = ?', (provider_account.is_a?(ProviderAccount) ? provider_account.id : provider_account) ]
+		unless extra_conditions.blank?
+			extra_conditions = [ extra_conditions ] if not extra_conditions.is_a? Array
+			conditions[0] << ' AND ' + extra_conditions[0];
+			conditions << extra_conditions[1..-1]
+		end
   
-    self.search(search, page, joins, conditions, sort, filter, include)
-  end
+		search(search, page, joins, conditions, sort, filter, include)
+	end
 
-  def self.find_all_by_security_group(security_group, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
-    joins = [
-        'INNER JOIN instances_security_groups ON instances_security_groups.instance_id = instances.id',
-    ] + [extra_joins].flatten.compact
+	def self.search_by_security_group(security_group, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
+	    joins = [
+	        'INNER JOIN instances_security_groups ON instances_security_groups.instance_id = instances.id',
+	    ] + [extra_joins].flatten.compact
 
-    conditions = [ 'instances_security_groups.security_group_id = ?', (security_group.is_a?(SecurityGroup) ? security_group.id : security_group) ]
-    unless extra_conditions.blank?
-      extra_conditions = [ extra_conditions ].flatten
-      conditions[0] << ' AND ' + extra_conditions[0];
-      conditions << extra_conditions[1..-1]
-    end
+		conditions = [ 'instances_security_groups.security_group_id = ?', (security_group.is_a?(SecurityGroup) ? security_group.id : security_group) ]
+		unless extra_conditions.blank?
+			extra_conditions = [ extra_conditions ].flatten
+			conditions[0] << ' AND ' + extra_conditions[0];
+			conditions << extra_conditions[1..-1]
+		end
   
-      self.search(search, page, joins, conditions, sort, filter, include)
-  end
+		search(search, page, joins, conditions, sort, filter, include)
+	end
 
-  def self.find_all_by_cluster(cluster, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
-    joins = [
-        'INNER JOIN servers ON servers.id = instances.server_id',
-    ] + [extra_joins].flatten.compact
+	def self.search_by_cluster(cluster, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
+		joins = [
+		    'INNER JOIN servers ON servers.id = instances.server_id',
+		] + [extra_joins].flatten.compact
 
-    conditions = [ 'servers.cluster_id = ?', (cluster.is_a?(Cluster) ? cluster.id : cluster) ]
-    unless extra_conditions.blank?
-      extra_conditions = [ extra_conditions ].flatten
-      conditions[0] << ' AND ' + extra_conditions[0];
-      conditions << extra_conditions[1..-1]
-    end
-    self.search(search, page, joins, conditions, sort, filter, include)
-  end
+		conditions = [ 'servers.cluster_id = ?', (cluster.is_a?(Cluster) ? cluster.id : cluster) ]
+		unless extra_conditions.blank?
+			extra_conditions = [ extra_conditions ].flatten
+			conditions[0] << ' AND ' + extra_conditions[0];
+			conditions << extra_conditions[1..-1]
+	    end
+	    search(search, page, joins, conditions, sort, filter, include)
+	end
 
-	def self.find_all_by_server(server, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
+	def self.search_by_server(server, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
 		joins = [extra_joins].flatten.compact unless extra_joins.blank?
 
 		conditions = [ 'server_id = ?', (server.is_a?(Server) ? server.id : server) ]
@@ -260,10 +274,10 @@ class Instance < BaseModel
 			conditions[0] << ' AND ' + extra_conditions[0];
 			conditions << extra_conditions[1..-1]
 	    end
-	    self.search(search, page, joins, conditions, sort, filter, include)
+	    search(search, page, joins, conditions, sort, filter, include)
 	end
 
-	def self.find_all_by_auto_scaling_group(auto_scaling_group, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
+	def self.search_by_auto_scaling_group(auto_scaling_group, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
 		joins = [extra_joins].flatten.compact unless extra_joins.blank?
 
 		conditions = [ table_name()+'.auto_scaling_group_id = ?', (auto_scaling_group.is_a?(AutoScalingGroup) ? auto_scaling_group.id : auto_scaling_group) ]
@@ -328,4 +342,60 @@ class Instance < BaseModel
 		# TODO we currently don't do anything on the instance side
 		return true
 	end
+	
+  def with_ssh(user = 'root', options = {})
+    raise ArgumentError, 'block required!' unless block_given?
+    unless options[:keyfile]
+      provider_account.with_ssh_master_key do |keyfile|
+        ssh_session(self[:private_dns], user, options) { |ssh| return yield ssh }
+      end
+    else
+      ssh_session(self[:private_dns], user, options) { |ssh| return yield ssh }
+    end
+  end
+
+  def send_file src_path, dest_path, options = {}
+    user = options.delete(:user) || 'root'
+		options[:timeout] = 10 unless options[:timeout]
+		options[:upload] = { :src => src_path, :dest => dest_path }
+		ssh_session(self[:private_dns], user, options)
+  end
+  
+  def ssh_execute(command, options = {})
+    user = options.delete(:user) || 'root'
+    result_as_list = options[:result_as_list].nil? ? false : options.delete(:result_as_list)
+    
+    with_ssh(user, options) do |ssh|
+      output = ''
+      ssh.exec! command do |ch, stream, data|
+        case stream
+          when :stdout
+            output += data
+          when :stderr
+            output += "STDERR: #{data}"
+        end
+      end
+      (result_as_list ? output.split(/\n/) : output)
+    end
+  end
+
+private
+
+  def ssh_session host, user, options = {}
+    keyfile = options.delete(:keyfile) or raise ArgumentError, "Missing 'keyfile' argument!"
+    begin
+      options = { :keys => [ keyfile ], :paranoid => false }.merge!(options)
+      upload = options.delete(:upload) || {}
+      
+      Net::SSH.start(host, user, options) do |session|
+				unless upload.nil? or upload[:src].nil? or upload[:dest].nil?
+					session.sftp.upload!(upload[:src], upload[:dest])
+				end
+        return yield session
+      end
+    rescue LoadError
+      warn 'Net/SSH not available - unable to ssh to remote hosts'
+      return false
+    end
+  end
 end

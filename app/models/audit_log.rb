@@ -19,21 +19,20 @@ class AuditLog < BaseModel
     end
     private :skip_unchanged
     
-    def self.search_by_author(author, options={})
+	def self.search_by_author(author, options={})
 		extra_joins = options[:joins]
 		extra_conditions = options[:conditions]
 		order = options[:order]
-		
 		joins = []
 		joins = joins + extra_joins unless extra_joins.blank?
-		
-		conditions = [ table_name()+'.author_id = ? OR lower('+table_name()+'.author_login) = ?', author.id, author.login.downcase ]
+
+		conditions = ['('+table_name()+'.author_id = ? OR '+table_name()+'.author_login = ?)', author.id, author.login]
 		unless extra_conditions.blank?
 			extra_conditions = [ extra_conditions ] if not extra_conditions.is_a? Array
 			conditions[0] << ' AND ' + extra_conditions[0]
 			conditions << extra_conditions[1..-1]
 		end
-		
+    
 		order = table_name()+'.created_at DESC' if order.blank?
 
 		options.merge!({
@@ -41,10 +40,10 @@ class AuditLog < BaseModel
 			:conditions => conditions,
 			:order => order,
 		})
-		
+
 		search(options[:search], options[:page], options[:joins], options[:conditions], options[:order], options[:filter], options[:include])
-    end
-    
+	end
+	
 	# by default - find all logs concerning provider accounts and clusters visible to the user
 	def self.options_for_find_by_user(user, options={})
 		extra_joins = options[:joins]
@@ -82,31 +81,6 @@ class AuditLog < BaseModel
 		})
 
 		return options        
-	end
-	
-	def self.search_by_author(author, options={})
-		extra_joins = options[:joins]
-		extra_conditions = options[:conditions]
-		order = options[:order]
-		joins = []
-		joins = joins + extra_joins unless extra_joins.blank?
-
-		conditions = ['('+table_name()+'.author_id = ? OR '+table_name()+'.author_login = ?)', author.id, author.login]
-		unless extra_conditions.blank?
-			extra_conditions = [ extra_conditions ] if not extra_conditions.is_a? Array
-			conditions[0] << ' AND ' + extra_conditions[0]
-			conditions << extra_conditions[1..-1]
-		end
-    
-		order = table_name()+'.created_at DESC' if order.blank?
-
-		options.merge!({
-			:joins => joins,
-			:conditions => conditions,
-			:order => order,
-		})
-
-		search(options[:search], options[:page], options[:joins], options[:conditions], options[:order], options[:filter], options[:include])
 	end
 	
 	def self.create_for_parent(options)

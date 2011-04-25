@@ -6,7 +6,7 @@
     <td><%=h server.server_profile_revision %></td>
     <td><%= link_to server.instances.count, server_instances_path(server) %></td>
     <td class="small"><% server.security_groups.each do |group| %><%= security_group_server_link group, server %><br /><% end %></td>
-    <td><%= h server.type %></td>
+    <td><%= h server.instance_type %></td>
     <td><%= h server.key_name %></td>
     <td><%= h server.zone %></td>
     <td><% if server.volume_id %><%= h server.volume_name %><% end %></td>

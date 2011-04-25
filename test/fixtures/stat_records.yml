@@ -1,9 +1,0 @@
-# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
-
-one:
-  provider_account_id: 1
-  timestamp: 2009-08-07 16:54:08
-
-two:
-  provider_account_id: 1
-  timestamp: 2009-08-07 16:54:08

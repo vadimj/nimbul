@@ -8,14 +8,21 @@ class ClustersController < ApplicationController
 	# GET /clusters.xml
 	# GET /clusters.js
 	def index
-        @clusters = Cluster.find_all_by_user(current_user)
+    @clusters = Cluster.find_all_by_user(
+      current_user,
+      :include => [
+        :provider_account,
+        { :servers => :instances }
+      ]
+    )
 
-        respond_to do |format|
-            format.html
-            format.xml  { render :xml => @clusters }
-            format.js   { render :partial => 'list', :layout => false }
-        end
+    respond_to do |format|
+        format.html
+        format.xml  { render :xml => @clusters }
+        format.js   { render :partial => 'list', :layout => false }
+    end
 	end
+
 	def list
 		index
 	end

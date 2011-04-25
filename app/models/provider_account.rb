@@ -1,12 +1,13 @@
 require 'transient_key_store'
 require 'tempfile'
 require 'digest/md5'
+require 'carrot'
 
 class ProviderAccount < BaseModel
 	behaviors :service, :associated_attributes
 
 	service_parent_relationship :provider
-	service_child_relationship :none
+	service_child_relationship :clusters
 	
 	belongs_to :provider
 	has_many :instances, :dependent => :destroy
@@ -65,6 +66,48 @@ class ProviderAccount < BaseModel
   
 	include TrackChanges # must follow any before filters
 
+  def messaging_valid?
+	if service(:events).nil? or service(:events).first_active_instance.nil?
+      errors.add(:messaging_uri, 'Events Service does not appear to be created. Please go to Admin Controls -> Services and create an Events service, and provider.')
+    else
+      unless messaging_can_connect?
+        errors.add(:messaging_uri, 'Credentials for connecting to the messaging service appear to be invalid')
+      end
+    end
+    !!(errors.size <= 0)
+  end
+
+  def messaging_can_connect?
+    uri = URI.parse(messaging_url)
+    ssl = !!(uri.scheme == 'amqps')
+    connect_options = {
+      :host  => uri.host,
+      :port  => uri.port,
+      :user  => ::URI.decode(uri.user || ''),
+      :pass  => ::URI.decode(uri.password || ''),
+      :vhost => uri.path,
+      :ssl   => ssl
+    }
+    
+    begin
+      Carrot.new(connect_options).server
+    rescue Carrot::AMQP::Server::ServerDown
+      Rails.logger.warn "Unable to connect to AMQP service as user '#{messaging_username}'."
+      return false
+    rescue OpenSSL::SSL::SSLError
+      begin
+        Rails.logger.warn "Caught SSL Error - retrying with ssl_verify:0"
+        Carrot.new(connect_options.merge({:ssl_verify => 0})).server
+      rescue Exception => e
+        Rails.logger.warn "Caught another exception: #{e.message}"
+        return false
+      end
+    end
+    true
+  rescue Exception => e
+    false
+  end
+  
 	def messaging_username=(v); end
 	def messaging_username(); "nimbul_pa_#{self.id}"; end
 
@@ -76,11 +119,15 @@ class ProviderAccount < BaseModel
     self.update_attribute(:messaging_password, PasswordGenerator.generate)
   end
   
-	def messaging_url()
-	    uri          = URI.parse(messaging_uri)
-	    uri.user     = URI.escape(messaging_username)
-	    uri.password = URI.escape(messaging_password, '~`!@#$%^&*()_-+=[]{}|\:;<,>.?/')
-	    uri.to_s
+	def messaging_url
+    uri = (messaging_uri =~ %r|^amqps?://|i ? messaging_uri : "amqp://#{messaging_uri}")
+    uri           = URI.parse(messaging_uri)
+    uri.scheme    = (uri.scheme.empty? ? 'amqp' : (uri.scheme.to_sym == :amqps ? 'amqps' : 'amqp'))
+    uri.user      = URI.escape(messaging_username)
+    uri.password  = URI.escape(messaging_password, '~`!@#$%^&*()_-+=[]{}|\:;<,>.?/')
+    uri.path      = (uri.path.empty? ? '/nimbul' : uri.path)
+    uri.port      = (uri.port.empty? ? (uri.scheme.to_sym == :amqps ? 5671 : 5672) : uri.port)
+    uri.to_s
 	end
   
 	def mark_as_destroyed
@@ -176,7 +223,7 @@ class ProviderAccount < BaseModel
   def send_control_update type, args = {}
     begin
       unless (instance = service(:events).first_active_instance).nil?
-        type = "operations/rabbit_mq/#{type.to_s}".classify
+        type = "operation/rabbit_mq/#{type.to_s}".classify
         options = { :args => args.merge({ :provider_account_id => self.id }) }
         puts "Creating Operation '#{type}' with arguments: #{options.inspect}"
         instance.operations << Operation.factory(type, options)

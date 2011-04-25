@@ -1,0 +1,11 @@
+<% subtitle "New Instance Category" %>
+
+<h1>
+  <%= link_to 'Admin Controls', admin_controls_path %>
+  / <%= link_to 'Available Instance Types', send("#{ @parent_type }_instance_kind_categories_path", @parent) %>
+  / New Instance Category
+</h1>
+
+<br/>
+
+<%= render :partial => 'form' %>

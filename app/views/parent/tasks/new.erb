@@ -1,0 +1,12 @@
+<% subtitle h(@server.name)+': New Task' %>
+
+<h1><%= pagetitle h(@server.name)+': New Task' %></h1>
+
+<br />
+
+<% form_for :task,
+    :url => server_tasks_path(@server) do |f| %>
+    <%= render :partial => 'tasks/fields', :locals => { :f => f } %>
+    <%= submit_tag 'Create Task', :disable_with => "Creating&hellip;" %>
+    <%= submit_tag 'Cancel', :name => 'cancel_button' %>
+<% end %>

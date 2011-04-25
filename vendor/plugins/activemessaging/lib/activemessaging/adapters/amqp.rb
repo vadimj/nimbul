@@ -7,6 +7,7 @@ require 'activemessaging/processor'
 require 'activemessaging/adapters/base'
 
 require 'emissary/message'
+require 'openssl'
 
 module ActiveMessaging
   class Processor
@@ -38,11 +39,11 @@ module ActiveMessaging
         
         def initialize config = {}
           @connect_options = {
-            :user  => config[:user]  || 'guest',
+            :user  => config[:user]  || 'nimbul',
             :pass  => config[:pass]  || 'guest',
             :host  => config[:host]  || 'localhost',
-            :port  => config[:port]  || 5672,
-            :vhost => config[:vhost] || nil,
+            :port  => config[:port]  || (config[:ssl] ? 5671 : 5672),
+            :vhost => config[:vhost] || '/nimbul',
             :ssl   => config[:ssl]   || false,
             :ssl_verify => config[:ssl_verify] || OpenSSL::SSL::VERIFY_PEER,
           }
@@ -80,8 +81,19 @@ module ActiveMessaging
         end
         
         def receive
-          while true 
-            message = queue.pop(:ack => true)
+          loop do 
+            begin
+              message = queue.pop(:ack => true)
+            rescue ::OpenSSL::SSL::SSLError
+              retry_attempts = retry_attempts.nil? ? 1 : retry_attempts + 1
+              sleep(retry_attempts * 0.25)
+              unless retry_attempts >= SERVER_RETRY_MAX_ATTEMPTS
+                @client = @queue = nil # force reconnect
+                retry
+              end
+              raise e
+            end
+            
             unless message.nil?
               message = AmqpMessage.decode(message).stamp_received! unless message.nil?
               message.delivery_tag = queue.delivery_tag
@@ -125,16 +137,19 @@ module ActiveMessaging
         end
         
         def unsubscribe(queue_name, headers={}, subId=nil)
-          if @debug > 1
-            puts "Begin UNsubscribe Request:"
-            puts "    Queue Name: #{queue_name.inspect}"
-            puts "    Headers:    #{headers.inspect}"
-            puts "    subId:      #{subId.inspect}"
-            puts "End UNsubscribe Request."
+          # don't unbind subscriptions if we're not deleting the queue
+          unless not @queue_config[:auto_delete]
+            if @debug > 1
+              puts "Begin UNsubscribe Request:"
+              puts "    Queue Name: #{queue_name.inspect}"
+              puts "    Headers:    #{headers.inspect}"
+              puts "    subId:      #{subId.inspect}"
+              puts "End UNsubscribe Request."
+            end
+
+            routing_key = headers[:routing_key] || queue_name
+            queue.unbind(exchange(*exchange_info(headers)), :key => routing_key)
           end
-          
-          routing_key = headers[:routing_key] || queue_name
-          queue.unbind(exchange(*exchange_info(headers)), :key => routing_key)
         end
         
         def disconnect(headers={})

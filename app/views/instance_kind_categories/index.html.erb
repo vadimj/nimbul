@@ -1,0 +1,30 @@
+<% subtitle 'Available Instance Types' %>
+
+<h1><%= link_to 'Admin Controls', admin_controls_path %> / Available Instance Types</h1>
+<br/>
+<% for instance_kind_category in @instance_kind_categories %>
+  <b><%=h instance_kind_category.name %></b>
+  <%= link_to 'edit', send("edit_#{ @parent_type }_instance_kind_category_path", @parent, instance_kind_category) %> |
+  <%= link_to 'destroy', send("#{ @parent_type }_instance_kind_category_path", @parent, instance_kind_category), :confirm => 'Are you sure?', :method => :delete %>
+  <ul>
+    <%=h instance_kind_category.description %><br/><br/>
+    <% for instance_kind in instance_kind_category.instance_kinds %>
+    <b><%=h instance_kind.name %></b><% if instance_kind.is_default? -%> - default<% end -%>
+    <%= link_to 'show', instance_kind %> |
+    <%= link_to 'edit', edit_instance_kind_path(instance_kind) %> |
+    <%= link_to 'destroy', instance_kind, :confirm => 'Are you sure?', :method => :delete %>
+    <br/>
+    <ul>
+<%= instance_kind_ram(instance_kind) %> memory<br/>
+<%=h instance_kind.cpu_cores*instance_kind.cpu_units %> EC2 Compute Unit
+(<%=h instance_kind.cpu_cores %> virtual core with <%=h instance_kind.cpu_units %> EC2 Compute Unit)<br/>
+<%=h instance_kind.storage_gb %> GB instance storage<br/>
+<%=h instance_kind.platform_bit %>-bit platform<br/>
+I/O Performance: <%=h instance_kind.io_performance %><br/>
+API name: <%=h instance_kind.api_name %>
+    </ul>
+    <% end %>
+  </ul>
+<% end %>
+
+<%= link_to 'New Instance Category', send("new_#{ @parent_type }_instance_kind_category_path", @parent) %>

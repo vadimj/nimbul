@@ -1,13 +1,18 @@
 class Server < BaseModel
+  PARAMETER_PRIORITY = [
+    ServerProfileRevisionParameter,
+    ClusterParameter,
+    ProviderAccountParameter
+  ]
+      
 	behavior :service
 
 	service_parent_relationship :cluster
 	service_child_relationship :none
 
-	set_inheritance_column :server_type
 	belongs_to :cluster, :counter_cache => true, :include => :provider_account
 	belongs_to :server_profile_revision
-
+  
 	has_and_belongs_to_many :security_groups, :order => :name, :uniq => true
 	has_many :instances, :dependent => :nullify
 
@@ -17,7 +22,7 @@ class Server < BaseModel
 	has_and_belongs_to_many :dns_hostnames, :join_table => :dns_hostname_assignments, :select => 'dns_hostnames.*'
 	has_many :dns_hostname_assignments, :dependent => :destroy
 	
-	has_many :server_tasks, :dependent => :destroy
+	has_many :tasks, :as => :taskable, :dependent => :destroy
 	has_one :default_resource_bundle, :class_name => 'ResourceBundle', :conditions => { :is_default => true }, :include => [ :zone, :server_resources, :addresses, :volumes, :instance ]
 	has_many :resource_bundles, :dependent => :destroy, :order => 'position', :include => [ :zone, :server_resources, :addresses, :volumes, :instance ]
 	has_many :zones, :through => :resource_bundles, :order => :name, :uniq => true, :readonly => true
@@ -119,14 +124,13 @@ class Server < BaseModel
 
 	def publishable?
 		return false unless startable?
-		return false if ServerImage.find_by_image_id(self.image_id).nil?
-		return false if ServerImage.find_by_image_id(self.image_id).location.nil?
+		return false if ServerImage.find_by_image_id(self.image_id).try(:location).nil?
 		return true
 	end
 	
 	# has bare minimum attributes set allowing for start of instances
 	def startable?
-		return false if self.key_name.blank? || self.type.blank? || self.image_id.blank? || self.security_groups.nil?
+		return false if self.key_name.blank? || self.instance_type.blank? || self.image_id.blank? || self.security_groups.nil?
 		return true
 	end
 	
@@ -145,7 +149,7 @@ class Server < BaseModel
 		self.server_profile_revision.image_id
 	end
 
-	def type
+	def instance_type
 		return nil unless self.server_profile_revision
 		self.server_profile_revision.instance_type
 	end
@@ -192,6 +196,39 @@ class Server < BaseModel
 		return parameter.value
 	end
 
+  def get_parameter(name)
+    parameters[name].value rescue nil
+  end
+  
+  #
+  # Retreives the combined parameter list of the Provider Account, Cluster and this Server
+  # and provides a [] access method which retreives keys based on Parameter Class Priority
+  #
+  def parameters
+    _parameters = (
+      self.cluster.provider_account.provider_account_parameters +
+      self.cluster.cluster_parameters +
+      self.server_parameters
+    )
+    _parameters.class_eval(<<-EOS, __FILE__, __LINE__)
+      # order of priority (highest to lowest): server -> cluster -> provider account
+      alias :__array_access_orig :[]
+      def [](key)
+        return self.__array_access_orig(key) if key.is_a? Integer
+        matches = self.select { |p| p.name == key }
+        return case matches.size
+          when 0
+            nil
+          when 1
+            matches.first
+          else
+            matches.sort_by {|m| Server::PARAMETER_PRIORITY.index(m.class) }.first
+        end
+      end
+    EOS
+    _parameters
+  end
+  
 	def save_server_user_accesses
 		server_user_accesses.each do |c|
 			if c.should_destroy?
@@ -202,11 +239,7 @@ class Server < BaseModel
 		end
 	end
   
-	def self.find_all_by_parent(parent, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
-		send("find_all_by_#{ parent.class.to_s.underscore }", parent, search, page, extra_joins, extra_conditions, sort, filter, include)
-	end
-
-	def self.find_all_by_provider_account(provider_account, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
+	def self.search_by_provider_account(provider_account, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
 		joins = [
 			'INNER JOIN clusters ON clusters.id = servers.cluster_id',
 		] + [extra_joins].flatten.compact
@@ -221,7 +254,7 @@ class Server < BaseModel
 		search(search, page, joins, conditions, sort, filter, include)
 	end
 
-	def self.find_all_by_cluster(cluster, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
+	def self.search_by_cluster(cluster, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
 		joins = [] + [extra_joins].flatten.compact
 		
 		conditions = [ 'cluster_id = ?', (cluster.is_a?(Cluster) ? cluster.id : cluster) ]
@@ -234,7 +267,7 @@ class Server < BaseModel
 		search(search, page, joins, conditions, sort, filter, include)
 	end
   
-	def self.find_all_by_security_group(security_group, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
+	def self.search_by_security_group(security_group, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
 		joins = [
 			'INNER JOIN security_groups_servers ON security_groups_servers.server_id = servers.id',
 		] + [extra_joins].flatten.compact
@@ -251,6 +284,7 @@ class Server < BaseModel
 
 	# this method is used by find_all_by_user, count_all_by_user and search_by_user in the searchable behavior
 	def self.options_for_find_by_user(user, options={})
+	  user = User.find_by_id(user) if user.is_a? Fixnum
 		extra_joins = options[:joins]
 		extra_conditions = options[:conditions]
 		order = options[:order]
@@ -321,4 +355,34 @@ class Server < BaseModel
         
         return instances
 	end
+	
+    def add_user_key(user_key, server_user)
+	self.instances.each do |instance|
+	    next if not instance.running?
+	    instance.operations << Operation.factory(
+	        'Operation::SshKeys::Add',
+		:args => {
+		    :local_user_id => user_key.user_id,
+		    :server_user => server_user,
+		    :public_key => user_key.public_key,
+		    :hash_of_public_key => user_key.hash_of_public_key,
+		}
+	    )
+	end
+    end
+
+    def delete_user_key(user_key, server_user)
+	self.instances.each do |instance|
+	    next if not instance.running?
+	    instance.operations << Operation.factory(
+	        'Operation::SshKeys::Delete',
+		:args => {
+		    :local_user_id => user_key.user_id,
+		    :server_user => server_user,
+		    :public_key => user_key.public_key,
+		    :hash_of_public_key => user_key.hash_of_public_key,
+		}
+	    )
+	end
+    end
 end

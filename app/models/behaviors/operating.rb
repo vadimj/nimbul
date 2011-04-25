@@ -26,7 +26,8 @@ module Behaviors::Operating
       InMessage.find_by_sender_and_operation_id_and_handler(
         instance.instance_id,
         self[:id],
-        handler_name
+        handler_name,
+        :order => 'id DESC'
       )
     end
 
@@ -50,8 +51,14 @@ module Behaviors::Operating
       next_step!.execute
 
     rescue Exception => e
+      bt_sample = e.backtrace
+      unless e.backtrace.size <= 10
+        # show only the first five, and last five
+        bt_sample = bt_sample[0,5] + [ " ... #{bt_sample.size - 10} more ..." ] + bt_sample[-5,5]
+      end
+      
       self[:result_code]    = 'Error_StepExecutionFailure'
-      self[:result_message] = e.message
+      self[:result_message] = "#{e.class.name}: #{e.message}\n\t#{bt_sample.join("\n\t")}"
       fail!
 
       self.update_attribute(:current_step, (self.current_step - 1))

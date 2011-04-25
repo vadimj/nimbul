@@ -1,4 +1,3 @@
-
 class SecurityGroup < BaseModel
 	belongs_to :provider_account
 	validates_presence_of :name
@@ -28,7 +27,7 @@ class SecurityGroup < BaseModel
         %w(name description)
     end
     
-    def self.find_all_by_firewall_rule(firewall_rule, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
+    def self.search_by_firewall_rule(firewall_rule, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
 	    joins = [
 			'INNER JOIN firewall_rules_security_groups ON firewall_rules_security_groups.security_group_id = security_groups.id'
 		]
@@ -41,10 +40,10 @@ class SecurityGroup < BaseModel
 		    conditions << extra_conditions[1..-1]
 	    end
 		
-        self.search(search, page, joins, conditions, sort, filter, include)
+        search(search, page, joins, conditions, sort, filter, include)
     end
   
-    def self.find_all_by_provider_account(provider_account, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
+    def self.search_by_provider_account(provider_account, search, page, extra_joins, extra_conditions, sort=nil, filter=nil, include=nil)
 	    joins = []
 	    joins = joins + extra_joins unless extra_joins.blank?
 

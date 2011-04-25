@@ -8,7 +8,7 @@ class Parent::AddressesController < ApplicationController
 
         joins = nil
 	    conditions = nil
-	    @addresses  = CloudAddress.find_all_by_parent(parent, params[:search], params[:page], joins, conditions, params[:sort], params[:filter], [ :clusters, :instance ])
+	    @addresses  = CloudAddress.search_by_parent(parent, params[:search], params[:page], joins, conditions, params[:sort], params[:filter], [ :clusters, :instance ])
 
 	    @parent_type = parent_type
 	    @parent = parent
@@ -70,7 +70,7 @@ class Parent::AddressesController < ApplicationController
     def control
         joins = nil
 	    conditions = nil
-	    @addresses  = CloudAddress.find_all_by_parent(parent, params[:address_ids], params[:page], joins, conditions, params[:sort], nil, :provider_account)
+	    @addresses  = CloudAddress.search_by_parent(parent, params[:address_ids], params[:page], joins, conditions, params[:sort], nil, :provider_account)
 
         options = {
             :search => params[:search],

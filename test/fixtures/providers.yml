@@ -6,7 +6,6 @@ one:
   description: MyText
   main_documentation_url: MyString
   api_documentation_url: MyString
-  endpoint_url: MyString
   state: MyString
   adapter_class: MyString
 
@@ -16,6 +15,5 @@ two:
   description: MyText
   main_documentation_url: MyString
   api_documentation_url: MyString
-  endpoint_url: MyString
   state: MyString
   adapter_class: MyString

@@ -16,12 +16,12 @@ class S3Adapter
 
     def self.create_bucket(account, bucket)
         s3 = get_s3(account)
-        s3.create_bucket(bucket)
+        s3.create_bucket(bucket) unless bucket_exists?(account, bucket)
     end
 
     def self.put_object(account, bucket, key, content, policy = 'private')
         s3 = get_s3(account)
-        create_bucket(account, bucket)
+        create_bucket(account, bucket) 
         # canned policy may be: 'private', 'public-read', 'public-read-write', 'authenticated-read'
         opts = {
                 :data => content,
@@ -47,5 +47,13 @@ class S3Adapter
     def self.get_acl(account, bucket, key='')
         s3 = get_s3(account)
         s3.get_acl(bucket, key)
+    end
+    
+    def self.list_buckets(account)
+      get_s3(account).list_buckets
+    end
+    
+    def self.bucket_exists?(account, bucket)
+      list_buckets(account)[:buckets].any? { |b| b[:name] == bucket } rescue false
     end
 end

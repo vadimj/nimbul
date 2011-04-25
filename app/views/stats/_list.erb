@@ -51,45 +51,61 @@ Come back later.
 Instance Allocation as of <%= time_and_time_ago @latest_stat_record.taken_at %>
 <br/>
 <br/>
-<table>
+<table class="scrollable">
+    <colgroup span="5" class="headcol">
+    <colgroup span="<%= @cluster_names.size %>">
+    <thead>
     <tr>
         <th>Zone</th>
         <th>Type</th>
         <th>Reserved</th>
-        <th>Total</th>
+        <th>Running</th>
+        <th>Recommendations</th>
         <% @cluster_names.each do |cluster_name| %>
             <th><%= cluster_name.blank? ? 'Undefined' : cluster_name %></th>
         <% end %>
     </tr>
+    </thead>
+    <tbody>
 <%
-@zones.each do |zone_o|
-    zone = zone_o.id
-    next if @zone_type_stats.nil? or @zone_type_stats[zone].empty? 
-    @zone_type_stats.fetch(zone).keys.sort.each do |instance_type|
+@zones.each do |zone|
+    zone_id = zone.id
+    next if @zone_type_stats.nil? or @zone_type_stats[zone_id].empty? 
+    @zone_type_stats.fetch(zone_id).keys.sort.each do |instance_type|
         sum = 0
-        @reserved_instances.collect{ |i| i if i.zone == zone and i.instance_type == instance_type }.compact.each do |i|
+        @reserved_instances.collect{ |i| i if i.zone_id == zone_id and i.instance_type == instance_type }.compact.each do |i|
             sum += i.count
         end
-        c = @zone_type_stats[zone][instance_type]['Total']
+        c = @zone_type_stats[zone_id][instance_type]['Total']
         c_state = 'too-high'
         if c == sum
             c_state = 'ok'
         elsif c < sum
             c_state = 'too-low'
         end
+
+        recommendation = case c_state
+            when 'too-high' then 'You are running too many unreserved instances. Reserve more instanceas in this zone or move some instances to another zone'
+            when 'too-low' then 'You are not using all reserved instances, move more instances to this zone'
+        else 'No recommendations'
+end
 %>
     <tr class="<%= cycle("even", "odd") %>">
-        <td><%= zone_o.name %></td>
+        <td><%= zone.name %></td>
         <td><%= instance_type %></td>
         <td><strong><%= sum %></strong></td>
         <td class="<%= c_state %>"><%= c %></td>
+        <td class="<%= c_state %> small">
+            <%= recommendation %>
+        </td>
         <% @cluster_names.each do |cluster_name| %>
-            <td>&nbsp;<%= @zone_type_stats[zone][instance_type][cluster_name] %></td>
+            <td>&nbsp;<%= @zone_type_stats[zone_id][instance_type][cluster_name] %></td>
         <% end %>
     </tr>
 <%
     end
 end
 %>
+    </tbody>
 </table>
 <% end %>

@@ -13,7 +13,7 @@ class OperationLogsController < ApplicationController
                 format.html
                 format.xml  { render :xml => @operation_logs }
             else
-                flash[:error] = "Failed to find Logs for this Operations"
+                flash[:error] = "Failed to find Logs for this Operation"
                 format.html { redirect_to :back }
                 format.xml  { render :xml => @operation.errors, :status => :unprocessable_entity }
             end

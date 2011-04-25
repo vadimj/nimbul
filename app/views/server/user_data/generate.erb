@@ -18,14 +18,14 @@ root_users = user_data.server.cluster.provider_account.users + user_data.server.
 root_users.each do |user|
     instance_user = 'root'
     instance_users[instance_user] = [] if instance_users[instance_user].nil?
-    instance_users[instance_user] << user unless user.public_key.blank?
+    instance_users[instance_user] << user unless user.user_keys.size == 0
 end
 
 user_data.server.server_user_accesses.each do |sua|
     user = sua.user
     instance_user = sua.server_user
     instance_users[instance_user] = [] if instance_users[instance_user].nil?
-    instance_users[instance_user] << user unless user.public_key.blank?
+    instance_users[instance_user] << user unless user.user_keys.size == 0
 end
 
 instance_users.each do |instance_user, users|
@@ -42,9 +42,13 @@ mkdir -p $SSH_DIR
 cat <<'<%= reol %>' >> $SSH_DIR/authorized_keys
 <%
     users.each do |user|
+        user.user_keys.each do |user_key|
+            unless user_key.public_key.blank? or user_key.public_key !~ /^ssh-/
 -%>
-<%= user.public_key.delete("\C-M").delete("\r").delete("\n") %>
+<%= user_key.public_key.delete("\C-M").delete("\r").delete("\n") %>
 <%
+            end
+        end
     end
 -%>
 <%= reol %>
@@ -57,66 +61,19 @@ end
 
 # Seed the /etc/hosts file
 <% account = user_data.server.cluster.provider_account -%>
-<% require 'dns_adapter' -%>
 cat <<'EOL' > /etc/hosts
 127.0.0.1		localhost
-<%= DNS_Adapter.get_host_entries(user_data.server.cluster.provider_account).join -%>
+<%= DnsAdapter.static_dns_entries(user_data.server.cluster.provider_account).join("\n") %>
 EOL
 
-# put password-like values in /etc/cloudrc.private
-touch /etc/cloudrc.private
-chmod 600 /etc/cloudrc.private
-cat <<'EOL' > /etc/cloudrc.private
-<% user_data.parameters.collect{ |p| p if p.is_protected? }.compact.each do |p| -%>
-export <%= p.name %>='<%= p.value.delete("\n").delete("\C-M").sub("'","\'") %>'
-<% end -%>
-EOL
+<%= user_data.cloudrc %>
 
-# put public values in /etc/cloudrc
-if [ ! -e /etc/cloudrc ]; then
-	cat <<'ETC_CLOUDRC' > /etc/cloudrc
-# cloudmaster setup
-export AWS_HOME="/opt/cloudmaster"
-export RUBYLIB="${AWS_HOME}/lib"
-export PATH="${PATH}:${AWS_HOME}/tools"
-ETC_CLOUDRC
-
+# populate the hosts file by forcing an update
+# Note: this has to be done /after/ cloudrc is built
+if [ -x /root/bin/hostsfile_updater.sh ]; then
+  source /etc/cloudrc
+  /root/bin/hostsfile_updater.sh
 fi
-
-chmod 644 /etc/cloudrc
-
-cat <<'EOL' >> /etc/cloudrc
-
-function INSTANCE_NAME {
-    instance_name="$(cat /etc/hosts | grep "${INSTANCE_ID}" | awk '{ print $2 }' | head -n 1)"
-    if [ -z "${instance_name}" ]; then
-        echo $(hostname | tr -d "\n")
-    else
-        echo "${instance_name}"
-    fi
-}
-
-export -f INSTANCE_NAME
-export ACCOUNT_ID="<%= user_data.server.cluster.provider_account.id -%>"
-export CLUSTER_ID="<%= user_data.server.cluster.id -%>"
-export SERVER_ID="<%= user_data.server.id -%>"
-export INSTANCE_ID="$(/usr/local/bin/ec2-metadata -i | awk '{ print $2 }')"
-
-export CLUSTER_NAME="<%= user_data.server.cluster.name.gsub(/[^\w\d]+/, '_').downcase -%>"
-export SERVER_NAME="<%= user_data.server.name.gsub(/[^\w\d]+/, '_').downcase -%>"
-
-PS1="\n-[\u@$(INSTANCE_NAME)]- -[\d - \A]-\n-[\w]-\n\$ "
-PS2="--- "
-
-# load in password information if user has read access
-if [ -r /etc/cloudrc.private ]; then
-	source /etc/cloudrc.private
-fi
-
-<% user_data.parameters.collect{ |p| p unless p.is_protected? }.compact.each do |p| -%>
-export <%= p.name %>='<%= p.value.delete("\n").delete("\C-M").sub("'","\'") %>'
-<% end -%>
-EOL
 
 # Set the environment
 source /etc/bashrc
@@ -147,7 +104,7 @@ emissary stop
 
 # configure emissary
 mkdir -p /etc/emissary
-cat << 'EOF' >> /etc/emissary/config.ini
+cat << 'EOF' > /etc/emissary/config.ini
 <%= emissary_config -%>
 EOF
 

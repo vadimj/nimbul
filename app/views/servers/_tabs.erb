@@ -53,13 +53,13 @@
 			:href => '#operations'
 		) %>
     </li>
-    <li class="tab-unselected" id="server_tasks_tab">
+    <li class="tab-unselected" id="tasks_tab">
         <%= link_to_function('Tasks',
-			"loadDiv($('server_#{@server.id}_server_tasks_index'), '" + server_server_tasks_url(@server) + "');
-			tabselect($('server_tasks_tab'));
-			paneselect($('server_tasks_pane'));
+			"loadDiv($('server_#{@server.id}_tasks_index'), '" + server_tasks_url(@server) + "');
+			tabselect($('tasks_tab'));
+			paneselect($('tasks_pane'));
 			return true;",
-			:href => '#server_tasks'
+			:href => '#tasks'
 		) %>
     </li>
     <li class="tab-unselected" id="security_tab">
@@ -89,9 +89,9 @@
 		<h1>Operations</h1><br/>
 		<div id="server_<%= @server.id %>_operations_index"></div>
 	</li>
-    <li id="server_tasks_pane" class="pane-unselected">
+    <li id="tasks_pane" class="pane-unselected">
 		<h1>Server Tasks</h1><br/>
-		<div id="server_<%= @server.id %>_server_tasks_index"></div>
+		<div id="server_<%= @server.id %>_tasks_index"></div>
 	</li>
     <li id="security_pane" class="pane-unselected">
         <%= render :partial => 'security' %>
@@ -111,8 +111,8 @@
         if (anchor == 'operations') {
 			loadDiv($('server_#{@server.id}_operations_index'), '" + server_operations_url(@server) + "');
         }
-        if (anchor == 'server_tasks') {
-			loadDiv($('server_#{@server.id}_server_tasks_index'), '" + server_server_tasks_url(@server) + "');
+        if (anchor == 'tasks') {
+			loadDiv($('server_#{@server.id}_tasks_index'), '" + server_tasks_url(@server) + "');
         }
         if ($(anchor+'_pane') != null) {
             tabselect($(anchor+'_tab'));

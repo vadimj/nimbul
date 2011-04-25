@@ -1,5 +1,3 @@
-class ServiceWithoutActiveInstance < Exception; end
-
 class ServiceProvider < BaseModel
   belongs_to :service_type
   belongs_to :server

@@ -8,8 +8,7 @@
 </td>
 <% if @parent.is_a?(User) %>
 	<td class="nowrap">
-		<%= link_to row.cluster.provider_account.name, provider_account_path(row.cluster.provider_account_id) -%>
-		<br/>&nbsp;&nbsp;<%= link_to row.cluster.name, cluster_path(row.cluster_id) -%>
+		<%= parent_links(row, ' / <br/>&nbsp;&nbsp;') %>
 	</td>
 <% end %>
 <td>

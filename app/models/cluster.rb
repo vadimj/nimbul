@@ -1,4 +1,5 @@
 class Cluster < BaseModel
+  include AASM
 	behavior :service
   
 	service_parent_relationship :provider_account
@@ -10,7 +11,7 @@ class Cluster < BaseModel
 	has_and_belongs_to_many :cloud_resources
   
 	has_many :cluster_parameters, :dependent => :destroy
-	has_many :servers, :dependent => :destroy
+	has_many :servers, :dependent => :destroy, :include => :server_profile_revision
 
 	# auditing
 	has_many :logs, :class_name => 'AuditLog', :dependent => :nullify
@@ -23,6 +24,15 @@ class Cluster < BaseModel
 	after_update :save_cluster_parameters
 	attr_accessor :should_destroy
 	
+  aasm_column :state
+  aasm_initial_state :active
+
+  aasm_state :active
+  aasm_state :maintenance, :enter => :initiate_maintenance
+
+  aasm_event :activate do transitions :from => [ :active, :maintenance ], :to => :active; end
+  aasm_event :maintain do transitions :from => :active, :to => :maintenance; end
+
 	include TrackChanges # must follow any before filters
 
 	def zones
@@ -45,7 +55,7 @@ class Cluster < BaseModel
 		should_destroy.to_i == 1
 	end
 
-	def self.find_all_by_provider_account(provider_account, search, page, extra_joins, extra_conditions, sort=nil, filter=nil)
+	def self.search_by_provider_account(provider_account, search, page, extra_joins, extra_conditions, sort=nil, filter=nil)
 		joins = []
 		joins = joins + extra_joins unless extra_joins.blank?
 

@@ -1,0 +1,14 @@
+<% subtitle h(@task.taskable.name)+': '+h(@task.operation) %>
+
+<h1><%= pagetitle h(@task.taskable.name)+': '+h(@task.operation)  %></h1>
+
+<br />
+
+<% form_for :task,
+    :url => task_path(@task),
+    :html => { :method => 'put' } do |f| %>
+    <%= render :partial => 'tasks/fields', :locals => { :f => f } %>
+    <%= submit_tag "Update", :disable_with => "Updating&hellip;"  %>
+    <%= submit_tag 'Cancel', :name => 'cancel_button' %>
+<% end %>
+

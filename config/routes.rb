@@ -1,17 +1,22 @@
 ActionController::Routing::Routes.draw do |map|
-	map.resources :dashboard, :only => [ :index ]
-	map.resources :providers do |provider|
-		provider.resources :regions, :controller => 'provider/regions',
-			:only => [ :index ]
-		provider.resources :services, :controller => 'parent/services',
-			:collection => { :list => :any },
-			:only => [ :index, :list, :new, :create, :destroy ]
-	end
-	map.resources :regions do |region|
-		region.resources :zones, :controller => 'region/zones',
-			:only => [ :index ]
-	end
-	map.resources :provider_accounts,
+  map.resources :dashboard, :only => [ :index ]
+
+  map.resources :providers do |provider|
+    provider.resources :services, :controller => 'parent/services',
+      :collection => { :list => :any },
+      :only => [ :index, :list, :new, :create, :destroy ]
+    provider.resources :regions, :controller => 'regions'
+    provider.resources :instance_kind_categories, :controller => 'instance_kind_categories'
+    provider.resources :instance_kinds, :controller => 'instance_kinds'
+    provider.resources :operating_systems, :controller => 'operating_systems'
+  end
+
+  map.resources :regions do |region|
+    region.resources :zones, :controller => 'region/zones',
+      :only => [ :index ]
+  end
+
+  map.resources :provider_accounts,
 	    :collection => { :list => :any, :control => :post } do |provider_account|
 		provider_account.resources :instances, :controller => 'parent/instances',
 			:collection => { :list => :any, :control => :any },
@@ -174,7 +179,7 @@ ActionController::Routing::Routes.draw do |map|
 	end
 
 	map.resources :dns_leases, :member => { :release => :delete }
-	map.resources :dns_hostnames
+	map.resources :dns_hostnames, :collection => { :list => :any }
 
 ########
 	map.hostname_ac '/dns_hostname_ac',
@@ -256,17 +261,19 @@ ActionController::Routing::Routes.draw do |map|
 		end
 		server.resources :dns_leases, :controller => 'server/dns_leases',
 			:collection => { :release => :delete, :list => :any }, :except => [ :destroy, :edit, :new, :update, :create ]
-		server.resources :server_tasks, :controller => 'parent/server_tasks',
-			:member => { :run => :get },
-			:collection => { :list => :any }
+		server.resources :tasks, :controller => 'parent/tasks',
+			:collection => { :list => :any },
+			:only => [ :index, :new, :create ]
 		server.resources :operations, :controller => 'parent/operations',
 			:collection => { :list => :any, :control => :any },
 			:only => [ :index, :list, :show ]
 		server.resources :security_groups, :controller => 'server/security_groups', :only => [ :destroy ]
 	end
 		
-	# server tasks
-	map.resources :server_tasks, :controller => 'server_tasks', :only => [ :update ]
+	# tasks
+	map.resources :tasks, :controller => 'tasks',
+		:member => { :run => :get },
+		:only => [ :edit, :update, :destroy ]
 
 	# resource_bundles
 	map.resources :resource_bundles do |resource_bundle|
@@ -282,6 +289,7 @@ ActionController::Routing::Routes.draw do |map|
     map.resources :operations, :has_many => [ :operation_logs ]
 
 	map.show_server_server_user_data '/server/:id/user_data', :controller => 'server/user_data', :action => 'show'
+	map.show_server_server_script_data '/server/:id/user_script', :controller => 'server/user_script', :action => 'show'
 
     # server profiles
     map.resources :server_profiles, :has_many => [ :server_profile_revisions ]

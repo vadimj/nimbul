@@ -1,12 +1,16 @@
 # Provides support for including behaviors (mixins) in a consistent manner
 # including keeping track of inherited behaviors through ancestors (see: BaseModel)
-
 module Behaviors
+  # ensure that Behaviors are reloaded when classes are
+  unless Rails.configuration.cache_classes
+    ActiveSupport::Dependencies.unloadable Behaviors
+  end
 
   def self.included klass
     klass.class_eval(<<-EOS, __FILE__, __LINE__)
       # provides support for inheritable behaviors, both class and instance based
       class_inheritable_accessor :class_behaviors, :instance_behaviors
+      
       write_inheritable_attribute :class_behaviors, [].dup
       write_inheritable_attribute :instance_behaviors, [].dup
       
@@ -18,6 +22,12 @@ module Behaviors
       
       class << self
         alias_method :behaviors, :behavior
+
+        # if classes get reloaded (via reload!) then we
+        # should also reload all behaviors
+        unless Rails.configuration.cache_classes
+          Behaviors.loaded_behaviors = false
+        end
         
         def kind_of? klass
           unless klass.to_s[/Behaviors::([^:]+)/,1].nil?
@@ -30,18 +40,19 @@ module Behaviors
   end
   
   class << self
-    @@behaviors = nil
+    @@behaviors = []
     @@loaded_behaviors = false
-    
+    cattr_accessor :behaviors, :loaded_behaviors
+
     def include(klass, what, opts = {})
       load_behaviors
 
-      what = [what].flatten.include?(:all) ? @@behaviors : [what].flatten.collect { |b| b.to_s.camelize.to_sym }
+      what = [what].flatten.include?(:all) ? self.behaviors : [what].flatten.collect { |b| b.to_s.camelize.to_sym }
       
       exceptions = opts.delete(:except) || opts.delete(:exceptions) || []
       exceptions = [exceptions].flatten.select { |e| e.camelize.to_sym }
-
-      modules = @@behaviors.select do |b|
+      
+      modules = self.behaviors.select do |b|
         what.include?(b) && !exceptions.include?(b)
       end.inject({}) do |hash,behavior|
         hash[behavior] = behavior_constants behavior
@@ -56,6 +67,39 @@ module Behaviors
     
     private
     
+    def load_behaviors
+      unless self.loaded_behaviors
+        file = File.expand_path(__FILE__)[/(app\/models.*)/,1]
+        path = File.join(RAILS_ROOT, File.dirname(file), File.basename(file, '.rb'))
+        begin
+          self.behaviors = Dir[File.join(path, '*.rb')].collect do |behavior|
+            load behavior
+            File.basename(behavior,'.rb').camelize.to_sym
+          end.compact
+        rescue Exception => e
+          Rails.logger.error "Exception caught: #{e.message}\n\t#{e.backtrace.join("\n\t")}"
+        end
+        
+        self.loaded_behaviors = true
+      end
+    end
+    
+    def behavior_constants behavior
+      (@@cached||={})[behavior] = { # lazy "load" - and only do it once
+        :class    => begin
+          Behaviors.const_get(behavior).const_get('ClassBehaviors')
+        rescue NameError
+          nil
+        end,
+        
+        :instance => begin
+          Behaviors.const_get(behavior).const_get('InstanceBehaviors')
+        rescue NameError
+          nil
+        end
+      }
+    end
+
     def setup_class_behavior klass, behavior, b_module
       unless b_module.nil? or klass.class_behaviors.include? behavior
         klass.extend b_module
@@ -80,39 +124,6 @@ module Behaviors
         EOS
         klass.instance_behaviors << behavior
       end
-    end
-  
-    def load_behaviors
-      unless @@loaded_behaviors
-        file = File.expand_path(__FILE__)[/(app\/models.*)/,1]
-        path = File.join(RAILS_ROOT, File.dirname(file), File.basename(file, '.rb'))
-        begin
-          @@behaviors ||= Dir[File.join(path, '*.rb')].collect do |behavior|
-            result = require behavior
-            File.basename(behavior,'.rb').camelize.to_sym
-          end.compact
-        rescue Exception => e
-          puts "Exception caught: #{e.message}\n\t#{e.backtrace.join("\n\t")}"
-        end
-        
-        @@loaded_behaviors = true
-      end
-    end
-    
-    def behavior_constants behavior
-      (@@cached||={})[behavior] = { # lazy "load" - and only do it once
-        :class    => begin
-          Behaviors.const_get(behavior).const_get('ClassBehaviors')
-        rescue NameError
-          nil
-        end,
-        
-        :instance => begin
-          Behaviors.const_get(behavior).const_get('InstanceBehaviors')
-        rescue NameError
-          nil
-        end
-      }
-    end
+    end  
   end
 end

@@ -39,11 +39,7 @@ class Snapshot < BaseModel
         Volume.update_all( ['snapshot_name=?', self.name], ['provider_account_id=? and snapshot_id=?', self.provider_account_id, self.snapshot_id ] )
     end
 
-    def self.find_all_by_parent(parent, search, page, extra_joins, extra_conditions, sort=nil, filter=nil)
-		send("find_all_by_#{ parent.class.to_s.underscore }", parent, search, page, extra_joins, extra_conditions, sort, filter)
-	end
-
-#    def self.find_all_by_cluster(cluster, search, page, extra_joins, extra_conditions, sort=nil, filter=nil)
+#    def self.search_by_cluster(cluster, search, page, extra_joins, extra_conditions, sort=nil, filter=nil)
 #	    joins = [
 #	  	    'INNER JOIN cloud_resources_clusters ON cloud_resources_clusters.cloud_resource_id = cloud_resources.id',
 #	    ]
@@ -60,7 +56,7 @@ class Snapshot < BaseModel
 #        self.search(search, page, joins, conditions, sort, filter)
 #    end
   
-    def self.find_all_by_provider_account(provider_account, search, page, extra_joins, extra_conditions, sort=nil, filter=nil)
+    def self.search_by_provider_account(provider_account, search, page, extra_joins, extra_conditions, sort=nil, filter=nil)
 	    joins = []
 	    joins = joins + extra_joins unless extra_joins.blank?
 
