@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="author" content="The New York Times / Based on a design by Andreas Viklund - http://andreasviklund.com/" />
+    <meta name="generator" content="webgen - http://webgen.rubyforge.com/" />
+    <link rel="stylesheet" type="text/css" href="../nyt_open.css" media="screen,projection" />
+   <link rel="stylesheet" type="text/css" href="../nyt_open.css" media="print" />
+    <title>Permissions and Roles</title>
+  </head>
+
+  <body>
+    <div id="wrap">
+
+      <div id="header">
+        <p id="toplinks">
+        <a href="../index.html">Nimbul</a> / <a href="index.html">User Accounts</a> / <span>Permissions and Roles</span>
+        </p>
+	<h1 class="logo"><a href="../index.html"><img src="../images/logo.png"></a></h1>
+        <!--<h1><a href="../index.html"><span class="fade">Nimbul</span></a></h1>-->
+      </div>
+
+      <div id="content">
+        <h1>Permissions and Roles</h1>
+<h2>Controlling Access</h2>
+<p>In Nimbul, user access is controlled in several ways:</p>
+<table>
+	<tr>
+		<td class="head">Setting/Type</td>
+		<td class="head">Description</td>
+	</tr>
+	<tr>
+		<th style="width:20%;">Roles</th>
+		<td>The &#8220;admin&#8221; role gives a user access to all Nimbul features and settings, including user account administration and other system administration. This role is assigned in the user administration area. For details, see <a href="user_account_managing.html">Managing User Accounts</a>.</td>
+	</tr>
+	<tr>
+		<th style="width:20%;">Access Rules</th>
+		<td>Users can be given administrator access to provider accounts and clusters. Access rules are set in the user administration area. For details, see <a href="user_account_managing.html">Managing User Accounts</a>. </td>
+	</tr>
+	<tr>
+		<th style="width:20%;">Firewall Rules</th>
+		<td>Users can be granted access to provider accounts based on IP ranges or Amazon Web Services account IDs. For details, see <a href="../security/firewall_rules_setting_up.html">Setting Up Firewall Rules</a>.</td>
+	</tr>
+	<tr>
+		<th style="width:20%;">Security Groups</th>
+		<td>Security groups can be configured to apply sets of firewall rules to provider accounts and servers. For details, see <a href="../security/security_configuring_groups.html">Managing Security Groups</a>.</td>
+	</tr>
+	<tr>
+		<th style="width:20%;"><span class="caps">SSH</span> Access</th>
+		<td>Users can be granted <span class="caps">SSH</span> access to all instances associated with a specific server profile. For details, see <a href="../security/security_ssh.html">Setting Up <span class="caps">SSH</span> Access</a>.</td>
+	</tr>
+</table>
+<p class="thinspace"></p><h2>User Types</h2>
+<p>Each Nimbul user can be thought of as one of the following types:</p>
+<table>
+	<tr>
+		<td class="head">User Type</td>
+		<td class="head">Description</td>
+	</tr>
+	<tr>
+		<th style="width:30%;">Nimbul Administrator</th>
+		<td>Users with the admin role enabled in the user administration area. These users are &#8220;system administrators&#8221; and can fully manage all other users&#8217; roles and access rules.</td>
+	</tr>
+	<tr>
+		<th style="width:30%;">Provider Account Administrator</th>
+		<td>Users who have been given administrator access to a provider account in the user administration area (under &#8220;access rules&#8221;). These users can add or remove other provider account administrators and cluster administrators.</td>
+	</tr>
+	<tr>
+		<th style="width:30%;">Cluster Administrator</th>
+		<td>Users who have been given administrator access to a specific cluster (under access rules). These users can add or remove other cluster administrators.</td>
+	</tr>
+	<tr>
+		<th style="width:30%;">Nimbul User</th>
+		<td>Users who have <span class="caps">SSH</span> access to instances that belong to a particular server. These users can connect to instances and restart them but cannot launch new instances.</td>
+</table>
+<p class="thinspace"></p><p>Note: Any Nimbul user can add a new provider account to the system, effectively becoming an administrator for that provider account.</p>
+<p>The rest of this page provides more information about each user type.</p>
+<h3>Nimbul Administrators</h3>
+<p>Nimbul Administrators can be thought of as &#8220;system&#8221; administrators. They manage and maintain Nimbul itself rather than focusing on managing cloud account activity. Nimbul administrators typically perform the following tasks:</p>
+<ul>
+	<li>Managing Nimbul user accounts</li>
+	<li>Enabling and configuring new accounts</li>
+	<li>Analyzing system information, such as message queues and daemons</li>
+</ul>
+<h3>Provider Account Administrators</h3>
+<p>Provider account administrators manage individual cloud provider accounts. They have unrestricted access to all aspects of the provider account and typically perform the following tasks:</p>
+<ul>
+	<li>Creating clusters and granting clusters access to provider account resources (such as IP addresses and storage)</li>
+	<li>Creating and managing security groups, firewall rules (including managing a master firewall list across all security groups) and master public keys</li>
+	<li>Configuring account <span class="caps">DNS</span> records and managing hostnames and leases</li>
+	<li>Configuring environment variables and startup scripts for the account</li>
+	<li>Designating other provider account administrators</li>
+</ul>
+<p>Note: Any Nimbul user can add a new provider account to the system, effectively becoming an administrator for that provider account.</p>
+<h3>Cluster Administrators</h3>
+<p>In most Nimbul configurations, the cluster administrator is the &#8220;basic&#8221; user level. Users who have administrative access to a cluster can perform the following tasks:</p>
+<ul>
+	<li>Adding servers</li>
+	<li>Creating and managing server profiles</li>
+	<li>Launching and terminating instances</li>
+	<li>Configuring environment variables and startup scripts for the cluster</li>
+	<li>Configuring environment variables and startup scripts for server profiles within the cluster</li>
+	<li>Managing server <span class="caps">DNS</span></li>
+	<li>Designating other cluster administrators</li>
+</ul>
+<p>Cluster administrators cannot create new clusters or perform other tasks at the provider account level &mdash; unless the cluster administrator adds a new provider account to the system, effectively becoming an administrator for that account. For more information, see <a href="../provider_accounts/provider_managing.html">Managing Provider Accounts</a>.</p>
+<h2>Related Topics</h2>
+<ul>
+	<li><a href="user_account_managing.html">Managing User Accounts</a></li>
+</ul>
+<p style="text-align:right;">End of section. Next section: <a href="../provider_accounts/index.html">Provider Accounts &raquo;</a></p>
+<p><!-- MW have not adequately reviewed this one --></p>
+
+        <!--<p class="readmore"><a href="styles.html">Example "Read more" link</a> &raquo;</p>-->
+      </div>
+
+      <div id="sidebar">
+        <h2>About</h2>
+        <p>Nimbul helps you manage your work in the cloud.</p>
+
+        <h2>Documentation</h2>
+        <div id="menu"><ul><li class="webgen-menu-level1"><a href="../index.html">Overview</a></li><li class="webgen-menu-level1 webgen-menu-submenu"><a href="../getting_started/index.html">Getting Started</a></li><li class="webgen-menu-level1 webgen-menu-submenu webgen-menu-submenu-inhierarchy"><a href="index.html">User Accounts</a><ul><li class="webgen-menu-level2"><a href="index.html">Overview</a></li><li class="webgen-menu-level2"><a href="user_account_signing_up.html">Signing Up for an Account</a></li><li class="webgen-menu-level2"><a href="user_account_managing.html">Managing User Accounts</a></li><li class="webgen-menu-level2 webgen-menu-item-selected"><span>Permissions and Roles</span></li></ul></li><li class="webgen-menu-level1 webgen-menu-submenu"><a href="../provider_accounts/index.html">Provider Accounts</a></li><li class="webgen-menu-level1 webgen-menu-submenu"><a href="../servers_clusters/index.html">Clusters and Servers</a></li><li class="webgen-menu-level1 webgen-menu-submenu"><a href="../instances/index.html">Instances</a></li><li class="webgen-menu-level1 webgen-menu-submenu"><a href="../hostnames/index.html">Hostnames and Addresses</a></li><li class="webgen-menu-level1 webgen-menu-submenu"><a href="../security/index.html">Security</a></li><li class="webgen-menu-level1 webgen-menu-submenu"><a href="../system_admin/index.html">Administration</a></li><li class="webgen-menu-level1"><a href="../license.html">License and Feedback</a></li><li class="webgen-menu-level1"><a href="../glossary.html">Glossary</a></li></ul></div>
+        
+        <h2>Downloads</h2>
+        <p><strong>Version 1.0</strong><br />
+        <a href="http://github.com/nimbul/nimbul">GitHub</a><br>
+        Released July 2010</p>
+
+        <h2>Other Projects</h2>
+        <ul class="links">
+	<li><a href="http://developer.nytimes.com">Times Developer Network</a></li>
+	<li><a href="http://code.nytimes.com/projects/nyt_transformer/doc/">NYT_Transformer</a></li>
+          <li><a href="http://code.nytimes.com/projects/dbslayer">DBSlayer</a></li>
+          <li><a href="http://code.nytimes.com/projects/xslcache">XSL Cache</a></li>
+        </ul>
+      </div>
+
+      <div id="footer">
+        <p>&copy; 2010 <a href="http://www.nytimes.com">The New York Times</a> | Made with <a href="http://webgen.rubyforge.org">webgen</a></p>
+      </div>
+
+    </div>
+  </body>
+</html>

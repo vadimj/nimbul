@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="author" content="The New York Times / Based on a design by Andreas Viklund - http://andreasviklund.com/" />
+    <meta name="generator" content="webgen - http://webgen.rubyforge.com/" />
+    <link rel="stylesheet" type="text/css" href="../nyt_open.css" media="screen,projection" />
+   <link rel="stylesheet" type="text/css" href="../nyt_open.css" media="print" />
+    <title>Managing Provider Accounts</title>
+  </head>
+
+  <body>
+    <div id="wrap">
+
+      <div id="header">
+        <p id="toplinks">
+        <a href="../index.html">Nimbul</a> / <a href="index.html">Provider Accounts</a> / <span>Managing Provider Accounts</span>
+        </p>
+	<h1 class="logo"><a href="../index.html"><img src="../images/logo.png"></a></h1>
+        <!--<h1><a href="../index.html"><span class="fade">Nimbul</span></a></h1>-->
+      </div>
+
+      <div id="content">
+        <h1>Managing Provider Accounts</h1>
+<p>Currently, Nimbul supports Amazon EC2 accounts only.</p>
+<table style="margin-left:10px;">
+	<tr>
+		<td class="head"><span class="caps">PERMISSIONS</span> <span class="caps">REQUIRED</span></td>
+	</tr>
+	<tr>
+		<td>To edit or delete a provider account, you must be a provider account administrator. All users can add provider accounts to the system. For more information, see the <a href="index.html">Overview</a>.</td>
+</table>
+<p class="thinspace"></p><p>Topics covered on this page:</p>
+<p style="margin-top:-15px;">&nbsp;&nbsp;&nbsp;&nbsp;<a href="#add">Add, Edit or Delete Basic Account Information</a><br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#configure">Configure or Update Account Details</a><br><br></p>
+<h2 id="add">Add, Edit or Delete Basic Account Information</h2>
+<h3>Adding an Account</h3>
+<p>To add a provider account to Nimbul, complete these steps. <strong>Note:</strong> The account must already exist outside of Nimbul.</p>
+<ol>
+	<li>In the main Nimbul menu, click <strong>Provider Accounts.</strong> The provider accounts dashboard appears.</li>
+	<li>Click the green plus sign near the search box.</li>
+	<li>Enter the requested information, then click <strong>Create Provider Account.</strong><br><br><strong>Note:</strong> The <strong>Master Private Key</strong> in the basic account information must correspond to the <strong>Default Main Key</strong> on the <strong>Security</strong> tab on the provider account details page (see <a href="#security">below</a>).</li>
+</ol>
+<p>When you add a provider account to the system, you automatically become an administrator of that provider account.</p>
+<h3 id="edit">Editing an Account</h3>
+<p>To edit basic provider account information, complete these steps.</p>
+<ol>
+	<li>In the main Nimbul menu, click <strong>Provider Accounts.</strong></li>
+	<li>In the <strong>Name</strong> column, click the name of the account you want to edit.</li>
+	<li>At the top of the provider account page (under the name of the account), click the <strong>edit</strong> link.<br><br><img src="../images/provider_accounts/account_basic_edit.png" alt="" /><br><br></li>
+	<li>Edit the fields as necessary. <br><br><strong>Tip:</strong> To edit a masked field, click it to make a text box appear. Edit the value, then click the <strong>Save</strong> button immediately to the right of the text box.</li>
+	<li>To save your changes, click the <strong>Update</strong> button.</li>
+</ol>
+<h3>Deleting an Account</h3>
+<p><strong><span class="caps">WARNING</span>:</strong> In most cases, you will not need to delete a provider account. An account can remain dormant in Nimbul indefinitely. Delete the account only if you are certain you will never need access to it again.</p>
+<p>To delete a provider account, complete these steps.</p>
+<ol>
+	<li>In the main Nimbul menu, click <strong>Provider Accounts.</strong></li>
+	<li>Select the checkbox to the left of the account you want to delete.</li>
+	<li>Click the trash can icon next to the green plus sign. A warning message will appear; click <strong>OK</strong> to confirm. A second warning appears. Type <code>yes</code>, then click <strong>OK</strong>.</li>
+</ol>
+<p>When you delete a provider account, you delete it only from Nimbul &mdash; the external account still exists with the cloud provider.</p>
+<h2 id="configure">Configure or Update Account Details</h2>
+<h3 id="view">Viewing Account Details</h3>
+<p>To configure or update an account, first view the account details by completing these steps:</p>
+<ol>
+	<li>In the main Nimbul menu, click <strong>Provider Accounts.</strong></li>
+	<li>In the <strong>Name</strong> column, click the name of the account you want to configure or update. The provider account details page appears.<br><br><img src="../images/provider_accounts/pa_details1.png" alt="" /><br><br></li>
+</ol>
+<p class="num-sub">The provider account details page contains the following tabs:</p>
+<table style="margin-left:50px;">
+	<tr>
+		<td class="head">Tab</td>
+		<td class="head">Available Actions</td>
+	</tr>
+	<tr>
+		<th><a href="../instances/index.html">Instances</a> </th>
+		<td><ul class="table"><li>View summary information about currently running instances.</li><li>Reboot and terminate instances. (To launch instances, go to the <a href="../servers_clusters/index.html">clusters area</a>.)</li><li>Click links (such as server names and security group names) to get more details or make changes.</li><ul></td>
+	</tr>
+	<tr>
+		<th><a href="../hostnames/index.html">Addresses</a> </th>
+		<td><ul class="table"><li>View summary information about existing elastic IP addresses, including the instance currently attached to each address.</li><li>Add and delete elastic IP addresses.</li><li>Click an instance ID to view instance details and change elastic IP address allocation.</li><li>Add and revoke cluster access to an existing elastic IP address.</li></ul></td>
+	</tr>
+	<tr>
+		<th>Storage</th>
+		<td><ul class="table"><li>View summary information about existing storage (<span class="caps">EBS</span>) volumes, including attached instances.</li><li>Create and delete volumes and snapshots.</li><li>Restore  existing snapshots in specific zones.</li></ul></td>
+	</tr>
+	<tr>
+		<th>Auto-Scaling </th>
+		<td><ul class="table"><li>Create, activate and monitor auto-scaling groups (containers for auto-scaling triggers and configurations).</li><li>Create and activate launch configurations for auto-scaling groups.</li></ul><strong>Note:</strong> You can also define default launch configurations at the server level. See  <a href="../servers_clusters/servers_managing.html">Managing Servers</a>.</td>
+	</tr>
+	<tr>
+		<th>Images</th>
+		<td><ul class="table"><li>View summary information about existing server images (AMIs).</li><li>Add/register new server images.<li>Enable or disable existing server images.</li></ul></td>
+	</tr>
+	<tr>
+		<th>Groups</th>
+		<td><ul class="table"><li>View summary information about existing security groups, including the number of instances and servers currently using each group.</li><li>Add and delete security groups.</li><li>Click links (such as security group names and number of instances/servers) to get more details or make changes.</li></ul></td>
+	</tr>
+	<tr>
+		<th>Firewall</th>
+		<td><ul class="table"><li>View summary information about existing firewall rules, including the number of security groups currently using each rule.</li><li>Add, delete, enable and disable firewall rules.</li><li>Click the number of groups to get group details or make changes.</li></ul></td>
+	</tr>
+	<tr>
+		<th>Variables</th>
+		<td><ul class="table"><li>View existing account variables and edit their parameters.</li><li>Add and remove environment variables for all instances started under an account.</li><li>View and edit account startup scripts.</li></ul><strong>Note:</strong> To reorder variables, use the first column of the table to click and drag the appropriate rows to new positions.</td>
+	</tr>
+	<tr>
+		<th>Communication</th>
+		<td><ul class="table"><li>View and edit the <span class="caps">URI</span>  for sending event messages to running instances in this account (see the text on the tab for the <span class="caps">URI</span> structure and parameters).</li><li>Add, edit and run <a href="provider_publishers.html">publishers</a> for the account.</li></ul></td>
+	</tr>
+	<tr>
+		<th><span class="caps">DNS</span></th>
+		<td><ul class="table"><li>View and edit <a href="../system_admin/index.html">service</a>-related <span class="caps">DNS</span> records.</li><li>View and edit static <span class="caps">DNS</span> records (<code>/etc/hosts</code> file format).</li><li>View existing <a href="../hostnames/hostnames_managing.html">hostnames</a>, including servers currently assigned to those hostnames, plus accrued and in-use leases.</li><li>Add and remove account hostnames.</li><li>Click a server name to view the server profile and make changes.</li></ul></td>
+	</tr>
+	<tr>
+		<th>Security</th>
+		<td><ul class="table"><li>Set the default security group and main key for the account.  (See the important note about keys <a href="#security">below</a>.)</li><li>Enable or disable auto-locking for instances launched under the account.</li><li>Add and remove account administrators.</li></ul></td>
+	</tr>
+	<tr>
+		<th>Stats</th>
+		<td><ul class="table"><li>View various statistics for the account, including zones, types and  number of instances by cluster.</li></ul></td>
+	</tr>
+</table>
+<p class="thinspace">&nbsp;</p><h3>Configuring and Updating Account Details</h3>
+<h4>UI Elements</h4>
+<p>Use the tabs described <a href="#view">above</a> to configure and update provider account details as you use Nimbul. Note the following UI elements on each tab:</p>
+<ul>
+	<li>Click links to servers, instances, security groups and other objects to get more details and make changes.</li>
+	<li>Use the standard icons to enable, disable, add and remove various resources.</li>
+	<li>Look for confirmation messages and other information in the left margin (under the main Nimbul menu).</li>
+	<li>Be sure to click <strong>Update</strong> buttons where available.</li>
+</ul>
+<p>For more information, see <a href="../getting_started/ui_elements.html">User Interface Elements</a>.</p>
+<h4>Minimum Configuration</h4>
+<p>Configurations vary depending on cloud providers and local environments. At a minimum, you will want to set up the following aspects of each provider account:</p>
+<ol>
+	<li><em>Images:</em> On the <strong>Images</strong> tab, register your existing server images.</li>
+	<li id="security"><em>Security:</em> When you add an existing cloud provider account to Nimbul, your existing security groups will be imported. To fine-tune these groups, use the <strong>Firewall</strong> and <strong>Groups</strong> tabs. On the <strong>Security</strong> tab, you can set a default security group (set of firewall rules) and a main key. For more information, see <a href="../security/security_configuring_groups.html">Managing Security Groups</a>.<br><br><strong>Note:</strong> The main key on the <strong>Security</strong> tab must correspond to the <strong>Master Private Key</strong> entered in the <a href="#add">basic account information</a> so that Nimbul can access instances.</li>
+	<li><em>Local Configuration:</em> Review the other provider account tabs to ensure that you have set up any additional elements for your local configuration, such as environment variables.</li>
+</ol>
+<p>After you have configured your provider accounts, you (or a cluster administrator) will still need to configure clusters, especially server profiles. For more information, proceed to the <a href="../servers_clusters/index.html">Clusters and Servers section</a>.</p>
+<h2>Related Topics</h2>
+<ul>
+	<li><a href="../security/security_configuring_groups.html">Managing Security Groups</a></li>
+</ul>
+<p style="text-align:right;">Next: <a href="provider_publishers.html">Publishing Account Information &raquo;</a></p>
+
+        <!--<p class="readmore"><a href="styles.html">Example "Read more" link</a> &raquo;</p>-->
+      </div>
+
+      <div id="sidebar">
+        <h2>About</h2>
+        <p>Nimbul helps you manage your work in the cloud.</p>
+
+        <h2>Documentation</h2>
+        <div id="menu"><ul><li class="webgen-menu-level1"><a href="../index.html">Overview</a></li><li class="webgen-menu-level1 webgen-menu-submenu"><a href="../getting_started/index.html">Getting Started</a></li><li class="webgen-menu-level1 webgen-menu-submenu"><a href="../user_accounts/index.html">User Accounts</a></li><li class="webgen-menu-level1 webgen-menu-submenu webgen-menu-submenu-inhierarchy"><a href="index.html">Provider Accounts</a><ul><li class="webgen-menu-level2"><a href="index.html">Overview</a></li><li class="webgen-menu-level2 webgen-menu-item-selected"><span>Managing Provider Accounts</span></li><li class="webgen-menu-level2"><a href="provider_publishers.html">Publishing Account Information</a></li></ul></li><li class="webgen-menu-level1 webgen-menu-submenu"><a href="../servers_clusters/index.html">Clusters and Servers</a></li><li class="webgen-menu-level1 webgen-menu-submenu"><a href="../instances/index.html">Instances</a></li><li class="webgen-menu-level1 webgen-menu-submenu"><a href="../hostnames/index.html">Hostnames and Addresses</a></li><li class="webgen-menu-level1 webgen-menu-submenu"><a href="../security/index.html">Security</a></li><li class="webgen-menu-level1 webgen-menu-submenu"><a href="../system_admin/index.html">Administration</a></li><li class="webgen-menu-level1"><a href="../license.html">License and Feedback</a></li><li class="webgen-menu-level1"><a href="../glossary.html">Glossary</a></li></ul></div>
+        
+        <h2>Downloads</h2>
+        <p><strong>Version 1.0</strong><br />
+        <a href="http://github.com/nimbul/nimbul">GitHub</a><br>
+        Released July 2010</p>
+
+        <h2>Other Projects</h2>
+        <ul class="links">
+	<li><a href="http://developer.nytimes.com">Times Developer Network</a></li>
+	<li><a href="http://code.nytimes.com/projects/nyt_transformer/doc/">NYT_Transformer</a></li>
+          <li><a href="http://code.nytimes.com/projects/dbslayer">DBSlayer</a></li>
+          <li><a href="http://code.nytimes.com/projects/xslcache">XSL Cache</a></li>
+        </ul>
+      </div>
+
+      <div id="footer">
+        <p>&copy; 2010 <a href="http://www.nytimes.com">The New York Times</a> | Made with <a href="http://webgen.rubyforge.org">webgen</a></p>
+      </div>
+
+    </div>
+  </body>
+</html>

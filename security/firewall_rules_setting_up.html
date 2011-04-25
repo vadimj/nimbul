@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="author" content="The New York Times / Based on a design by Andreas Viklund - http://andreasviklund.com/" />
+    <meta name="generator" content="webgen - http://webgen.rubyforge.com/" />
+    <link rel="stylesheet" type="text/css" href="../nyt_open.css" media="screen,projection" />
+   <link rel="stylesheet" type="text/css" href="../nyt_open.css" media="print" />
+    <title>Setting Up Firewall Rules</title>
+  </head>
+
+  <body>
+    <div id="wrap">
+
+      <div id="header">
+        <p id="toplinks">
+        <a href="../index.html">Nimbul</a> / <a href="index.html">Security</a> / <span>Setting Up Firewall Rules</span>
+        </p>
+	<h1 class="logo"><a href="../index.html"><img src="../images/logo.png"></a></h1>
+        <!--<h1><a href="../index.html"><span class="fade">Nimbul</span></a></h1>-->
+      </div>
+
+      <div id="content">
+        <h1>Setting Up Firewall Rules</h1>
+<table style="margin-left:10px;">
+	<tr>
+		<td class="head">Permissions Required</td>
+	</tr>
+	<tr>
+		<td>To create and apply firewall rules, you must be a Nimbul administrator or a provider account administrator. For more information, see <a href="../user_accounts/user_account_permissions_roles.html">Permissions and Roles</a>.</td>
+	</tr>
+</table>
+<p class="thinspace"></p><p>Firewall rules are used to grant <span class="caps">HTTP</span> access to Nimbul users based on IP ranges or Amazon Web Services account IDs. You may need to create rules to grant access to users outside your organization or in other locations.</p>
+<p>When you first add an existing cloud account to Nimbul, the security groups and firewall rules you have already configured for the account will be automatically imported.</p>
+<p>Topics covered on this page:</p>
+<p style="margin-top:-15px;">&nbsp;&nbsp;&nbsp;&nbsp;<a href="#create">Create a Firewall
+ Rule</a><br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#delete">Enable, Disable or Delete a Firewall Rule</a></p>
+<h2 id="create">Create a Firewall Rule</h2>
+<p>To set up a new firewall rule, complete these steps:</p>
+<ol>
+	<li>In the main Nimbul menu, click <strong>Provider Accounts.</strong></li>
+	<li>In the list of provider accounts, click the name of the account for which you want to create a firewall rule.<br><br><strong>Tip:</strong> You can use the <strong>Search</strong> box to quickly find the account (the list of accounts will automatically refresh to match the characters you type).</li>
+	<li>On the provider account details page, click the <strong>Firewall</strong> tab.<br><br><img src="../images/security/pa_firewall.png" alt="" /><br><br></li>
+	<li>Click the plus sign icon (to the right of the <strong>Search</strong> box). A pop-up appears.</li>
+	<li>Fill in the fields:</li>
+</ol>
+<table>
+	<tr>
+		<td class="head">Field</td>
+		<td class="head">Description</td>
+	</tr>
+	<tr>
+		<th style="width:25%;">Firewall Rule Name</th>
+		<td>Enter a name that indicates the purpose of this rule, such as &#8220;Allow access from the Chicago office.&#8221;<br><br><strong>Note:</strong> Specify a name that&#8217;s easy to remember, or make a note of it. You will need it later, when you apply the rule to a security group.</td>
+	</tr>
+	<tr>
+		<td class="divider" colspan="2"><em><strong>To set a rule by IP range:</strong></em></td>
+	</tr>
+	<tr>
+		<th>IP Range</th>
+		<td>Specify the range in the format <em>network address/subnet mask bits</em>,  e.g., 192.168.1.0/24. You can also specify your current IP address by clicking <strong>Use My Address.</strong></td>
+	</tr>
+	<tr>
+		<th>Protocol</th>
+		<td>Select <strong><span class="caps">TCP</span>, <span class="caps">UDP</span></strong> or <strong><span class="caps">ICMP</span>.</strong></td>
+	</tr>
+	<tr>
+		<th>Ports</th>
+		<td>Specify the start and end of the port range to allow (for <span class="caps">TCP</span> or <span class="caps">UDP</span>). These can be the same number.</td>
+	</tr>
+	<tr>
+		<td class="divider" colspan="2"><em><strong>To set a rule by Amazon Web Services account ID:</strong></em></td>
+	</tr>
+	<tr>
+		<th style="width:25%;">EC2 User ID</th>
+		<td>Enter an <span class="caps">AWS</span> account ID, without hyphens. For more information, see the <a href="http://docs.amazonwebservices.com/AWSSecurityCredentials/1.0/AboutAWSCredentials.html#AccountIDs">Amazon Web Services documentation</a>. To use your EC2 account, click <strong>Use My Account.</strong></td>
+	</tr>
+	<tr>
+		<th>Group Name</th>
+		<td>The <span class="caps">AWS</span> security group name, as specified in the EC2 account.</td>
+	</tr>
+</table>
+<p class="thinspace"></p><ol><li value="6">Click <strong>Create</strong>. Your new rule will appear at the bottom of the list on the <strong>Firewall</strong> tab. You can search for it by typing characters in the <strong>Search</strong> box at the top of the tab.</li></ol>
+<p>Now you need to apply the rule to a security group, as described on the <a href="security_configuring_groups.html">next page</a>.</p>
+<h2 id="delete">Enable, Disable or Delete a Firewall Rule</h2>
+<p>Nimbul allows you to temporarily enable and disable firewall rules to help you manage access across the enterprise.</p>
+<ol>
+	<li>View the <strong>Firewall</strong> tab for the provider account by completing steps 1&ndash;3 <a href="#create">above</a>.</li>
+	<li>Select the checkbox for the rules you want to manage.</li>
+	<li>Use the icons at the top of the tab to disable, enable or delete the rules. <br><br><strong>Note:</strong> When you disable a rule, it will be hidden and will no longer be available to add to security groups. This can result in a group with no rules (if you do not have other rules defined for the group).</li>
+</ol>
+<p>You do not have to disable a rule in order to delete it. Deleting a rule effectively disables it, immediately removing it from all associated security groups.</p>
+<p style="text-align:right;">Next: <a href="security_configuring_groups.html">Managing Security Groups &raquo;</a></p>
+
+        <!--<p class="readmore"><a href="styles.html">Example "Read more" link</a> &raquo;</p>-->
+      </div>
+
+      <div id="sidebar">
+        <h2>About</h2>
+        <p>Nimbul helps you manage your work in the cloud.</p>
+
+        <h2>Documentation</h2>
+        <div id="menu"><ul><li class="webgen-menu-level1"><a href="../index.html">Overview</a></li><li class="webgen-menu-level1 webgen-menu-submenu"><a href="../getting_started/index.html">Getting Started</a></li><li class="webgen-menu-level1 webgen-menu-submenu"><a href="../user_accounts/index.html">User Accounts</a></li><li class="webgen-menu-level1 webgen-menu-submenu"><a href="../provider_accounts/index.html">Provider Accounts</a></li><li class="webgen-menu-level1 webgen-menu-submenu"><a href="../servers_clusters/index.html">Clusters and Servers</a></li><li class="webgen-menu-level1 webgen-menu-submenu"><a href="../instances/index.html">Instances</a></li><li class="webgen-menu-level1 webgen-menu-submenu"><a href="../hostnames/index.html">Hostnames and Addresses</a></li><li class="webgen-menu-level1 webgen-menu-submenu webgen-menu-submenu-inhierarchy"><a href="index.html">Security</a><ul><li class="webgen-menu-level2"><a href="index.html">Overview</a></li><li class="webgen-menu-level2 webgen-menu-item-selected"><span>Setting Up Firewall Rules</span></li><li class="webgen-menu-level2"><a href="security_configuring_groups.html">Managing Security Groups</a></li><li class="webgen-menu-level2"><a href="security_ssh.html">Setting Up SSH Access</a></li></ul></li><li class="webgen-menu-level1 webgen-menu-submenu"><a href="../system_admin/index.html">Administration</a></li><li class="webgen-menu-level1"><a href="../license.html">License and Feedback</a></li><li class="webgen-menu-level1"><a href="../glossary.html">Glossary</a></li></ul></div>
+        
+        <h2>Downloads</h2>
+        <p><strong>Version 1.0</strong><br />
+        <a href="http://github.com/nimbul/nimbul">GitHub</a><br>
+        Released July 2010</p>
+
+        <h2>Other Projects</h2>
+        <ul class="links">
+	<li><a href="http://developer.nytimes.com">Times Developer Network</a></li>
+	<li><a href="http://code.nytimes.com/projects/nyt_transformer/doc/">NYT_Transformer</a></li>
+          <li><a href="http://code.nytimes.com/projects/dbslayer">DBSlayer</a></li>
+          <li><a href="http://code.nytimes.com/projects/xslcache">XSL Cache</a></li>
+        </ul>
+      </div>
+
+      <div id="footer">
+        <p>&copy; 2010 <a href="http://www.nytimes.com">The New York Times</a> | Made with <a href="http://webgen.rubyforge.org">webgen</a></p>
+      </div>
+
+    </div>
+  </body>
+</html>
